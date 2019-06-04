@@ -121,13 +121,13 @@ def about_me():
 
 
 root = Menu("Главное меню")
-root.add_item("1", "Главный корпус", lambda: main_corp)
-root.add_item("2", "Корпус №2", lambda: corp_2)
-root.add_item("3", "Корпус №2", lambda: corp_3)
-root.add_item("4", "Корпус №2", lambda: corp_4)
-root.add_item("5", "Корпус №4", lambda: corp_5)
-root.add_item("6", "Корпус №8", lambda: corp_8)
-root.add_item("7", "Рассакажи о себе", about_me)
+root.add_item("1", "&#127970;Главный корпус", main_corp)
+root.add_item("2", "Корпус №2", corp_2)
+root.add_item("3", "Корпус №2", corp_3)
+root.add_item("4", "Корпус №2", corp_4)
+root.add_item("5", "Корпус №4", corp_5)
+root.add_item("6", "Корпус №8", corp_8)
+root.add_item("7", "&#128483;Рассакажи о себе", about_me)
 
 
 # sub_menu = Menu("Вложенное меню")
