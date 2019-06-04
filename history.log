@@ -1,0 +1,82 @@
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+ERROR:root:(psycopg2.ProgrammingError) can't adapt type 'builtin_function_or_method'
+[SQL: SELECT users.id AS users_id, users.vk_id AS users_vk_id, users.first_name AS users_first_name, users.last_name AS users_last_name, users.total_requests AS users_total_requests, users.current_menu AS users_current_menu, users.special_index AS users_special_index, users.created_date AS users_created_date, users.update_date AS users_update_date 
+FROM users 
+WHERE users.vk_id = %(vk_id_1)s 
+ LIMIT %(param_1)s]
+[parameters: {'vk_id_1': <built-in function id>, 'param_1': 1}]
+(Background on this error at: http://sqlalche.me/e/f405)
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 2
+INFO:root:From id: 155590107, message: 7
+INFO:root:From id: 155590107, message: 1

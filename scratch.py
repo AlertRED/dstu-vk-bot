@@ -1,7 +1,6 @@
 import string
 from menues import Menu, SpecialMenu
 from models import User
-from user_dao import userDAO
 
 
 class Treatment:

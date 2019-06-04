@@ -1,12 +1,14 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
+from config import Config
 
-connect = 'postgres://bcpunbmalhoelx:0b5c8be713e5c154ad5df8962748329af694897313b3a5edaa05565ee4fc8c51@ec2-54-247-72-30.eu-west-1.compute.amazonaws.com:5432/deeip25epu1jg8'
-engine = create_engine(connect, echo=False)
-# engine = create_engine('postgresql://postgres@127.0.0.1/mydb', echo=False)
+engine = create_engine(Config.DATABASE, echo=False)
 Base = declarative_base()
+
 
 class Answer(Base):
     __tablename__ = 'answers'
@@ -19,15 +21,22 @@ class Answer(Base):
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    vk_id = Column(Integer)
-    name = Column(String)
+
+    vk_id = Column(Integer, nullable=False)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+
+    total_requests = Column(Integer, default=0)
     current_menu = Column(String)
     special_index = Column(Integer, default=0)
 
+    created_date = Column(DateTime, index=True, default=datetime.utcnow)
+    update_date = Column(DateTime, onupdate=datetime.utcnow)
 
-    def __init__(self, name, vk_id, current_menu):
-        self.name = name
+    def __init__(self, vk_id: int, first_name: str, last_name: str, current_menu: str):
         self.vk_id = vk_id
+        self.first_name = first_name
+        self.last_name = last_name
         self.current_menu = current_menu
 
     def __repr__(self):
@@ -36,3 +45,4 @@ class User(Base):
 
 # Создание таблицы
 Base.metadata.create_all(engine)
+
