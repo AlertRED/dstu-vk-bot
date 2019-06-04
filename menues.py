@@ -10,6 +10,7 @@ class Item:
 
 class Menu(Item):
     menues: dict = {}
+    back_point_text = ""
 
     def __init__(self, name):
         super().__init__(name, None)
@@ -19,9 +20,9 @@ class Menu(Item):
         Menu.menues[self.name] = self
 
     def get_menu(self):
-        text_menu = " > ".join(reversed(["[ %s ]" % i for i in self.get_story()])) + "\n"
-        text_menu += "\n".join(
-            ["%s. %s" % (key, node.name) for key, node in self.items.items()])
+        text_menu = " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
+        # text_menu += "\n".join(
+        #     ["%s. %s" % (key, node.name) for key, node in self.items.items()])
         return text_menu
 
     def call(self, *args, **kwargs):
@@ -43,14 +44,14 @@ class Menu(Item):
         self.items[index] = special
 
     # добавить вложенное меню
-    def add_menu(self, index, menu, is_back=False):
+    def add_menu(self, index, menu, is_back=False, back_point_text=""):
         self.items[index] = menu
         menu.parent = self
         if is_back:
-            menu.add_back_point(menu.parent)
+            menu.add_back_point(menu.parent, back_point_text)
 
-    def add_back_point(self, menu):
-        self.items["0"] = menu
+    def add_back_point(self, menu, back_point_text):
+        self.items[back_point_text if back_point_text else menu.name] = menu
 
     def get_story(self):
         menu = self

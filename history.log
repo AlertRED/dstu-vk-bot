@@ -82,3 +82,348 @@ INFO:root:From id: 155590107, message: 7
 INFO:root:From id: 155590107, message: 1
 INFO:root:From id: 155590107, message: 1
 INFO:root:From id: 155590107, message: 3
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 0
+INFO:root:From id: 155590107, message: * f
+INFO:root:From id: 155590107, message: * f
+INFO:root:From id: 155590107, message: 2
+INFO:root:From id: 155590107, message: 0
+INFO:root:From id: 155590107, message: 2
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 0
+INFO:root:From id: 155590107, message: 2
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'NoneType' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 4
+ERROR:root:'Menu' object is not callable
+INFO:root:From id: 155590107, message: 4
+INFO:root:From id: 155590107, message: 4
+INFO:root:From id: 155590107, message: 0
+INFO:root:From id: 155590107, message: 3
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: 1
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'NoneType' object has no attribute 'get_answer'
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпус №4
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: d
+INFO:root:From id: 155590107, message: d
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 146875580, message: 1
+INFO:root:From id: 146875580, message: 4
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Рассакажи о себе
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпус №2
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: 1
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: q
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Рассакажи о себе
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Конгресс-холл
+INFO:root:From id: 155590107, message: Корпус №6,7
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: АСА ДГТУ
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Корпус №3,4,5
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главное меню
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
