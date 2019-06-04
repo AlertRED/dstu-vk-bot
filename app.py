@@ -12,8 +12,6 @@ import logging
 
 
 class app:
-    beautiful_title = {'Рассакажи о себе': '&#128483;Рассакажи о себе', 'Стипендии': '&#128179;Стипендии',
-                       'Корпуса': '&#127970;Корпуса'}
 
     def __init__(self, db: Session, vk: VkApi):
         self.db = db
@@ -80,15 +78,13 @@ class app:
 
     def run(self):
         while True:
-
-            messages = self.vk.method("messages.getConversations",
-                                      {"offset": 0, "count": 20, "filter": "unanswered"})
-            if messages["count"] >= 1:
-                id = messages["items"][0]["last_message"]["from_id"]
-                body = messages["items"][0]["last_message"]["text"]
-                self.receive_message(id, body)
             try:
-                pass
+                messages = self.vk.method("messages.getConversations",
+                                          {"offset": 0, "count": 20, "filter": "unanswered"})
+                if messages["count"] >= 1:
+                    id = messages["items"][0]["last_message"]["from_id"]
+                    body = messages["items"][0]["last_message"]["text"]
+                    self.receive_message(id, body)
             except Exception as E:
                 logging.error(E)
                 print(E)
