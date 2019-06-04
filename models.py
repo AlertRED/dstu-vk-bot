@@ -3,7 +3,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import relationship, backref
 
-engine = create_engine('postgresql://postgres@127.0.0.1/mydb', echo=False)
+connect = 'postgres://bcpunbmalhoelx:0b5c8be713e5c154ad5df8962748329af694897313b3a5edaa05565ee4fc8c51@ec2-54-247-72-30.eu-west-1.compute.amazonaws.com:5432/deeip25epu1jg8'
+engine = create_engine(connect, echo=False)
+# engine = create_engine('postgresql://postgres@127.0.0.1/mydb', echo=False)
 Base = declarative_base()
 
 class Answer(Base):
