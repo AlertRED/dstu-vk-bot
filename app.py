@@ -1,4 +1,5 @@
 import json
+import time
 
 from sqlalchemy.orm import Session
 from vk_api import VkApi
@@ -73,17 +74,17 @@ class app:
 
     def run(self):
         while True:
-            # try:
-            messages = self.vk.method("messages.getConversations",
-                                      {"offset": 0, "count": 20, "filter": "unanswered"})
-            if messages["count"] >= 1:
-                id = messages["items"][0]["last_message"]["from_id"]
-                body = messages["items"][0]["last_message"]["text"]
-                self.receive_message(id, body)
+            try:
+                messages = self.vk.method("messages.getConversations",
+                                          {"offset": 0, "count": 20, "filter": "unanswered"})
+                if messages["count"] >= 1:
+                    id = messages["items"][0]["last_message"]["from_id"]
+                    body = messages["items"][0]["last_message"]["text"]
+                    self.receive_message(id, body)
 
-            # except Exception as E:
-            #     logging.error(E)
-            #     time.sleep(1)
+            except Exception as E:
+                logging.error(E)
+                time.sleep(1)
 
 
 
