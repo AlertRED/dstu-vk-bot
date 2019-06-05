@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from models import User, Answer
+from app.models import User, Answer
 
 
 class userDAO:

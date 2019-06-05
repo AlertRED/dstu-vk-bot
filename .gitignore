@@ -1,4 +1,4 @@
 .idea
 __pycache__
 venv
-history.log
+config/history.log

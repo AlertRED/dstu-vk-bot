@@ -1,6 +1,6 @@
 import string
-from menues import Menu, SpecialMenu
-from models import User
+from app.menues import Menu, SpecialMenu
+from app.models import User
 
 
 class Treatment:
