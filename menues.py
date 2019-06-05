@@ -1,3 +1,13 @@
+from enum import Enum
+
+
+class TypeItem(Enum):
+    BACK = 1
+    MENU = 2
+    SIMPLE = 3
+    DEFAULT = 4
+
+
 class Item:
 
     def __init__(self, name: str, method):
@@ -31,27 +41,32 @@ class Menu(Item):
     # получить ответ от меню
     def get_answer(self, request, *args, **kwargs):
         result = self.items.get(request, None)
-        return result.call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs, request=request)
+        return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs, request=request)
+
+    def _add_item(self, index, item, type_item: TypeItem = TypeItem.DEFAULT):
+        self.items[index] = item, type_item
 
     # добавить пункт меню
-    def add_item(self, index, name, method):
-        self.items[index] = Item(name, method)
+    def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
+        self._add_item(index,Item(name, method), type_item)
 
     # добавить пункт меню
-    def add_special(self, index, name, messages: list, method):
+    def add_special_item(self, index, name, messages: list, method, type_item: TypeItem = TypeItem.SIMPLE):
         special = SpecialMenu(name, messages, method)
         special.parent = self
-        self.items[index] = special
+        self._add_item(index, special, type_item)
+
 
     # добавить вложенное меню
-    def add_menu(self, index, menu, is_back=False, back_point_text=""):
-        self.items[index] = menu
+    def add_menu_item(self, index, menu, is_back=False, back_point_text="", type_item: TypeItem = TypeItem.MENU):
+        self.items[index] = [menu, type_item]
         menu.parent = self
         if is_back:
             menu.add_back_point(menu.parent, back_point_text)
 
     def add_back_point(self, menu, back_point_text):
-        self.items[back_point_text if back_point_text else menu.name] = menu
+        index = back_point_text if back_point_text else menu.name
+        self._add_item(index, menu, TypeItem.BACK)
 
     def get_story(self):
         menu = self
@@ -89,8 +104,6 @@ class SpecialMenu(Menu):
             new_menu = self
             number += 1
         return {"answer": answer, "new_menu": new_menu, "special_index": number, "special_answers": lst}
-
-
 
 # sub_menu = Menu("Вложенное меню")
 # sub_menu.add_item("1", "Скажи привет еще раз", lambda: "Привет еще раз")

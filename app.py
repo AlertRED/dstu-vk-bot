@@ -4,7 +4,7 @@ import time
 from sqlalchemy.orm import Session
 from vk_api import VkApi
 
-from menues import Menu, Item, SpecialMenu
+from menues import Menu, Item, SpecialMenu, TypeItem
 from scratch import Treatment
 from user_dao import userDAO
 import random
@@ -34,13 +34,14 @@ class app:
         buttons = []
         group = []
 
-        colors = {Item: 'primary',
-                  SpecialMenu: 'primary',
-                  Menu: 'positive'}
+        colors = {TypeItem.DEFAULT: 'default',
+                  TypeItem.BACK: 'negative',
+                  TypeItem.MENU: 'positive',
+                  TypeItem.SIMPLE: 'primary'}
 
         for label, obj in items.items():
             limit = 40 // (len(group) + 1)
-            group.append((label, colors.get(type(obj), "default")))
+            group.append((label, colors.get(obj[1], "default")))
             if any(map(lambda x: len(x[0]) > limit, group)) or (len(group) > 4):
                 buttons.append(list(map(lambda i: self.get_button(label=i[0], color=i[1]), group[:-1])))
                 group = group[-1:]
@@ -78,17 +79,17 @@ class app:
 
     def run(self):
         while True:
-            try:
-                messages = self.vk.method("messages.getConversations",
-                                          {"offset": 0, "count": 20, "filter": "unanswered"})
-                if messages["count"] >= 1:
-                    id = messages["items"][0]["last_message"]["from_id"]
-                    body = messages["items"][0]["last_message"]["text"]
-                    self.receive_message(id, body)
-            except Exception as E:
-                logging.error(E)
-                print(E)
-                # time.sleep(1)
+            # try:
+            messages = self.vk.method("messages.getConversations",
+                                      {"offset": 0, "count": 20, "filter": "unanswered"})
+            if messages["count"] >= 1:
+                id = messages["items"][0]["last_message"]["from_id"]
+                body = messages["items"][0]["last_message"]["text"]
+                self.receive_message(id, body)
+            # except Exception as E:
+            #     logging.error(E)
+            #     print(E)
+            #     # time.sleep(1)
 
 
 def main_corp():
@@ -144,63 +145,63 @@ main_housing = Menu("Главный корпус")
 asa_housing = Menu("АСА ДГТУ")
 
 housings = Menu("Корпуса")
-housings.add_item("Главный корпус", "", main_corp)
-housings.add_item("Конгресс-холл", "", holl)
-housings.add_item("Корпус №2", "", corp_2)
-housings.add_item("Корпус №3,4,5", "", corp_3_4_5)
-housings.add_item("Корпус №6,7", "", corp_6_7)
-housings.add_item("Корпус №8", "", corp_8)
+housings.add_basic_item("Главный корпус", "", main_corp)
+housings.add_basic_item("Конгресс-холл", "", holl)
+housings.add_basic_item("Корпус №2", "", corp_2)
+housings.add_basic_item("Корпус №3,4,5", "", corp_3_4_5)
+housings.add_basic_item("Корпус №6,7", "", corp_6_7)
+housings.add_basic_item("Корпус №8", "", corp_8)
 
 cafe_housings = Menu("Кафе")
-cafe_housings.add_item("Кафе «Экспресс»", "", lambda: "Кафе «Экспресс» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
+cafe_housings.add_basic_item("Кафе «Экспресс»", "", lambda: "Кафе «Экспресс» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
                                                       "📌 Корпус №8 (цоколь)")
-cafe_housings.add_item("Кафе «Русь»", "", lambda: "Кафе «Русь» - 🕘 пн.-пт. | 8.30 – 18.00 |\n"
+cafe_housings.add_basic_item("Кафе «Русь»", "", lambda: "Кафе «Русь» - 🕘 пн.-пт. | 8.30 – 18.00 |\n"
                                                 "📌 ул. Текучева 145")
-cafe_housings.add_item("Кафе «Миг»", "", lambda: "Кафе «Миг» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
+cafe_housings.add_basic_item("Кафе «Миг»", "", lambda: "Кафе «Миг» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
                                                 "📌 Главный корпус (2-й этаж)")
-cafe_housings.add_item("Кафе «Миг»", "", lambda: "Кафе «Миг» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
+cafe_housings.add_basic_item("Кафе «Миг»", "", lambda: "Кафе «Миг» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
                                                 "📌 Главный корпус (2-й этаж) (карта)")
-cafe_housings.add_item("Кафе «Кафедра»", "", lambda: "Кафе «Кафедра» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
+cafe_housings.add_basic_item("Кафе «Кафедра»", "", lambda: "Кафе «Кафедра» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
                                                 "📌 Корпус №7 (1-й этаж) (карта)")
 
 hostels = Menu("Общажития")
-hostels.add_item("Общежитие №1", "", lambda: "Общежитие №1 - 👤Дарсания Лемин Бичикоевич\n"
+hostels.add_basic_item("Общежитие №1", "", lambda: "Общежитие №1 - 👤Дарсания Лемин Бичикоевич\n"
                                                 "📌 ул. Студенческая 2 \n"
                                                 "📞 (863) 211-10-41, 252-15-78")
-hostels.add_item("Общежитие №2", "", lambda: "Общежитие №2 - 👤Тугуши Давид Александрович\n"
+hostels.add_basic_item("Общежитие №2", "", lambda: "Общежитие №2 - 👤Тугуши Давид Александрович\n"
                                                 "📌 пр. М. Нагибина 5 \n"
                                                 "📞 (863) 273-84-18, 232-78-93")
-hostels.add_item("Общежитие №3", "", lambda: "Общежитие №3 - 👤Исраилов Султан Адамович\n"
+hostels.add_basic_item("Общежитие №3", "", lambda: "Общежитие №3 - 👤Исраилов Султан Адамович\n"
                                                 "📌 ул. Мечникова 79а \n"
                                                 "📞 (863) 273-84-19, 273-87-06")
-hostels.add_item("Общежитие №4", "", lambda: "Общежитие №4 - 👤Газиев Руслан Яхьяевич\n"
+hostels.add_basic_item("Общежитие №4", "", lambda: "Общежитие №4 - 👤Газиев Руслан Яхьяевич\n"
                                                 "📌 ул. Текучева 145\n"
                                                 "📞 (863) 273-87-10, 273-87-10")
-hostels.add_item("Общежитие №5", "", lambda: "Общежитие №5 - 👤Тугуши Давид Александрович\n"
+hostels.add_basic_item("Общежитие №5", "", lambda: "Общежитие №5 - 👤Тугуши Давид Александрович\n"
                                                 "📌 пр. М. Нагибина 5\n"
                                                 "📞 (863) 211-10-41, 252-15-78")
 
 sport_housings = Menu("Спортивные комплекы")
-sport_housings.add_item("Легкоатлетический манеж", "", lambda: "Легкоатлетический манеж")
-sport_housings.add_item("Мини-футбольное поле", "", lambda: "Мини-футбольное поле")
-sport_housings.add_item("Футбольное поле", "", lambda: "Футбольное поле")
-sport_housings.add_item("Бассейн", "", lambda: "Бассейн")
+sport_housings.add_basic_item("Легкоатлетический манеж", "", lambda: "Легкоатлетический манеж")
+sport_housings.add_basic_item("Мини-футбольное поле", "", lambda: "Мини-футбольное поле")
+sport_housings.add_basic_item("Футбольное поле", "", lambda: "Футбольное поле")
+sport_housings.add_basic_item("Бассейн", "", lambda: "Бассейн")
 
 other = Menu("Другое")
-other.add_item("Храм св. мученицы Татианы", "", lambda: "Храм св. мученицы Татианы")
-other.add_item("Коворкинг «Gараж»", "", lambda: "Легкоатлетический манеж")
-other.add_item("Скейт-парк", "", lambda: "Скейт-парк")
+other.add_basic_item("Храм св. мученицы Татианы", "", lambda: "Храм св. мученицы Татианы")
+other.add_basic_item("Коворкинг «Gараж»", "", lambda: "Легкоатлетический манеж")
+other.add_basic_item("Скейт-парк", "", lambda: "Скейт-парк")
 
-main_housing.add_menu(housings.name, housings, True, "Назад")
-main_housing.add_menu(cafe_housings.name, cafe_housings, True, "Назад")
-main_housing.add_menu(hostels.name, hostels, True, "Назад")
-main_housing.add_menu(sport_housings.name, sport_housings, True, "Назад")
-main_housing.add_menu(other.name, other, True, "Назад")
+main_housing.add_menu_item(housings.name, housings, True, "Назад")
+main_housing.add_menu_item(cafe_housings.name, cafe_housings, True, "Назад")
+main_housing.add_menu_item(hostels.name, hostels, True, "Назад")
+main_housing.add_menu_item(sport_housings.name, sport_housings, True, "Назад")
+main_housing.add_menu_item(other.name, other, True, "Назад")
 
-root.add_menu(main_housing.name, main_housing, True, "Назад")
-root.add_menu(asa_housing.name, asa_housing, True, "Назад")
+root.add_menu_item(main_housing.name, main_housing, True, "Назад")
+root.add_menu_item(asa_housing.name, asa_housing, True, "Назад")
 
-root.add_item("Рассакажи о себе", "", about_me)
+root.add_basic_item("Рассакажи о себе", "", about_me)
 # menu_housing = Menu("Корпуса")
 #
 # menu_housing.add_item("Главный корпус", "", main_corp)

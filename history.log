@@ -427,3 +427,19 @@ INFO:root:From id: 155590107, message: Главный корпус
 INFO:root:From id: 155590107, message: Главное меню
 INFO:root:From id: 155590107, message: Главный корпус
 INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'list' object has no attribute 'call'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'list' object has no attribute 'call'
+INFO:root:From id: 155590107, message: Главный корпус
+ERROR:root:'list' object has no attribute 'call'
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Главный корпус
+INFO:root:From id: 155590107, message: Корпуса
+INFO:root:From id: 155590107, message: Конгресс-холл
+INFO:root:From id: 155590107, message: Назад
+INFO:root:From id: 155590107, message: Назад
