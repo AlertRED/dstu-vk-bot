@@ -3,7 +3,7 @@ from app.menues import Menu, SpecialMenu
 from app.models import User
 
 
-class Treatment:
+class Controller:
 
     def __init__(self, userDAO):
         self.userDAO = userDAO

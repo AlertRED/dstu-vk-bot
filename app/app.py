@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from vk_api import VkApi
 
 from app.menues import Menu, TypeItem
-from app.scratch import Treatment
+from app.controller import Controller
 from app.user_dao import userDAO
 import random
 import logging
@@ -15,7 +15,7 @@ class app:
     def __init__(self, db: Session, vk: VkApi):
         self.db = db
         self.userDAO = userDAO(self.db)
-        self.treatment = Treatment(self.userDAO)
+        self.treatment = Controller(self.userDAO)
         self.vk = vk
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
