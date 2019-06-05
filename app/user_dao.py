@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import User, Answer
+from app.models import User, UserAnswer
 
 
 class userDAO:
@@ -35,7 +35,7 @@ class userDAO:
         if kwargs.get("special_index") is not None:
             user.special_index = kwargs.get("special_index", user.special_index)
         if kwargs.get("special_answers") is not None:
-            user.answers = [Answer(answer=answer) for answer in kwargs.get("special_answers", [])]
+            user.answers = [UserAnswer(answer=answer) for answer in kwargs.get("special_answers", [])]
 
         self.db.commit()
         return user
