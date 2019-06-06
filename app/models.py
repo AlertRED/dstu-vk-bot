@@ -70,6 +70,7 @@ class Place(Base):
     type_place_id = Column(Integer, ForeignKey('type_place.id'))
     type_place = relationship("TypePlace", backref="place")
     schedules = relationship("Schedule", backref="place")
+    managers = relationship("Manager", backref="")
 
 class Schedule(Base):
     __tablename__ = 'schedule'
@@ -94,7 +95,25 @@ class Day_of_week(Base):
 
 
 
+class Manager(Base):
+    __tablename__ = 'managers'
+    id = Column(Integer, primary_key=True)
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    patronymic = Column(String, nullable=False)
 
+    place_id = Column(Integer, nullable=False)
+    place = relationship("Place", backref="managers")
+    post_id = Column(Integer, nullable=False)
+    posts = relationship("Post", backref="managers")
+
+
+class Post(Base):
+    __tablename__ = 'posts'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+
+    managers = relationship("Manager", backref="posts")
 
 
 
