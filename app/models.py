@@ -70,7 +70,9 @@ class Place(Base):
     type_place_id = Column(Integer, ForeignKey('type_place.id'))
     type_place = relationship("TypePlace", backref="place")
     schedules = relationship("Schedule", backref="place")
-    managers = relationship("Manager", backref="")
+    managers = relationship("Manager", backref="place")
+    phones = relationship("Phone_places", backref="place")
+
 
 class Schedule(Base):
     __tablename__ = 'schedule'
@@ -87,12 +89,12 @@ class Schedule(Base):
     day_of_week = relationship("Day_of_week", backref="schedule")
 
 
+
 class Day_of_week(Base):
     __tablename__ = 'day_of_week'
     id = Column(Integer, primary_key=True)
     name = Column(String)
     schedules = relationship("Schedule", backref="day_of_week")
-
 
 
 class Manager(Base):
@@ -105,7 +107,7 @@ class Manager(Base):
     place_id = Column(Integer, nullable=False)
     place = relationship("Place", backref="managers")
     post_id = Column(Integer, nullable=False)
-    posts = relationship("Post", backref="managers")
+    post = relationship("Post", backref="managers")
 
 
 class Post(Base):
@@ -114,6 +116,14 @@ class Post(Base):
     name = Column(String)
 
     managers = relationship("Manager", backref="posts")
+
+class Phone_place(Base):
+    __tablename__ = 'phone_place'
+    id = Column(Integer, primary_key=True)
+    phone = Column(String)
+
+    place_id = Column("Place", )
+    place = relationship("Manager", backref="posts")
 
 
 
