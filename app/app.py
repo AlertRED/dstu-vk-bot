@@ -6,6 +6,7 @@ from vk_api import VkApi
 from app.menues import Menu, TypeItem
 from app.controller import Controller
 from app.user_dao import userDAO
+from  app.place_dao import placeDAO
 import random
 import logging
 

@@ -1,13 +1,15 @@
 from datetime import datetime
 
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Time
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
-from sqlalchemy.orm import relationship
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, Session
+
 from config.config import Config
 
 engine = create_engine(Config.DATABASE, echo=False)
 Base = declarative_base()
+
 
 class UserAnswer(Base):
     __tablename__ = 'user_answers'
@@ -15,17 +17,7 @@ class UserAnswer(Base):
     answer = Column(String)
     user_id = Column(Integer, ForeignKey('users.id'))
 
-    user = relationship("User", back_populates="user_answers")
-
-class UserCache(Base):
-    __tablename__ = 'user_cache'
-    id = Column(Integer, primary_key=True)
-    vk_id = Column(Integer, ForeignKey('users.id'))
-    current_menu = Column(String)
-    special_index = Column(Integer, default=0)
-
-    user_id = Column(Integer, ForeignKey('users.id'))
-    user = relationship("User", uselist=False, back_populates="user_cache")
+    user = relationship("User", backref="user_answers")
 
 
 class User(Base):
@@ -39,10 +31,8 @@ class User(Base):
     created_date = Column(DateTime, index=True, default=datetime.utcnow)
     update_date = Column(DateTime, onupdate=datetime.utcnow)
 
-    answers = relationship("UserAnswer", back_populates="users")
-    cache = relationship("UserCache", back_populates="users")
-
-
+    answers = relationship("UserAnswer", back_populates="user")
+    user_cache = relationship("UserCache", uselist=False, back_populates="user")
 
     def __init__(self, vk_id: int, first_name: str, last_name: str, current_menu: str):
         self.vk_id = vk_id
@@ -54,24 +44,35 @@ class User(Base):
         return "<User('%s','%s')>" % (self.name, self.currient_menu)
 
 
+class UserCache(Base):
+    __tablename__ = 'user_cache'
+    id = Column(Integer, primary_key=True)
+    current_menu = Column(String)
+    special_index = Column(Integer, default=0)
+
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="user_cache")
+
+
 class TypePlace(Base):
     __tablename__ = 'type_place'
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     places = relationship("Place", back_populates="type_place")
 
+
 class Place(Base):
     __tablename__ = 'place'
     id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    name = Column(String, nullable=False, unique=True)
     map_url = Column(String)
     adress = Column(String)
 
     type_place_id = Column(Integer, ForeignKey('type_place.id'))
-    type_place = relationship("TypePlace", backref="place")
-    schedules = relationship("Schedule", backref="place")
-    managers = relationship("Manager", backref="place")
-    phones = relationship("Phone_places", backref="place")
+    type_place = relationship("TypePlace", back_populates="places")
+    schedules = relationship("Schedule", back_populates="place")
+    managers = relationship("Manager", back_populates="place")
+    phones = relationship("Phone_place", back_populates="place")
 
 
 class Schedule(Base):
@@ -82,19 +83,17 @@ class Schedule(Base):
     pause_start_time = Column(Time)
     pause_end_time = Column(Time)
 
-    place_id = Column(Integer, nullable=False)
-    place = relationship("Place", backref="schedule")
-
-    day_of_week_id = Column(Integer, nullable=False)
-    day_of_week = relationship("Day_of_week", backref="schedule")
-
+    place_id = Column(Integer, ForeignKey('place.id'))
+    place = relationship("Place", back_populates="schedules")
+    day_of_week_id = Column(Integer, ForeignKey('day_of_week.id'))
+    day_of_week = relationship("Day_of_week", back_populates="schedules")
 
 
 class Day_of_week(Base):
     __tablename__ = 'day_of_week'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    schedules = relationship("Schedule", backref="day_of_week")
+    schedules = relationship("Schedule", back_populates="day_of_week")
 
 
 class Manager(Base):
@@ -104,29 +103,28 @@ class Manager(Base):
     last_name = Column(String, nullable=False)
     patronymic = Column(String, nullable=False)
 
-    place_id = Column(Integer, nullable=False)
-    place = relationship("Place", backref="managers")
-    post_id = Column(Integer, nullable=False)
-    post = relationship("Post", backref="managers")
+    place_id = Column(Integer, ForeignKey('place.id'))
+    place = relationship("Place", back_populates="managers")
+
+    post_id = Column(Integer, ForeignKey('post.id'))
+    post = relationship("Post", back_populates="managers")
 
 
 class Post(Base):
-    __tablename__ = 'posts'
+    __tablename__ = 'post'
     id = Column(Integer, primary_key=True)
     name = Column(String)
+    managers = relationship("Manager", back_populates="post")
 
-    managers = relationship("Manager", backref="posts")
 
 class Phone_place(Base):
     __tablename__ = 'phone_place'
     id = Column(Integer, primary_key=True)
     phone = Column(String)
 
-    place_id = Column("Place", )
-    place = relationship("Manager", backref="posts")
-
+    place_id = Column(Integer, ForeignKey('place.id'))
+    place = relationship("Place", back_populates="phones")
 
 
 # Создание таблицы
 Base.metadata.create_all(engine)
-
