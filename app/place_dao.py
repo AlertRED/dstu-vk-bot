@@ -9,7 +9,7 @@ class placeDAO:
 
     def _first_or_create_type_place(self, name):
         type_place = self.db.query(TypePlace).filter_by(name=name).first()
-        if not type_place:
+        if not type_place and name:
             type_place = TypePlace(name=name)
             self.db.add(type_place)
             self.db.commit()
@@ -17,7 +17,7 @@ class placeDAO:
 
     def _first_or_create_post(self, name):
         post = self.db.query(Post).filter_by(name=name).first()
-        if not post:
+        if not post and name:
             post = Post(name=name)
             self.db.add(post)
             self.db.commit()
@@ -25,7 +25,7 @@ class placeDAO:
 
     def _first_or_create_day_of_week(self, name):
         day = self.db.query(Day_of_week).filter_by(name=name).first()
-        if not day:
+        if not day and name:
             day = Day_of_week(name=name)
             self.db.add(day)
             self.db.commit()
@@ -34,7 +34,7 @@ class placeDAO:
     def _update_or_create_schedule(self, place, day_of_week, start_time=None, end_time=None,
                                    pause_start_time=None, pause_end_time=None):
         schedule = self.db.query(Schedule).filter_by(place=place, day_of_week=day_of_week).first()
-        if not schedule:
+        if not schedule and place and day_of_week:
             schedule = Schedule(start_time=start_time,
                                 end_time=end_time,
                                 pause_start_time=pause_start_time,
@@ -54,14 +54,26 @@ class placeDAO:
 
     def _first_or_create_phone_place(self, phone, place):
         phone_place = self.db.query(Phone_place).filter_by(place=place, phone=phone).first()
-        if not phone_place:
+        if not phone_place and phone and place:
             phone_place = Phone_place(phone=phone, place=place)
             self.db.add(phone_place)
             self.db.commit()
         return phone_place
 
-
-
+    def _update_or_create_manager(self, place, first_name, last_name, patronymic, post=None):
+        manager = self.db.query(Manager).filter_by(place=place, first_name=first_name, last_name=last_name,
+                                                   patronymic=patronymic).first()
+        if not manager and first_name and last_name and patronymic:
+            manager = Manager(first_name=first_name,
+                              last_name=last_name,
+                              patronymic=patronymic,
+                              place=place,
+                              post=post)
+            self.db.add(manager)
+        else:
+            manager.post = post
+        self.db.commit()
+        return post
 
     def update_or_create_place(self, name, map_url=None, adress=None, type_place_name=None, schedules=None,
                                managers=None, phones=None):
@@ -81,20 +93,16 @@ class placeDAO:
         self.db.commit()
 
         if managers:
-            managers = [
-                Manager(first_name=manager["first_name"], last_name=manager["last_name"],
-                        patronymic=manager["patronymic"],
-                        place=place, post=self._first_or_create_post(manager["post"]))
-                for manager in managers]
-            self.db.bulk_save_objects(managers)
-            self.db.commit()
+            for manager in managers:
+                self._update_or_create_manager(place=place,
+                                              first_name=manager["first_name"],
+                                              last_name=manager["last_name"],
+                                              patronymic=manager["patronymic"],
+                                              post=self._first_or_create_post(manager["post"]))
 
         if phones:
-            phones = [
-                Phone_place(phone=phone, place=place)
-                for phone in phones]
-            self.db.bulk_save_objects(phones)
-            self.db.commit()
+            for phone in phones:
+                self._first_or_create_phone_place(phone=phone, place=place)
 
         if schedules:
             for schedule in schedules:
