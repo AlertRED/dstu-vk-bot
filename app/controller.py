@@ -11,7 +11,7 @@ class Controller:
     def get_clear_question(self, question: str):
         return question.lower().rstrip(string.punctuation)
 
-    def parse_answer(self, result_data: dict, user: User, current_menu: Menu):
+    def parse_answer(self, result_data: dict, user: User, current_menu: Menu, request: str):
         answer = result_data.get("answer", None)
         new_menu = result_data.get("new_menu", None)
 
@@ -32,14 +32,14 @@ class Controller:
         self.userDAO.update_user(user.vk_id, special_answers=special_answers, special_index=special_index,
                                  current_menu=current_menu.name)
 
-        return answer, current_menu
+        return answer, current_menu, request
 
     def get_answer(self, request: str, user):
         current_menu = Menu.menues.get(user.current_menu)
         result = current_menu.get_answer(request, special_index=user.special_index,
                                          special_answers=[i.answer for i in user.answers])
 
-        result = self.parse_answer(result, user, current_menu)
+        result = self.parse_answer(result, user, current_menu, request)
         return result
 
     def get_menu(self, menu_name):

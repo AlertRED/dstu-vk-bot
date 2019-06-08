@@ -1,13 +1,14 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
-from vk_api import vk_api
+from vk_api import vk_api, VkUpload
 from config.config import Config
 from app.app import app
 
 db = Session(bind=create_engine(Config.DATABASE, echo=False))
 vk = vk_api.VkApi(token=Config.VK_TOKEN)
 vk._auth_token()
-app = app(db, vk)
+vk_upload = VkUpload(vk)
+app = app(db, vk, vk_upload)
 
 if __name__ == '__main__':
     app.run()

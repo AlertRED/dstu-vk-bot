@@ -1,7 +1,8 @@
 import json
+import os
 
 from sqlalchemy.orm import Session
-from vk_api import VkApi
+from vk_api import VkApi, VkUpload
 
 from app.menues import Menu, TypeItem
 from app.controller import Controller
@@ -12,11 +13,13 @@ import logging
 
 class app:
 
-    def __init__(self, db: Session, vk: VkApi):
+    def __init__(self, db: Session, vk: VkApi, vk_upload: VkUpload):
         self.db = db
         self.userDAO = userDAO(self.db)
-        self.treatment = Controller(self.userDAO)
+        self.controller = Controller(self.userDAO)
         self.vk = vk
+        self.vk_upload = vk_upload
+        self.images_dir = os.getcwd()+'\\images\\'
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
 
@@ -55,12 +58,18 @@ class app:
         keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
         return str(keyboard.decode('utf-8'))
 
-    def send_message(self, answer, menu, id_user):
+    def send_message(self, answer, menu, id_user, request):
         if answer:
+            path_file = self.images_dir+request+".jpg"
+            result = ""
+            if os.path.exists(path_file):
+                photo = self.vk_upload.photo_messages(path_file)
+                result = 'photo' + str(photo[0].get('owner_id')) + '_' + str(photo[0].get('id'))
             self.vk.method("messages.send",
                            {"peer_id": id_user,
                             "message": answer,
                             "keyboard": self.get_keyboard(menu.items),
+                            "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
             self.vk.method("messages.send",
@@ -73,8 +82,8 @@ class app:
         vk_user = self.vk.method("users.get", values={"user_ids": from_id})
         user = self.userDAO.first_or_create_user(from_id, vk_user[0]['first_name'], vk_user[0]['last_name'], root.name)
         self.userDAO.user_inc_request(user.vk_id)
-        answer, menu = self.treatment.get_answer(text, user)
-        self.send_message(answer, menu, from_id)
+        answer, menu, request = self.controller.get_answer(text, user)
+        self.send_message(answer, menu, from_id, request)
         return answer, menu
 
     def run(self):
