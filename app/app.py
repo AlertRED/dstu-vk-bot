@@ -19,7 +19,7 @@ class app:
         self.controller = Controller(self.userDAO)
         self.vk = vk
         self.vk_upload = vk_upload
-        self.images_dir = os.getcwd()+'\\images\\'
+        self.images_dir = os.path.join(os.getcwd(), 'images')
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
 
@@ -60,7 +60,7 @@ class app:
 
     def send_message(self, answer, menu, id_user, request):
         if answer:
-            path_file = self.images_dir+request+".jpg"
+            path_file = os.path.join(self.images_dir, request+".jpg")
             result = ""
             if os.path.exists(path_file):
                 photo = self.vk_upload.photo_messages(path_file)
