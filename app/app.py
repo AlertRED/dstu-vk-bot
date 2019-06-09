@@ -67,7 +67,7 @@ class app:
                 result = 'photo' + str(photo[0].get('owner_id')) + '_' + str(photo[0].get('id'))
             self.vk.method("messages.send",
                            {"peer_id": id_user,
-                            "message": answer,
+                            "message": path_file,
                             "keyboard": self.get_keyboard(menu.items),
                             "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
