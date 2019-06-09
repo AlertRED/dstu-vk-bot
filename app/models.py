@@ -34,11 +34,10 @@ class User(Base):
     answers = relationship("UserAnswer", back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
 
-    def __init__(self, vk_id: int, first_name: str, last_name: str, current_menu: str):
+    def __init__(self, vk_id: int, first_name: str, last_name: str):
         self.vk_id = vk_id
         self.first_name = first_name
         self.last_name = last_name
-        self.current_menu = current_menu
 
     def __repr__(self):
         return "<User('%s','%s')>" % (self.name, self.currient_menu)

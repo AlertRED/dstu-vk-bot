@@ -15,7 +15,7 @@ class Item:
         self.method = method
 
     def call(self, *args, **kwargs):
-        return {"answer": self.method(), "new_menu": None}
+        return {"answer": self.method(**kwargs), "new_menu": None}
 
 
 class Menu(Item):

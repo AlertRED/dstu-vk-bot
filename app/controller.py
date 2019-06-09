@@ -35,8 +35,8 @@ class Controller:
         return answer, current_menu
 
     def get_answer(self, request: str, user):
-        current_menu = Menu.menues.get(user.current_menu)
-        result = current_menu.get_answer(request, special_index=user.special_index,
+        current_menu = Menu.menues.get(user.user_cache.current_menu)
+        result = current_menu.get_answer(request, special_index=user.user_cache.special_index,
                                          special_answers=[i.answer for i in user.answers])
 
         result = self.parse_answer(result, user, current_menu)

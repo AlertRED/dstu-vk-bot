@@ -95,10 +95,10 @@ class placeDAO:
         if managers:
             for manager in managers:
                 self._update_or_create_manager(place=place,
-                                              first_name=manager["first_name"],
-                                              last_name=manager["last_name"],
-                                              patronymic=manager["patronymic"],
-                                              post=self._first_or_create_post(manager["post"]))
+                                               first_name=manager["first_name"],
+                                               last_name=manager["last_name"],
+                                               patronymic=manager["patronymic"],
+                                               post=self._first_or_create_post(manager["post"]))
 
         if phones:
             for phone in phones:
@@ -115,13 +115,27 @@ class placeDAO:
 
         return place
 
+    def get_place(self, name):
+        place = self.db.query(Place).filter_by(name=name).first()
+        return place
+
 
 # if __name__ == '__main__':
 db = Session(bind=engine)
 placeDAO = placeDAO(db)
-placeDAO.update_or_create_place('Название места', map_url='ссылка на карту', adress='адрес места',
+placeDAO.update_or_create_place('Главный корпус', map_url='ссылка на карту', adress='адрес места',
                                 type_place_name='тип места', schedules=[
         {'day_name': 'пн', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
+         'pause_end_time': '15:00'},
+        {'day_name': 'вт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
+         'pause_end_time': '15:00'},
+        {'day_name': 'ср', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
+         'pause_end_time': '15:00'},
+        {'day_name': 'чт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
+         'pause_end_time': '15:00'},
+        {'day_name': 'пт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
+         'pause_end_time': '15:00'},
+        {'day_name': 'сб', 'start_time': '12:00', 'end_time': '16:00', 'pause_start_time': '14:00',
          'pause_end_time': '15:00'}],
                                 managers=[{'first_name': 'Имя', 'last_name': 'Фамилия', 'patronymic': 'Отчество',
                                            'post': 'Должность'}],
