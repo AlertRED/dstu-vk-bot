@@ -99,13 +99,13 @@ def get_format_place(name):
     result = ''
     result += "Название: " + place.name + "\n"
     if place.adress:
-        result += "Адрес: " + place.adress + "\n"
+        result += "📍Адрес: " + place.adress + "\n"
     if place.managers:
-        result += "Управляющие: " + ''.join(i.first_name for i in place.managers) + "\n"
+        result += "👤Управляющие: " + ''.join(i.first_name for i in place.managers) + "\n"
     if place.phones:
-        result += "Телефоны: " + ' '.join(i.phone for i in place.phones) + "\n"
+        result += "📞Телефоны: " + ', '.join(i.phone for i in place.phones)+"\n"
     if place.schedules:
-        result += "Расписание: \n" + '\n'.join(
+        result += "🕗Расписание: \n" + '\n'.join(
             '%s: %s - %s (перерыв %s - %s )' % (
                 i.day_of_week.name, i.start_time.strftime("%H:%M"), i.end_time.strftime("%H:%M"),
                 i.pause_start_time.strftime("%H:%M"), i.pause_end_time.strftime("%H:%M"))
