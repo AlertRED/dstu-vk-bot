@@ -68,7 +68,7 @@ class app:
             self.vk.method("messages.send",
                            {"peer_id": id_user,
                             "message": answer,
-                            "keyboard": self.get_keyboard(menu.items),
+                            "keyboard": self.get_keyboard(menu.items) if menu.items else None,
                             "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
@@ -143,8 +143,8 @@ def corp_8():
 
 def about_me():
     return "Я помогу узнать необходимую для тебя информацию о ДГТУ. " \
-           "Помогу найти нужный корпус или узнать подробную информацию о стипендиях. " \
-           "Спрашивай, не стисняйся!&#128521;"
+           "Помогу найти нужный корпус и узнать о нем подробную информацию. " \
+           "Спрашивай, не стесняйся!&#128521;"
 
 
 root = Menu("Главное меню")
@@ -172,7 +172,7 @@ cafe_housings.add_basic_item("Кафе «Миг»", "", lambda: "Кафе «Ми
 cafe_housings.add_basic_item("Кафе «Кафедра»", "", lambda: "Кафе «Кафедра» - 🕘 пн.-пт. | 8.30 – 17.00 |\n"
                                                            "📌 Корпус №7 (1-й этаж) (карта)")
 
-hostels = Menu("Общажития")
+hostels = Menu("Общежития")
 hostels.add_basic_item("Общежитие №1", "", lambda: "Общежитие №1 - 👤Дарсания Лемин Бичикоевич\n"
                                                    "📌 ул. Студенческая 2 \n"
                                                    "📞 (863) 211-10-41, 252-15-78")
@@ -209,7 +209,9 @@ main_housing.add_menu_item(other.name, other, True, "Назад")
 root.add_menu_item(main_housing.name, main_housing, True, "Назад")
 root.add_menu_item(asa_housing.name, asa_housing, True, "Назад")
 
-root.add_basic_item("Рассакажи о себе", "", about_me)
+root.add_basic_item("О боте", "", about_me)
+root.add_special_item("Предложить идею","",["Введите предлагаемую идею:"], lambda *args,**kwargs: None)
+
 # menu_housing = Menu("Корпуса")
 #
 # menu_housing.add_item("Главный корпус", "", main_corp)
