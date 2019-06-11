@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule, engine
+from app.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule
 
 
 class placeDAO:
@@ -75,7 +75,8 @@ class placeDAO:
         self.db.commit()
         return post
 
-    def update_or_create_place(self, name, map_url=None, adress=None, type_place_name=None, schedules=None,
+    def update_or_create_place(self, name, map_url=None, img_name=None, adress=None, type_place_name=None,
+                               schedules=None,
                                managers=None, phones=None):
 
         type_place = self._first_or_create_type_place(name=type_place_name) if type_place_name else None
@@ -88,6 +89,7 @@ class placeDAO:
         else:
             place.map_url = map_url
             place.adress = adress
+            place.img_name = img_name
             place.type_place = type_place
             place.name = name
         self.db.commit()
@@ -110,33 +112,11 @@ class placeDAO:
                                                 self._first_or_create_day_of_week(schedule["day_name"]),
                                                 schedule["start_time"],
                                                 schedule["end_time"],
-                                                schedule["pause_start_time"],
-                                                schedule["pause_end_time"])
+                                                schedule.get("pause_start_time", None),
+                                                schedule.get("pause_end_time", None))
 
         return place
 
     def get_place(self, name):
         place = self.db.query(Place).filter_by(name=name).first()
         return place
-
-
-# if __name__ == '__main__':
-db = Session(bind=engine)
-placeDAO = placeDAO(db)
-placeDAO.update_or_create_place('Главный корпус', map_url='ссылка на карту', adress='адрес места',
-                                type_place_name='тип места', schedules=[
-        {'day_name': 'пн', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'},
-        {'day_name': 'вт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'},
-        {'day_name': 'ср', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'},
-        {'day_name': 'чт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'},
-        {'day_name': 'пт', 'start_time': '12:00', 'end_time': '18:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'},
-        {'day_name': 'сб', 'start_time': '12:00', 'end_time': '16:00', 'pause_start_time': '14:00',
-         'pause_end_time': '15:00'}],
-                                managers=[{'first_name': 'Имя', 'last_name': 'Фамилия', 'patronymic': 'Отчество',
-                                           'post': 'Должность'}],
-                                phones=['+7-987-654-32-10', '+2-399-000'])

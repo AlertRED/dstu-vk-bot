@@ -3,7 +3,7 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Time
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Session
+from sqlalchemy.orm import relationship
 
 from config.config import Config
 
@@ -65,6 +65,7 @@ class Place(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False, unique=True)
     map_url = Column(String)
+    img_name = Column(String)
     adress = Column(String)
 
     type_place_id = Column(Integer, ForeignKey('type_place.id'))
@@ -127,3 +128,4 @@ class Phone_place(Base):
 
 # Создание таблицы
 Base.metadata.create_all(engine)
+
