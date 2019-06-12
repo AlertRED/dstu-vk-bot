@@ -65,15 +65,17 @@ class app:
 
     def send_message(self, answer, menu, id_user, request):
         if answer:
-            path_file = os.path.join(self.images_dir, request+".jpg")
             result = ""
-            if os.path.exists(path_file):
-                photo = self.vk_upload.photo_messages(path_file)
-                result = 'photo' + str(photo[0].get('owner_id')) + '_' + str(photo[0].get('id'))
+            if answer[1]:
+                path_file = os.path.join(self.images_dir, answer[1])
+                if os.path.exists(path_file):
+                    photo = self.vk_upload.photo_messages(path_file)
+                    result = 'photo' + str(photo[0].get('owner_id')) + '_' + str(photo[0].get('id'))
             self.vk.method("messages.send",
                            {"peer_id": id_user,
-                            "message": answer,
-                            "keyboard": self.get_keyboard(menu.items),
+                            "message": answer[0],
+                            "keyboard": self.get_keyboard(menu.items) if menu.items else None,
+                            "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
             self.vk.method("messages.send",
@@ -92,15 +94,15 @@ class app:
 
     def run(self):
         while True:
-            try:
-                messages = self.vk.method("messages.getConversations",
-                                          {"offset": 0, "count": 20, "filter": "unanswered"})
-                if messages["count"] >= 1:
-                    id = messages["items"][0]["last_message"]["from_id"]
-                    body = messages["items"][0]["last_message"]["text"]
-                    self.receive_message(id, body)
-            except Exception as E:
-                logging.error(E)
+            #try:
+            messages = self.vk.method("messages.getConversations",
+                                      {"offset": 0, "count": 20, "filter": "unanswered"})
+            if messages["count"] >= 1:
+                id = messages["items"][0]["last_message"]["from_id"]
+                body = messages["items"][0]["last_message"]["text"]
+                self.receive_message(id, body)
+            #except Exception as E:
+             #   logging.error(E)
                 # time.sleep(1)
 
 
@@ -123,7 +125,7 @@ class app:
                 for i in place.schedules) + "\n"
         if place.map_url:
             result += "Карта: " + place.map_url + "\n"
-        return result
+        return (result, place.img_name)
 
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)
@@ -151,12 +153,13 @@ class app:
         self.root.add_menu_item(self.main_housing.name, self.main_housing, True, "Назад")
         self.root.add_menu_item(self.asa_housing.name, self.asa_housing, True, "Назад")
 
-        self.root.add_basic_item("Рассакажи о себе", "", self.about_me)
+        self.root.add_basic_item("О Боте", "", self.about_me)
+        self.root.add_special_item("Предложить идею", "",[('Введите ваше предложение:', None)], lambda *args: None)
 
 
     def about_me(self, **kwargs):
-        return "Я помогу узнать необходимую для тебя информацию о ДГТУ. " \
-               "Помогу найти нужный корпус или узнать подробную информацию о стипендиях. " \
-               "Спрашивай, не стисняйся!&#128521;"
+        return ("Я помогу узнать необходимую для тебя информацию о ДГТУ. " \
+               "Помогу найти нужный корпус и узнать подробную информацию о разных местах. " \
+               "Спрашивай, не стесняйся!&#128521;", None)
 
 
