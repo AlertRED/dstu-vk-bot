@@ -1,7 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from vk_api import vk_api
-from config.config import Config
+from config.conf import Config
 from app.app import app
 
 db = Session(bind=create_engine(Config.DATABASE, echo=False))

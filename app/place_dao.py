@@ -117,6 +117,15 @@ class placeDAO:
 
         return place
 
-    def get_place(self, name):
+    def get_place_by_name(self, name):
         place = self.db.query(Place).filter_by(name=name).first()
         return place
+
+    def get_place_by_type(self, type_place_name: str):
+        type_place = self.db.query(TypePlace).filter_by(name=type_place_name).first()
+        places = self.db.query(Place).filter_by(type_place=type_place).all()
+        return places
+
+    def get_type_places(self):
+        typePlaces = self.db.query(TypePlace).all()
+        return typePlaces
