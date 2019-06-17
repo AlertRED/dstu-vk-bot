@@ -135,8 +135,7 @@ class app:
 
     def create_menues(self):
         self.root = Menu("Главное меню")
-        self.asa_housing = Menu("АСА ДГТУ")
-        self.main_housing = Menu("Корпус ДГТУ")
+        self.main_housing = Menu("Корпус пл. Гагарина 1")
 
         self.housings = self.get_place_menu('Корпуса', 'Корпус')
         self.cafe_housings = self.get_place_menu('Кафе', 'Кафе')
@@ -151,7 +150,6 @@ class app:
         self.main_housing.add_menu_item(self.other.name, self.other, True, "Назад")
 
         self.root.add_menu_item(self.main_housing.name, self.main_housing, True, "Назад")
-        self.root.add_menu_item(self.asa_housing.name, self.asa_housing, True, "Назад")
 
         self.root.add_basic_item("О Боте", "", self.about_me)
         self.root.add_special_item("Предложить идею", "",[('Введите ваше предложение:', None)], lambda *args: None)
