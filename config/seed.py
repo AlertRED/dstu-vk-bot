@@ -66,7 +66,7 @@ placeDAO.update_or_create_place('Конгресс-Холл',
                                 phones=['8-(863)-238-17-28'])
 
 placeDAO.update_or_create_place('Корпус №6,7',
-                                map_url='https://www.google.com/maps/place/%D0%9A%D0%BE%D0%BD%D0%B3%D1%80%D0%B5%D1%81%D1%81-%D0%A5%D0%BE%D0%BB%D0%BB/@47.238969,39.7119972,19.53z/data=!4m8!1m2!2m1!1z0LrQsNGA0YLRiw!3m4!1s0x40e3b9ac6e670b53:0xa0cee54076710c3f!8m2!3d47.2378533!4d39.7124118?hl=ru',
+                                map_url='https://vk.com/away.php?to=https%3A%2F%2Fwww.google.com%2Fmaps%2Fplace%2F%CC%E5%E4%E8%E0%EF%E0%F0%EA%2B%DE%E6%ED%FB%E9%2B%D0%E5%E3%E8%EE%ED%2C%2F%4047.2383522%2C39.7115657%2C19z%2Fdata%3D%214m8%211m2%212m1%211z0LrQsNGA0YLRiw%213m4%211s0x40e3b9ac1572738b%3A0x8243af72d94e08be%218m2%213d47.2383236%214d39.7121389%3Fhl%3Dru&cc_key=',
                                 adress='пл. Гагарина, 1',
                                 img_name='корпус_6_7.jpg', type_place_name='Корпус', schedules=[
         {'day_name': 'пн', 'start_time': '8:10', 'end_time': '21:00'},
