@@ -135,7 +135,7 @@ class app:
 
     def create_menues(self):
         self.root = Menu("Главное меню")
-        self.main_housing = Menu("Корпус пл. Гагарина 1")
+        self.main_housing = Menu("Кампус пл. Гагарина 1")
 
         self.housings = self.get_place_menu('Корпуса', 'Корпус')
         self.cafe_housings = self.get_place_menu('Кафе', 'Кафе')
