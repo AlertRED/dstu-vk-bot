@@ -83,6 +83,7 @@ class app:
                             "keyboard": self.get_keyboard(menu.items),
                             "random_id": random.randint(1, 2147483647)})
 
+    # обработка сообщения
     def receive_message(self, from_id: int, text: str):
         logging.info("From id: %d, message: %s" % (from_id, text))
         vk_user = self.vk.method("users.get", values={"user_ids": from_id})
@@ -92,6 +93,7 @@ class app:
         self.send_message(answer, menu, from_id, request)
         return answer, menu
 
+    # запуск цикла
     def run(self):
         while True:
             try:
