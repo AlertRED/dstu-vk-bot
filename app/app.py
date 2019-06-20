@@ -15,6 +15,10 @@ import logging
 class app:
 
     def __init__(self, db: Session, vk: VkApi, vk_upload: VkUpload):
+        self.colors = {TypeItem.DEFAULT: 'default',
+                      TypeItem.BACK: 'negative',
+                      TypeItem.MENU: 'positive',
+                      TypeItem.SIMPLE: 'primary'}
         self.db = db
         self.userDAO = userDAO(self.db)
         self.controller = Controller(self.userDAO)
@@ -42,14 +46,9 @@ class app:
         buttons = []
         group = []
 
-        colors = {TypeItem.DEFAULT: 'default',
-                  TypeItem.BACK: 'negative',
-                  TypeItem.MENU: 'positive',
-                  TypeItem.SIMPLE: 'primary'}
-
         for label, obj in items.items():
             limit = 30 // (len(group) + 1)
-            group.append((label, colors.get(obj[1], "default")))
+            group.append((label, self.colors.get(obj[1], "default")))
             if any(map(lambda x: len(x[0]) > limit, group)) or (len(group) > 4):
                 buttons.append(list(map(lambda i: self.get_button(label=i[0], color=i[1]), group[:-1])))
                 group = group[-1:]
