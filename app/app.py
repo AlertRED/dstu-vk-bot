@@ -4,10 +4,11 @@ import os
 from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
-from app.menues import Menu, TypeItem
+from app.menues import MenuTree
+from app.models.models_menu import Menu, TypeItem
 from app.controller import Controller
-from app.user_dao import userDAO
-from app.place_dao import placeDAO
+from app.models.user_dao import userDAO
+from app.models.place_dao import placeDAO
 import random
 import logging
 
@@ -21,13 +22,12 @@ class app:
                       TypeItem.SIMPLE: 'primary'}
         self.db = db
         self.userDAO = userDAO(self.db)
-        self.controller = Controller(self.userDAO)
         self.placeDAO = placeDAO(self.db)
+        self.controller = Controller(self.userDAO)
         self.vk = vk
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-
-        self.create_menues()
+        self.menues = MenuTree(self.placeDAO)
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
@@ -83,82 +83,29 @@ class app:
                             "random_id": random.randint(1, 2147483647)})
 
     # обработка сообщения
-    def receive_message(self, from_id: int, text: str):
-        logging.info("From id: %d, message: %s" % (from_id, text))
-        vk_user = self.vk.method("users.get", values={"user_ids": from_id})
-        user = self.userDAO.first_or_create_user(from_id, vk_user[0]['first_name'], vk_user[0]['last_name'], self.root.name)
+    def handling_message(self, user_id: int, text_message: str):
+        user_info = self.vk.method("users.get", values={"user_ids": user_id})
+        user = self.userDAO.first_or_create_user(user_id, user_info[0]['first_name'], user_info[0]['last_name'], self.menues.root.name)
         self.userDAO.user_inc_request(user.vk_id)
-        answer, menu, request = self.controller.get_answer(text, user)
-        self.send_message(answer, menu, from_id, request)
-        return answer, menu
+        answer, menu = self.controller.get_answer(text_message, user)
+        self.send_message(answer, menu, user_id, text_message)
 
     # запуск цикла
     def run(self):
         while True:
-            try:
-                messages = self.vk.method("messages.getConversations",
-                                          {"offset": 0, "count": 20, "filter": "unanswered"})
-                if messages["count"] >= 1:
-                    id = messages["items"][0]["last_message"]["from_id"]
-                    body = messages["items"][0]["last_message"]["text"]
-                    self.receive_message(id, body)
-            except Exception as E:
-                logging.error(E)
+            # try:
+                # получаем сообщения
+            messages = self.vk.method("messages.getConversations",
+                                      {"offset": 0, "count": 20, "filter": "unanswered"})
+            if messages["count"] >= 1:
+                user_id = messages["items"][0]["last_message"]["from_id"]
+                text_message = messages["items"][0]["last_message"]["text"]
+                logging.info("From id: %d, message: %s" % (user_id, text_message))
+                self.handling_message(user_id, text_message)
+            # except Exception as E:
+            #     logging.error(E)
                 # time.sleep(1)
 
 
-    def get_format_place(self, name):
-        place = self.placeDAO.get_place_by_name(name)
-        if not place:
-            return 'Извините, запрашевоемое место еще не добавлено'
-        result = ''
-        result += "Название: " + place.name + "\n"
-        if place.adress:
-            result += "📍Адрес: " + place.adress + "\n"
-        if place.managers:
-            result += "👤Управляющие: " + ''.join(i.first_name for i in place.managers) + "\n"
-        if place.phones:
-            result += "📞Телефоны: " + ', '.join(i.phone for i in place.phones)+"\n"
-        if place.schedules:
-            result += "🕗Расписание: \n" + '\n'.join(
-                '%s: %s - %s' % (
-                    i.day_of_week.name, i.start_time.strftime("%H:%M"), i.end_time.strftime("%H:%M"))
-                for i in place.schedules) + "\n"
-        if place.map_url:
-            result += "Карта: " + place.map_url + "\n"
-        return (result, place.img_name)
-
-    def get_place_menu(self, button_name: str, place_type: str):
-        menu = Menu(button_name)
-        for place in self.placeDAO.get_place_by_type(place_type):
-            menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
-        return menu
-
-    def create_menues(self):
-        self.root = Menu("Главное меню")
-        self.main_housing = Menu("Кампус пл. Гагарина 1")
-
-        self.housings = self.get_place_menu('Корпуса', 'Корпус')
-        self.cafe_housings = self.get_place_menu('Кафе', 'Кафе')
-        self.hostels = self.get_place_menu('Общежития', 'Общежитие')
-        self.sport_housings = self.get_place_menu('Спортивные комплексы', 'Спортивные комплексы')
-        self.other = self.get_place_menu('Другое', 'Другое')
-
-        self.main_housing.add_menu_item(self.housings.name, self.housings, True, "Назад")
-        self.main_housing.add_menu_item(self.cafe_housings.name, self.cafe_housings, True, "Назад")
-        self.main_housing.add_menu_item(self.hostels.name, self.hostels, True, "Назад")
-        self.main_housing.add_menu_item(self.sport_housings.name, self.sport_housings, True, "Назад")
-        self.main_housing.add_menu_item(self.other.name, self.other, True, "Назад")
-
-        self.root.add_menu_item(self.main_housing.name, self.main_housing, True, "Назад")
-
-        self.root.add_basic_item("О Боте", "", self.about_me)
-        self.root.add_special_item("Предложить идею", "",[('Введите ваше предложение:', None)], lambda *args: None)
-
-
-    def about_me(self, **kwargs):
-        return ("Я помогу узнать необходимую для тебя информацию о ДГТУ. " \
-               "Помогу найти нужный корпус и узнать подробную информацию о разных местах. " \
-               "Спрашивай, не стесняйся!&#128521;", None)
 
 

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule
+from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule
 
 
 class placeDAO:
@@ -114,7 +114,6 @@ class placeDAO:
                                                 schedule["end_time"],
                                                 schedule.get("pause_start_time", None),
                                                 schedule.get("pause_end_time", None))
-
         return place
 
     def get_place_by_name(self, name):

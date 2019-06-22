@@ -1,150 +1,174 @@
-from enum import Enum
+from app.models.models_menu import Menu
+from app.models.place_dao import placeDAO
 
 
-class TypeItem(Enum):
-    BACK = 1
-    MENU = 2
-    SIMPLE = 3
-    DEFAULT = 4
+class MenuTree:
 
+    def __init__(self, placeDAO: placeDAO):
 
-class Item:
+        self.placeDAO = placeDAO
+        self.root = Menu("Главное меню")
 
-    def __init__(self, name: str, method):
-        self.name = name
-        self.method = method
+        # ДГТУ и АСА
 
-    def call(self, *args, **kwargs):
-        return {"answer": self.method(**kwargs), "new_menu": None}
+        self.places_menu = Menu('Места и объекты')
+        self.dstu_menu = Menu('ДГТУ')
+        self.asa_menu = Menu('АСА')
 
+        self.dstu_housings_menu = self.get_place_menu('Корпуса', 'Корпус')
+        self.dstu_cafe_menu = self.get_place_menu('Кафе', 'Кафе')
+        self.dstu_hostels_menu = self.get_place_menu('Общежития', 'Общежитие')
+        self.dstu_sport_menu = self.get_place_menu('Спортивные комплексы', 'Спортивные комплексы')
+        self.dstu_other_places_menu = self.get_place_menu('Другое', 'Другое')
 
-class Menu(Item):
-    menues: dict = {}
-    back_point_text = ""
+        self.dstu_menu.add_menu_item(self.dstu_housings_menu.name, self.dstu_housings_menu)
+        self.dstu_menu.add_menu_item(self.dstu_cafe_menu.name, self.dstu_cafe_menu)
+        self.dstu_menu.add_menu_item(self.dstu_hostels_menu.name, self.dstu_hostels_menu)
+        self.dstu_menu.add_menu_item(self.dstu_sport_menu.name, self.dstu_sport_menu)
+        self.dstu_menu.add_menu_item(self.dstu_other_places_menu.name, self.dstu_other_places_menu)
 
-    def __init__(self, name):
-        super().__init__(name, None)
-        self.name = name
-        self.parent: Menu = None
-        self.items = {}
-        Menu.menues[self.name] = self
+        self.places_menu.add_menu_item('ДГТУ', self.dstu_menu)
 
-    def get_menu(self):
-        text_menu = " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
-        # text_menu += "\n".join(
-        #     ["%s. %s" % (key, node.name) for key, node in self.items.items()])
-        return text_menu
+        self.asa_housings_menu = self.get_place_menu('Корпуса', 'Корпус')
+        self.asa_cafe_menu = self.get_place_menu('Кафе', 'Кафе')
+        self.asa_hostels_menu = self.get_place_menu('Общежития', 'Общежитие')
+        self.asa_sport_menu = self.get_place_menu('Спортивные комплексы', 'Спортивные комплексы')
+        self.asa_other_places_menu = self.get_place_menu('Другое', 'Другое')
 
-    def call(self, *args, **kwargs):
-        return {"answer": None, "new_menu": self}
+        self.dstu_menu.add_menu_item(self.dstu_housings_menu.name, self.asa_housings_menu)
+        self.dstu_menu.add_menu_item(self.dstu_cafe_menu.name, self.asa_cafe_menu)
+        self.dstu_menu.add_menu_item(self.dstu_hostels_menu.name, self.asa_hostels_menu)
+        self.dstu_menu.add_menu_item(self.dstu_sport_menu.name, self.asa_sport_menu)
+        self.dstu_menu.add_menu_item(self.dstu_other_places_menu.name, self.asa_other_places_menu)
 
-    # получить ответ от меню
-    def get_answer(self, request, *args, **kwargs):
-        result = self.items.get(request, None)
-        return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs, request=request)
+        self.places_menu.add_menu_item('АСА', self.asa_menu)
 
-    def _add_item(self, index, item, type_item: TypeItem = TypeItem.DEFAULT):
-        self.items[index] = item, type_item
+        # Стипендии
+        self.grants_menu = Menu('Стипендии')
 
-    # добавить пункт меню
-    def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
-        self._add_item(index,Item(name, method), type_item)
+        self.grants_menu.add_basic_item('Академическая', "", self.academ_grant)
+        self.grants_menu.add_basic_item('Повышенная академическая', "", self.upper_academ_grant)
+        self.grants_menu.add_basic_item('Социальная', "", self.social_grant)
+        self.grants_menu.add_basic_item('Повышенная социальная', "", self.upper_social_grant)
+        self.grants_menu.add_basic_item('Гос. степендии аспирантам', "", self.gos_step_asp)
+        self.grants_menu.add_basic_item('Стипендии президента РФ', "", self.president_grant)
+        self.grants_menu.add_basic_item('Стипендии правительства РФ', "", self.government_grant)
+        self.grants_menu.add_basic_item('Материальная помощь', "", self.material_support_grant)
 
-    # добавить пункт меню
-    def add_special_item(self, index, name, messages: list, method, type_item: TypeItem = TypeItem.SIMPLE):
-        special = SpecialMenu(name, messages, method)
-        special.parent = self
-        self._add_item(index, special, type_item)
+        # Узнать расписание
 
+        self.schedule_menu = Menu('Узнать расписание')
 
-    # добавить вложенное меню
-    def add_menu_item(self, index, menu, is_back=False, back_point_text="", type_item: TypeItem = TypeItem.MENU):
-        self.items[index] = [menu, type_item]
-        menu.parent = self
-        if is_back:
-            menu.add_back_point(menu.parent, back_point_text)
+        self.schedule_menu.add_special_item('Мое расписание', "", [('Я не знаю вашу группу\n' \
+                                                                    'Введите название чтобы я запомнил\n' \
+                                                                    'Например ВПР41 или вПр-41, как угодно :)', None)],
+                                            lambda *args: None)
 
-    def add_back_point(self, menu, back_point_text):
-        index = back_point_text if back_point_text else menu.name
-        self._add_item(index, menu, TypeItem.BACK)
+        self.schedule_menu.add_special_item('Расписание группы', "", [('Введите название чтобы я запомнил\n' \
+                                                                    'Например ВПР41 или вПр-41, как угодно :)', None)],
+                                            lambda *args: None)
 
-    def get_story(self):
-        menu = self
-        result = []
-        while menu:
-            result.append(menu.name)
-            menu = menu.parent
-        return result
+        # Факультеты и кафедры
 
+        self.faculties_and_departments_menu = Menu('Факультеты и кафедры')
+        self.faculties_menu = Menu('Факультеты')
+        self.departments_menu = Menu('Кафедры')
+        self.specialty = Menu('Направления')
 
-class SpecialMenu(Menu):
+        self.specialty.add_basic_item('Программная инженерия', '', self.pi_specialty)
+        self.specialty.add_basic_item('Компьютерная безопасность', '', self.pi_specialty)
+        self.specialty.add_basic_item('Прикладная математика', '', self.pi_specialty)
 
-    def __init__(self, name: str, messages: list, method):
-        super().__init__(name)
-        self.messages = messages
-        self.parent = None
-        self.method = method
+        self.departments_menu.add_basic_item('ПОВТиАС', '', self.povtias_department)
+        self.departments_menu.add_menu_item(self.specialty.name, self.specialty)
 
-    def is_end(self, number):
-        return number and ((len(self.messages) - 1) < number)
+        self.faculties_menu.add_basic_item('ИиВТ', '', self.iivt_faculty)
+        self.faculties_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
+        self.faculties_menu.add_basic_item('МКиМТ', '', self.mkmt_faculty)
+        self.faculties_menu.add_basic_item('АМиУ', '', self.amiu_faculty)
 
-    def call(self, *args, **kwargs):
-        number = kwargs.get('special_index', 0)
-        lst = kwargs.get('special_answers')
-        if number and number > 0:
-            lst.append(kwargs.get('request'))
+        self.faculties_and_departments_menu.add_menu_item(self.faculties_menu.name, self.faculties_menu)
+        self.faculties_and_departments_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
 
-        if self.is_end(number):
-            answer = self.method(lst)
-            new_menu = self.parent
-            number = 0
-            lst = []
-        else:
-            answer = self.messages[number]
-            new_menu = self
-            number += 1
-        return {"answer": answer, "new_menu": new_menu, "special_index": number, "special_answers": lst}
+        # Настройки
 
-# sub_menu = Menu("Вложенное меню")
-# sub_menu.add_item("1", "Скажи привет еще раз", lambda: "Привет еще раз")
-# root.add_menu("2", sub_menu, True)
-# root.add_special("3", "Возвести в степень", ["Введите число: ", "Введите степень: "],
-#                  lambda lst: int(lst[0]) ** int(lst[1]))
-# root.add_special("4", "Сумма 5 чисел",
-#                  ["Введите число: ", "Введите число: ", "Введите число: ", "Введите число: ", "Введите число: "],
-#                  lambda lst: sum([int(i) for i in lst]))
+        self.settings_menu = Menu('Настройки')
 
-# class User:
-#     current_menu: Menu = root
-#     special_index = 0  # текущий пункт специального меню
-#     special_question = None  # вопрос специального меню
-#     special_answers = []  # накопленные ответы на вопросы
+        self.root.add_menu_item(self.places_menu.name, self.places_menu)
+        self.root.add_menu_item(self.schedule_menu.name, self.schedule_menu)
+        self.root.add_menu_item(self.faculties_and_departments_menu.name, self.faculties_and_departments_menu)
+        self.root.add_menu_item(self.grants_menu.name, self.grants_menu)
+        self.root.add_menu_item(self.settings_menu.name, self.settings_menu)
+        self.root.add_special_item("Оставить отзыв или предложение", "", [('Введите ваше предложение:', None)], lambda *args: None)
+        self.root.add_basic_item("О Боте", "", self.about_me)
 
+    def get_format_place(self, name):
+        place = self.placeDAO.get_place_by_name(name)
+        if not place:
+            return 'Извините, запрашевоемое место еще не добавлено'
+        result = ''
+        result += "Название: " + place.name + "\n"
+        if place.adress:
+            result += "📍Адрес: " + place.adress + "\n"
+        if place.managers:
+            result += "👤Управляющие: " + ''.join(i.first_name for i in place.managers) + "\n"
+        if place.phones:
+            result += "📞Телефоны: " + ', '.join(i.phone for i in place.phones) + "\n"
+        if place.schedules:
+            result += "🕗Расписание: \n" + '\n'.join(
+                '%s: %s - %s' % (
+                    i.day_of_week.name, i.start_time.strftime("%H:%M"), i.end_time.strftime("%H:%M"))
+                for i in place.schedules) + "\n"
+        if place.map_url:
+            result += "Карта: " + place.map_url + "\n"
+        return (result, place.img_name)
 
-# if __name__ == '__main__':
-#     user = User()
-#
-#     print(user.current_menu.get_menu())
-#     while True:
-#         request = input('command: ' if not (type(user.current_menu) is SpecialMenu) else user.special_question)
-#         result = user.current_menu.get_answer(request, special_index=user.special_index,
-#                                               special_answers=user.special_answers)
-#
-#         answer = result.get("answer", None)
-#         new_menu = result.get("new_menu", None)
-#
-#         if type(user.current_menu) is SpecialMenu:
-#             user.special_answers = result.get("special_answers")
-#             user.special_index = result.get("special_index", None)
-#         elif type(new_menu) is SpecialMenu:
-#             user.special_index = result.get("special_index", None)
-#
-#         if new_menu:
-#             user.current_menu = new_menu
-#
-#         if type(user.current_menu) is SpecialMenu:
-#             user.special_question = answer
-#         else:
-#             if answer:
-#                 print(answer)
-#             print(user.current_menu.get_menu())
+    def get_place_menu(self, button_name: str, place_type: str):
+        menu = Menu(button_name)
+        for place in self.placeDAO.get_place_by_type(place_type):
+            menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
+        return menu
+
+    def academ_grant(self):
+        return '', None
+
+    def upper_academ_grant(self):
+        return '', None
+
+    def social_grant(self):
+        return '', None
+
+    def upper_social_grant(self):
+        return '', None
+
+    def gos_step_asp(self):
+        return '', None
+
+    def president_grant(self):
+        return '', None
+
+    def government_grant(self):
+        return '', None
+
+    def material_support_grant(self):
+        return '', None
+
+    def iivt_faculty(self):
+        return '', None
+
+    def mkmt_faculty(self):
+        return '', None
+
+    def amiu_faculty(self):
+        return '', None
+
+    def povtias_department(self):
+        return '', None
+
+    def pi_specialty(self):
+        return '', None
+
+    def about_me(self, **kwargs):
+        return ("Я помогу узнать необходимую для тебя информацию о ДГТУ. " \
+                "Помогу найти нужный корпус и узнать подробную информацию о разных местах. " \
+                "Спрашивай, не стесняйся!&#128521;", None)

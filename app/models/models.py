@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Time
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Time, Boolean, Enum
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
@@ -126,6 +126,105 @@ class Phone_place(Base):
     place = relationship("Place", back_populates="phones")
 
 
+class Faculty(Base):
+    __tablename__ = 'faculty'
+    id = Column(Integer, primary_key=True)
+    name = Column(String, nullable=False)
+    abbreviation = Column(String, nullable=False)
+    cabinet = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+
+    dean = relationship("Dean", uselist=False, back_populates="faculty")
+    departments = relationship("Department", back_populates="faculty")
+
+
+class Dean(Base):
+    __tablename__ = 'dean'
+    id = Column(Integer, primary_key=True)
+
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    patronymic = Column(String, nullable=False)
+
+    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="dean")
+
+
+class Department(Base):
+    __tablename__ = 'department'
+    id = Column(Integer, primary_key=True)
+
+    name = Column(String, nullable=False)
+    abbreviation = Column(String, nullable=False)
+    cabinet = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+    phone = Column(String, nullable=False)
+
+    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="departments")
+
+    specialties = relationship("Specialty", back_populates="departments")
+    manager = relationship("Manager_department", uselist=False, back_populates="department")
+
+
+class Manager_department(Base):
+    __tablename__ = 'manager_department'
+    id = Column(Integer, primary_key=True)
+
+    first_name = Column(String, nullable=False)
+    last_name = Column(String, nullable=False)
+    patronymic = Column(String, nullable=False)
+
+    department_id = Column(Integer, ForeignKey('department.id'))
+    department = relationship("Department", back_populates="manager")
+
+
+class Specialty(Base):
+    __tablename__ = 'specialty'
+    id = Column(Integer, primary_key=True)
+
+    name = Column(String, nullable=False)
+    abbreviation = Column(String, nullable=False)
+    code = Column(String, nullable=False)
+    description = Column(String, nullable=False)
+
+    department_id = Column(Integer, ForeignKey('department.id'))
+    department = relationship("Department", back_populates="specialties")
+
+
+class Grant(Base):
+    __tablename__ = 'grant'
+    id = Column(Integer, primary_key=True)
+
+    name = Column(String, nullable=False)
+    need_statement = Column(Boolean, nullable=False)
+
+    conditions = relationship("Condition", back_populates="grant")
+    payments = relationship("Payment", back_populates="grant")
+
+
+class Condition(Base):
+    __tablename__ = 'condition'
+    id = Column(Integer, primary_key=True)
+
+    description = Column(String, nullable=False)
+
+    grant_id = Column(Integer, ForeignKey('grant.id'))
+    grant = relationship("Grant", back_populates="specialties")
+
+
+class Payment(Base):
+    __tablename__ = 'payment'
+    id = Column(Integer, primary_key=True)
+
+    foreigner = Column(Boolean, nullable=False)
+    conditions = Column(String, nullable=False)
+    form_of_study = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура'))
+    money = Column(String, nullable=False)
+
+    grant_id = Column(Integer, ForeignKey('grant.id'))
+    grant = relationship("Grant", back_populates="payments")
+
+
 # Создание таблицы
 Base.metadata.create_all(engine)
-

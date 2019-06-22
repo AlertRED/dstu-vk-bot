@@ -1,6 +1,5 @@
-from sqlalchemy import Time
 from sqlalchemy.orm import Session
-from app.models import User, UserAnswer, UserCache
+from app.models.models import User, UserAnswer, UserCache
 
 
 class userDAO:
