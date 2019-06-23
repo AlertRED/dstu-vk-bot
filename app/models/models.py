@@ -136,6 +136,7 @@ class Faculty(Base):
 
     dean = relationship("Dean", uselist=False, back_populates="faculty")
     departments = relationship("Department", back_populates="faculty")
+    specialties = relationship("Specialty", back_populates="faculty")
 
 
 class Dean(Base):
@@ -163,7 +164,6 @@ class Department(Base):
     faculty_id = Column(Integer, ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="departments")
 
-    specialties = relationship("Specialty", back_populates="departments")
     manager = relationship("Manager_department", uselist=False, back_populates="department")
 
 
@@ -185,11 +185,22 @@ class Specialty(Base):
 
     name = Column(String, nullable=False)
     abbreviation = Column(String, nullable=False)
-    code = Column(String, nullable=False)
-    description = Column(String, nullable=False)
 
-    department_id = Column(Integer, ForeignKey('department.id'))
-    department = relationship("Department", back_populates="specialties")
+    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="specialties")
+    types = relationship("Type_specialty", back_populates="specialty")
+
+
+class Type_specialty(Base):
+    __tablename__ = 'type_specialty'
+    id = Column(Integer, primary_key=True)
+
+    code = Column(String, nullable=False)
+    type = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура', name="type_specialty_enum"), nullable=False)
+    duration = Column(Integer, nullable=False)
+
+    specialty_id = Column(Integer, ForeignKey('specialty.id'))
+    specialty = relationship("Specialty", back_populates="types")
 
 
 class Grant(Base):
@@ -210,7 +221,7 @@ class Condition(Base):
     description = Column(String, nullable=False)
 
     grant_id = Column(Integer, ForeignKey('grant.id'))
-    grant = relationship("Grant", back_populates="specialties")
+    grant = relationship("Grant", back_populates="conditions")
 
 
 class Payment(Base):
@@ -219,12 +230,11 @@ class Payment(Base):
 
     foreigner = Column(Boolean, nullable=False)
     conditions = Column(String, nullable=False)
-    form_of_study = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура'))
-    money = Column(String, nullable=False)
+    form_of_study = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура', name="type_payment_enum"))
+    money = Column(Integer, nullable=False)
 
     grant_id = Column(Integer, ForeignKey('grant.id'))
     grant = relationship("Grant", back_populates="payments")
-
 
 # Создание таблицы
 Base.metadata.create_all(engine)

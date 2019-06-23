@@ -1,5 +1,5 @@
 from app.models.models_menu import Menu
-from app.models.place_dao import placeDAO
+from app.daos.place_dao import placeDAO
 
 
 class MenuTree:

@@ -5,10 +5,10 @@ from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
 from app.menues import MenuTree
-from app.models.models_menu import Menu, TypeItem
+from app.models.models_menu import TypeItem
 from app.controller import Controller
-from app.models.user_dao import userDAO
-from app.models.place_dao import placeDAO
+from app.daos.user_dao import userDAO
+from app.daos.place_dao import placeDAO
 import random
 import logging
 

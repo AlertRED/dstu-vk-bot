@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.models import engine
-from app.models.place_dao import placeDAO
+from app.daos.place_dao import placeDAO
 
 db = Session(bind=engine)
 placeDAO = placeDAO(db)
