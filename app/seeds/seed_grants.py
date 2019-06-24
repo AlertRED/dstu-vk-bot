@@ -5,7 +5,7 @@ from app.daos.grants_dao import grantDAO
 db = Session(bind=engine)
 grantDAO = grantDAO(db)
 
-grantDAO.create_or_update_grant('Государственная академическая стипендия', False,
+grantDAO.create_or_update_grant('Гос. академическая стипендия', False,
                                 ['отсутствие по итогам сессии оценки ниже 4',
                                  'отсутствие по итогам сессии задолженности',
                                  'исключение, если является иностранным гражданином'],

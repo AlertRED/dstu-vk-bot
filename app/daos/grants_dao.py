@@ -8,8 +8,15 @@ class grantDAO:
     def __init__(self, db: Session):
         self.db = db
 
-    def create_or_update_grant(self, name:str , need_statement: bool, conditions: list, payments: list):
+    def get_place_by_name(self, name: str):
+        grant = self.db.query(Grant).filter(Grant.name == name).first()
+        return grant
 
+    def get_grant_by_type(self, form_of_study: str):
+        grants = self.db.query(Grant).join(Grant.payments).filter(Payment.form_of_study == form_of_study).all()
+        return grants
+
+    def create_or_update_grant(self, name: str, need_statement: bool, conditions: list, payments: list):
         grant = self.db.query(Grant).filter_by(name=name).first()
         if grant:
             grant.need_statement = need_statement
@@ -31,4 +38,3 @@ class grantDAO:
                               grant=grant)
             self.db.add(payment)
         self.db.commit()
-

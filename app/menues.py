@@ -1,12 +1,14 @@
 from app.models.models_menu import Menu
 from app.daos.place_dao import placeDAO
+from app.daos.grants_dao import grantDAO
 
 
 class MenuTree:
 
-    def __init__(self, placeDAO: placeDAO):
+    def __init__(self, placeDAO: placeDAO, grantDAO: grantDAO):
 
         self.placeDAO = placeDAO
+        self.grantDAO = grantDAO
         self.root = Menu("Главное меню")
 
         # ДГТУ и АСА
@@ -46,14 +48,11 @@ class MenuTree:
         # Стипендии
         self.grants_menu = Menu('Стипендии')
 
-        self.grants_menu.add_basic_item('Академическая', "", self.academ_grant)
-        self.grants_menu.add_basic_item('Повышенная академическая', "", self.upper_academ_grant)
-        self.grants_menu.add_basic_item('Социальная', "", self.social_grant)
-        self.grants_menu.add_basic_item('Повышенная социальная', "", self.upper_social_grant)
-        self.grants_menu.add_basic_item('Гос. степендии аспирантам', "", self.gos_step_asp)
-        self.grants_menu.add_basic_item('Стипендии президента РФ', "", self.president_grant)
-        self.grants_menu.add_basic_item('Стипендии правительства РФ', "", self.government_grant)
-        self.grants_menu.add_basic_item('Материальная помощь', "", self.material_support_grant)
+        self.grants_mag = self.get_grants_menu('Магистратура', 'Магистратура')
+        self.grants_bak = self.get_grants_menu('Бакалавриат', 'Бакалавриат')
+
+        self.grants_menu.add_menu_item(self.grants_mag.name, self.grants_mag)
+        self.grants_menu.add_menu_item(self.grants_bak.name, self.grants_bak)
 
         # Узнать расписание
 
@@ -65,7 +64,8 @@ class MenuTree:
                                             lambda *args: None)
 
         self.schedule_menu.add_special_item('Расписание группы', "", [('Введите название чтобы я запомнил\n' \
-                                                                    'Например ВПР41 или вПр-41, как угодно :)', None)],
+                                                                       'Например ВПР41 или вПр-41, как угодно :)',
+                                                                       None)],
                                             lambda *args: None)
 
         # Факультеты и кафедры
@@ -75,17 +75,17 @@ class MenuTree:
         self.departments_menu = Menu('Кафедры')
         self.specialty = Menu('Направления')
 
-        self.specialty.add_basic_item('Программная инженерия', '', self.pi_specialty)
-        self.specialty.add_basic_item('Компьютерная безопасность', '', self.pi_specialty)
-        self.specialty.add_basic_item('Прикладная математика', '', self.pi_specialty)
+        # self.specialty.add_basic_item('Программная инженерия', '', self.pi_specialty)
+        # self.specialty.add_basic_item('Компьютерная безопасность', '', self.pi_specialty)
+        # self.specialty.add_basic_item('Прикладная математика', '', self.pi_specialty)
 
-        self.departments_menu.add_basic_item('ПОВТиАС', '', self.povtias_department)
-        self.departments_menu.add_menu_item(self.specialty.name, self.specialty)
-
-        self.faculties_menu.add_basic_item('ИиВТ', '', self.iivt_faculty)
-        self.faculties_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
-        self.faculties_menu.add_basic_item('МКиМТ', '', self.mkmt_faculty)
-        self.faculties_menu.add_basic_item('АМиУ', '', self.amiu_faculty)
+        # self.departments_menu.add_basic_item('ПОВТиАС', '', self.povtias_department)
+        # self.departments_menu.add_menu_item(self.specialty.name, self.specialty)
+        #
+        # self.faculties_menu.add_basic_item('ИиВТ', '', self.iivt_faculty)
+        # self.faculties_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
+        # self.faculties_menu.add_basic_item('МКиМТ', '', self.mkmt_faculty)
+        # self.faculties_menu.add_basic_item('АМиУ', '', self.amiu_faculty)
 
         self.faculties_and_departments_menu.add_menu_item(self.faculties_menu.name, self.faculties_menu)
         self.faculties_and_departments_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
@@ -99,15 +99,15 @@ class MenuTree:
         self.root.add_menu_item(self.faculties_and_departments_menu.name, self.faculties_and_departments_menu)
         self.root.add_menu_item(self.grants_menu.name, self.grants_menu)
         self.root.add_menu_item(self.settings_menu.name, self.settings_menu)
-        self.root.add_special_item("Оставить отзыв или предложение", "", [('Введите ваше предложение:', None)], lambda *args: None)
+        self.root.add_special_item("Оставить отзыв или предложение", "", [('Введите ваше предложение:', None)],
+                                   lambda *args: None)
         self.root.add_basic_item("О Боте", "", self.about_me)
 
     def get_format_place(self, name):
         place = self.placeDAO.get_place_by_name(name)
         if not place:
             return 'Извините, запрашевоемое место еще не добавлено'
-        result = ''
-        result += "Название: " + place.name + "\n"
+        result = "Название: " + place.name + "\n"
         if place.adress:
             result += "📍Адрес: " + place.adress + "\n"
         if place.managers:
@@ -129,44 +129,29 @@ class MenuTree:
             menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
         return menu
 
-    def academ_grant(self):
-        return '', None
+    def get_format_grant(self, name):
+        grant = self.grantDAO.get_place_by_name(name)
+        if not grant:
+            return 'Извините, запрашевоемое место еще не добавлено'
+        result = 'Название: ' + grant.name + '\n'
 
-    def upper_academ_grant(self):
-        return '', None
+        result += '📄Условия получения:\n'
+        for condition in grant.conditions:
+            result += '- '+condition.description + '\n'
 
-    def social_grant(self):
-        return '', None
+        result += '💶Размеры выплат:\n'
+        for payment in grant.payments:
+            result += '- '+payment.conditions + (' в т.ч. ИГ' if payment.foreigner else '') + '  - ' + str(payment.money) + 'р\n'
 
-    def upper_social_grant(self):
-        return '', None
+        result += '*ИГ - иностранные граждане'
 
-    def gos_step_asp(self):
-        return '', None
+        return result, None
 
-    def president_grant(self):
-        return '', None
-
-    def government_grant(self):
-        return '', None
-
-    def material_support_grant(self):
-        return '', None
-
-    def iivt_faculty(self):
-        return '', None
-
-    def mkmt_faculty(self):
-        return '', None
-
-    def amiu_faculty(self):
-        return '', None
-
-    def povtias_department(self):
-        return '', None
-
-    def pi_specialty(self):
-        return '', None
+    def get_grants_menu(self, button_name: str, form_of_study: str):
+        menu = Menu(button_name)
+        for grant in self.grantDAO.get_grant_by_type(form_of_study):
+            menu.add_basic_item(grant.name, "", lambda **kwargs: self.get_format_grant(kwargs['request']))
+        return menu
 
     def about_me(self, **kwargs):
         return ("Я помогу узнать необходимую для тебя информацию о ДГТУ. " \

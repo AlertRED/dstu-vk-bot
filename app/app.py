@@ -4,6 +4,7 @@ import os
 from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
+from app.daos.grants_dao import grantDAO
 from app.menues import MenuTree
 from app.models.models_menu import TypeItem
 from app.controller import Controller
@@ -23,11 +24,12 @@ class app:
         self.db = db
         self.userDAO = userDAO(self.db)
         self.placeDAO = placeDAO(self.db)
+        self.grantDAO = grantDAO(self.db)
         self.controller = Controller(self.userDAO)
         self.vk = vk
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-        self.menues = MenuTree(self.placeDAO)
+        self.menues = MenuTree(self.placeDAO, self.grantDAO)
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
