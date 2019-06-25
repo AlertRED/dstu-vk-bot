@@ -210,6 +210,8 @@ class Grant(Base):
     name = Column(String, nullable=False)
     need_statement = Column(Boolean, nullable=False)
 
+    is_all_conditions = Column(Boolean, nullable=False)
+
     conditions = relationship("Condition", back_populates="grant")
     payments = relationship("Payment", back_populates="grant")
 
