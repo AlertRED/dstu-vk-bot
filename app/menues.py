@@ -57,6 +57,9 @@ class MenuTree:
         self.grants_mag.add_basic_item('Академ. стипендия', "", self.get_grant_mag_academ)
         self.grants_mag.add_basic_item('Повышенная академ. стипендия', "", self.get_grant_mag_up_academ)
 
+        self.grants_bak.add_basic_item('Гос. академическая стипендия', "", self.get_grant_bak_academ)
+        self.grants_bak.add_basic_item('Гос. академическая стипенд', "", self.get_grant_bak_up_academ)
+
         self.grants_menu.add_menu_item(self.grants_mag.name, self.grants_mag)
         self.grants_menu.add_menu_item(self.grants_bak.name, self.grants_bak)
 
