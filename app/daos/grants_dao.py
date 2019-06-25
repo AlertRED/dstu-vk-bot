@@ -16,12 +16,13 @@ class grantDAO:
         grants = self.db.query(Grant).join(Grant.payments).filter(Payment.form_of_study == form_of_study).all()
         return grants
 
-    def create_or_update_grant(self, name: str, need_statement: bool, conditions: list, payments: list):
+    def create_or_update_grant(self, name: str, need_statement: bool, is_all_conditions: bool, conditions: list, payments: list):
         grant = self.db.query(Grant).filter_by(name=name).first()
         if grant:
             grant.need_statement = need_statement
+            grant.is_all_conditions = is_all_conditions
         else:
-            grant = Grant(name=name, need_statement=need_statement)
+            grant = Grant(name=name, need_statement=need_statement, is_all_conditions=is_all_conditions)
             self.db.add(grant)
         self.db.commit()
 
