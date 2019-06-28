@@ -51,14 +51,19 @@ class MenuTree:
 
         self.grants_mag = Menu('Магистратура')
         self.grants_bak = Menu('Бакалавриат')
+        self.grants_asp = Menu('Аспирантура')
 
         self.grants_bak.add_basic_item('Академ. стипендия', "", spec_foo.get_grant_bak_academ)
         self.grants_bak.add_basic_item('Повышенная академ. стипендия', "", spec_foo.get_grant_bak_up_academ)
+        self.grants_bak.add_basic_item('Стипендия Л.В. Красниченко', "", spec_foo.get_grant_bak_krasnichenko)
+        self.grants_bak.add_basic_item('Стипендия Ученого совета', "", spec_foo.get_grant_bak_uchony_sovet)
         self.grants_bak.add_basic_item('Соц. стипендия', "", spec_foo.get_grant_bak_soc)
         self.grants_bak.add_basic_item('Повышенная соц. стипендия', "", spec_foo.get_grant_bak_up_soc)
 
         self.grants_mag.add_basic_item('Академ. стипендия', "", spec_foo.get_grant_mag_academ)
         self.grants_mag.add_basic_item('Повышенная академ. стипендия', "", spec_foo.get_grant_mag_up_academ)
+
+        self.grants_asp.add_basic_item('Гос. стипендия аспирантам', "", spec_foo.get_grant_asp_asp)
 
 
         self.grants_menu.add_menu_item(self.grants_mag.name, self.grants_mag)
