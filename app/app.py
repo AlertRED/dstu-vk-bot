@@ -80,7 +80,7 @@ class app:
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
             self.vk.method("messages.send",
-                           {"peer_id": id_user, "message": menu.name,
+                           {"peer_id": id_user, "message": menu.get_menu(),
                             "keyboard": self.get_keyboard(menu.items),
                             "random_id": random.randint(1, 2147483647)})
 

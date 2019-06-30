@@ -24,7 +24,7 @@ class Menu(Item):
     def __init__(self, name):
         super().__init__(name, None)
         self.name = name
-        self.parent: Menu = None
+        self.parent = None
         self.items = {}
         Menu.menues[self.name] = self
 
