@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule, Faculty, Dean, \
+from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule_dean_office, Faculty, \
+    Dean, \
     Department, Specialty, Type_specialty, Manager_department
 
 
@@ -26,7 +27,8 @@ class facultyDAO:
             maneger.last_name = last_name
             maneger.patronymic = patronymic
         else:
-            maneger = Manager_department(first_name=first_name, last_name=last_name, patronymic=patronymic, department=department)
+            maneger = Manager_department(first_name=first_name, last_name=last_name, patronymic=patronymic,
+                                         department=department)
             self.db.add(maneger)
         self.db.commit()
 
@@ -40,15 +42,19 @@ class facultyDAO:
             self.db.add(type_specialty)
         self.db.commit()
 
-    def create_or_update_faculty(self, name: str, abbreviation: str, cabinet: str, phone: str, dean: dict):
+    def create_or_update_faculty(self, name: str, abbreviation: str, place: Place, cabinet_dean: str,
+                                 cabinet_dean_office: str, phone: str, dean: dict):
         faculty = self.db.query(Faculty).filter_by(name=name).first()
 
         if faculty:
             faculty.abbreviation = abbreviation
-            faculty.cabinet = cabinet
+            faculty.cabinet_dean = cabinet_dean
+            faculty.cabinet_dean_office = cabinet_dean_office
             faculty.phone = phone
+            faculty.place = place
         else:
-            faculty = Faculty(name=name, abbreviation=abbreviation, cabinet=cabinet, phone=phone)
+            faculty = Faculty(name=name, abbreviation=abbreviation, cabinet_dean_office=cabinet_dean_office,
+                              cabinet_dean=cabinet_dean, phone=phone, place=place)
             self.db.add(faculty)
         self.db.commit()
 

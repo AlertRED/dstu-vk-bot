@@ -70,13 +70,14 @@ class Place(Base):
 
     type_place_id = Column(Integer, ForeignKey('type_place.id'))
     type_place = relationship("TypePlace", back_populates="places")
-    schedules = relationship("Schedule", back_populates="place")
+    faculty = relationship("Faculty", back_populates="place")
+    schedules = relationship("Schedule_place", back_populates="place")
     managers = relationship("Manager", back_populates="place")
     phones = relationship("Phone_place", back_populates="place")
 
 
-class Schedule(Base):
-    __tablename__ = 'schedule'
+class Schedule_place(Base):
+    __tablename__ = 'schedule_place'
     id = Column(Integer, primary_key=True)
     start_time = Column(Time)
     end_time = Column(Time)
@@ -93,7 +94,7 @@ class Day_of_week(Base):
     __tablename__ = 'day_of_week'
     id = Column(Integer, primary_key=True)
     name = Column(String)
-    schedules = relationship("Schedule", back_populates="day_of_week")
+    schedules = relationship("Schedule_place", back_populates="day_of_week")
 
 
 class Manager(Base):
@@ -131,12 +132,31 @@ class Faculty(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     abbreviation = Column(String, nullable=False)
-    cabinet = Column(String, nullable=False)
+    cabinet_dean = Column(String, nullable=False)
+    cabinet_dean_office = Column(String, nullable=False)
     phone = Column(String, nullable=False)
 
+    place_id = Column(Integer, ForeignKey('place.id'))
+    place = relationship('Place', uselist=False, back_populates="faculty")
+
+    schedules = relationship("Schedule_dean_office", back_populates="faculty")
     dean = relationship("Dean", uselist=False, back_populates="faculty")
     departments = relationship("Department", back_populates="faculty")
     specialties = relationship("Specialty", back_populates="faculty")
+
+
+class Schedule_dean_office(Base):
+    __tablename__ = 'schedule_dean_office'
+    id = Column(Integer, primary_key=True)
+    start_time = Column(Time)
+    end_time = Column(Time)
+    pause_start_time = Column(Time)
+    pause_end_time = Column(Time)
+
+    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="schedules")
+    day_of_week_id = Column(Integer, ForeignKey('day_of_week.id'))
+    day_of_week = relationship("Day_of_week", back_populates="schedules")
 
 
 class Dean(Base):
@@ -201,42 +221,6 @@ class Type_specialty(Base):
 
     specialty_id = Column(Integer, ForeignKey('specialty.id'))
     specialty = relationship("Specialty", back_populates="types")
-
-
-class Grant(Base):
-    __tablename__ = 'grant'
-    id = Column(Integer, primary_key=True)
-
-    name = Column(String, nullable=False)
-    need_statement = Column(Boolean, nullable=False)
-
-    is_all_conditions = Column(Boolean, nullable=False)
-
-    conditions = relationship("Condition", back_populates="grant")
-    payments = relationship("Payment", back_populates="grant")
-
-
-class Condition(Base):
-    __tablename__ = 'condition'
-    id = Column(Integer, primary_key=True)
-
-    description = Column(String, nullable=False)
-
-    grant_id = Column(Integer, ForeignKey('grant.id'))
-    grant = relationship("Grant", back_populates="conditions")
-
-
-class Payment(Base):
-    __tablename__ = 'payment'
-    id = Column(Integer, primary_key=True)
-
-    foreigner = Column(Boolean, nullable=False)
-    conditions = Column(String, nullable=False)
-    form_of_study = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура', name="type_payment_enum"))
-    money = Column(Integer, nullable=False)
-
-    grant_id = Column(Integer, ForeignKey('grant.id'))
-    grant = relationship("Grant", back_populates="payments")
 
 # Создание таблицы
 Base.metadata.create_all(engine)

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule
+from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule_place
 
 
 class placeDAO:
@@ -33,9 +33,9 @@ class placeDAO:
 
     def _update_or_create_schedule(self, place, day_of_week, start_time=None, end_time=None,
                                    pause_start_time=None, pause_end_time=None):
-        schedule = self.db.query(Schedule).filter_by(place=place, day_of_week=day_of_week).first()
+        schedule = self.db.query(Schedule_place).filter_by(place=place, day_of_week=day_of_week).first()
         if not schedule and place and day_of_week:
-            schedule = Schedule(start_time=start_time,
+            schedule = Schedule_place(start_time=start_time,
                                 end_time=end_time,
                                 pause_start_time=pause_start_time,
                                 pause_end_time=pause_end_time,
