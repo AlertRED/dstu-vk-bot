@@ -34,13 +34,56 @@ class User(Base):
     answers = relationship("UserAnswer", back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
 
+    def inc_request(self, inc=1):
+        self.total_requests += inc
+        engine.commit()
+        return self
+
+    def add_answer(self, answer):
+        self.answers.append(UserAnswer(answer=answer))
+        engine.commit()
+        return self
+
+    def clear_answers(self):
+        self.answers = []
+        engine.commit()
+        return self
+
+    def update(self, vk_id=None, first_name=None, last_name=None, total_requests=None, user_cache=None, answers=None):
+        self.vk_id = vk_id if vk_id else self.vk_id
+        self.first_name = first_name if first_name else self.first_name
+        self.last_name = last_name if last_name else self.last_name
+        self.total_requests = total_requests if total_requests else self.total_requests
+        self.user_cache = user_cache if user_cache else self.user_cache
+        self.answers = answers if answers else self.answers
+        engine.commit()
+        return self
+
+    def create_cache(self, start_menu):
+        self.user_cache = UserCache(current_menu=start_menu)
+        return self
+
+    @staticmethod
+    def get_user(vk_id):
+        return engine.query(User).filter_by(vk_id=vk_id).first()
+
+    @staticmethod
+    def create(vk_id, first_name, last_name):
+        user = User.get_user(vk_id)
+        if not user:
+            user = User(vk_id, first_name=first_name, last_name=last_name)
+            engine.add(user)
+            engine.commit()
+        return user
+
+    def delete(self, vk_id):
+        engine.delete(User.get_user(vk_id))
+        engine.commit()
+
     def __init__(self, vk_id: int, first_name: str, last_name: str):
         self.vk_id = vk_id
         self.first_name = first_name
         self.last_name = last_name
-
-    def __repr__(self):
-        return "<User('%s','%s')>" % (self.name, self.currient_menu)
 
 
 class UserCache(Base):
@@ -51,6 +94,12 @@ class UserCache(Base):
 
     user_id = Column(Integer, ForeignKey('users.id'))
     user = relationship("User", back_populates="user_cache")
+
+    def update(self, currient_menu=None, special_index=None):
+        self.current_menu = currient_menu
+        self.special_index = special_index
+        engine.commit()
+        return self
 
 
 class TypePlace(Base):
@@ -221,6 +270,7 @@ class Type_specialty(Base):
 
     specialty_id = Column(Integer, ForeignKey('specialty.id'))
     specialty = relationship("Specialty", back_populates="types")
+
 
 # Создание таблицы
 Base.metadata.create_all(engine)
