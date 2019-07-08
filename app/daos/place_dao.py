@@ -36,11 +36,11 @@ class placeDAO:
         schedule = self.db.query(Schedule_place).filter_by(place=place, day_of_week=day_of_week).first()
         if not schedule and place and day_of_week:
             schedule = Schedule_place(start_time=start_time,
-                                end_time=end_time,
-                                pause_start_time=pause_start_time,
-                                pause_end_time=pause_end_time,
-                                place=place,
-                                day_of_week=day_of_week)
+                                      end_time=end_time,
+                                      pause_start_time=pause_start_time,
+                                      pause_end_time=pause_end_time,
+                                      place=place,
+                                      day_of_week=day_of_week)
             self.db.add(schedule)
         else:
             schedule.start_time = start_time
@@ -74,6 +74,10 @@ class placeDAO:
             manager.post = post
         self.db.commit()
         return post
+
+    def create_place(self, name, map_url, img_name, adress, type_place_name):
+        place = Place.create(name, map_url, img_name, adress).add_type_place(type_place_name)
+        return place
 
     def update_or_create_place(self, name, map_url=None, img_name=None, adress=None, type_place_name=None,
                                schedules=None,

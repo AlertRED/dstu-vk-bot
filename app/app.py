@@ -4,12 +4,11 @@ import os
 from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
-from app.daos.grants_dao import grantDAO
 from app.menues import MenuTree
 from app.models.models_menu import TypeItem
 from app.controller import Controller
-from app.daos.user_dao import userDAO
-from app.daos.place_dao import placeDAO
+# from app.daos.user_dao import userDAO
+from app.models.models import User
 import random
 import logging
 
@@ -18,18 +17,17 @@ class app:
 
     def __init__(self, db: Session, vk: VkApi, vk_upload: VkUpload):
         self.colors = {TypeItem.DEFAULT: 'default',
-                      TypeItem.BACK: 'negative',
-                      TypeItem.MENU: 'positive',
-                      TypeItem.SIMPLE: 'primary'}
+                       TypeItem.BACK: 'negative',
+                       TypeItem.MENU: 'positive',
+                       TypeItem.SIMPLE: 'primary'}
+
         self.db = db
-        self.userDAO = userDAO(self.db)
-        self.placeDAO = placeDAO(self.db)
-        self.grantDAO = grantDAO(self.db)
-        self.controller = Controller(self.userDAO)
+        # self.userDAO = userDAO()
+        self.controller = Controller()
         self.vk = vk
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-        self.menues = MenuTree(self.placeDAO, self.grantDAO)
+        self.menues = MenuTree()
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
@@ -87,8 +85,8 @@ class app:
     # обработка сообщения
     def handling_message(self, user_id: int, text_message: str):
         user_info = self.vk.method("users.get", values={"user_ids": user_id})
-        user = self.userDAO.first_or_create_user(user_id, user_info[0]['first_name'], user_info[0]['last_name'], self.menues.root.name)
-        self.userDAO.user_inc_request(user.vk_id)
+        user = User.create(user_id, user_info[0]['first_name'],
+                           user_info[0]['last_name']).create_cache(self.menues.root.name).inc_request()
         answer, menu = self.controller.get_answer(text_message, user)
         self.send_message(answer, menu, user_id, text_message)
 
@@ -96,7 +94,7 @@ class app:
     def run(self):
         while True:
             # try:
-                # получаем сообщения
+            # получаем сообщения
             messages = self.vk.method("messages.getConversations",
                                       {"offset": 0, "count": 20, "filter": "unanswered"})
             if messages["count"] >= 1:
@@ -106,8 +104,4 @@ class app:
                 self.handling_message(user_id, text_message)
             # except Exception as E:
             #     logging.error(E)
-                # time.sleep(1)
-
-
-
-
+            # time.sleep(1)

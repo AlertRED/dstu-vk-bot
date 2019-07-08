@@ -1,15 +1,11 @@
+from app.models.models import Place
 from app.models.models_menu import Menu
-from app.daos.place_dao import placeDAO
-from app.daos.grants_dao import grantDAO
 from app import answer_functions as spec_foo
 
 
 class MenuTree:
 
-    def __init__(self, placeDAO: placeDAO, grantDAO: grantDAO):
-
-        self.placeDAO = placeDAO
-        self.grantDAO = grantDAO
+    def __init__(self):
         self.root = Menu("Главное меню")
 
         # ДГТУ и АСА
@@ -127,7 +123,7 @@ class MenuTree:
         self.root.add_basic_item("О Боте", "", spec_foo.about_me)
 
     def get_format_place(self, name):
-        place = self.placeDAO.get_place_by_name(name)
+        place = Place.get_place(name)
         if not place:
             return 'Извините, запрашевоемое место еще не добавлено'
         result = "Название: " + place.name + "\n"
@@ -144,10 +140,10 @@ class MenuTree:
                 for i in place.schedules) + "\n"
         if place.map_url:
             result += "Карта: " + place.map_url + "\n"
-        return (result, place.img_name)
+        return result, place.img_name
 
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)
-        for place in self.placeDAO.get_place_by_type(place_type):
+        for place in Place.get_places_by_type(place_type):
             menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
         return menu

@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule_dean_office, Faculty, \
-    Dean, \
-    Department, Specialty, Type_specialty, Manager_department
+    Dean, Department, Specialty, Type_specialty, Manager_department
 
 
 class facultyDAO:
