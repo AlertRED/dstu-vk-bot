@@ -1,40 +1,38 @@
 from datetime import datetime
+from sqlalchemy.orm import relationship
+import web_app.__init__ as app
+db = app.db
 
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime, Time, Boolean, Enum
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, Session
-
-from config.conf import Config
-
-engine = create_engine(Config.DATABASE, echo=False)
-db = Session(bind=engine)
-Base = declarative_base()
-
+days_of_week = ('пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс')
+days_of_week_enum = db.Enum(*days_of_week, name="days_of_week")
 
 # User
-class UserAnswer(Base):
+class UserAnswer(db.Model):
     __tablename__ = 'user_answers'
-    id = Column(Integer, primary_key=True)
-    answer = Column(String)
-    user_id = Column(Integer, ForeignKey('users.id'))
+    id = db.Column(db.Integer, primary_key=True)
+    answer = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     user = relationship("User", backref="user_answers")
 
-
-class User(Base):
+    def __repr__(self):
+        return self.answer
+class User(db.Model):
     __tablename__ = 'users'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    vk_id = Column(Integer, nullable=False)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    total_requests = Column(Integer, default=0)
-    created_date = Column(DateTime, index=True, default=datetime.utcnow)
-    update_date = Column(DateTime, onupdate=datetime.utcnow)
+    vk_id = db.Column(db.Integer, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    total_requests = db.Column(db.Integer, default=0)
+    created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
     answers = relationship("UserAnswer", back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
+
+    def __repr__(self):
+        return '<vk_id: %s>' % self.vk_id
 
     def inc_request(self, inc=1):
         self.total_requests += inc
@@ -98,14 +96,17 @@ class User(Base):
         self.last_name = last_name
 
 
-class UserCache(Base):
+class UserCache(db.Model):
     __tablename__ = 'user_cache'
-    id = Column(Integer, primary_key=True)
-    current_menu = Column(String)
-    special_index = Column(Integer, default=0)
+    id = db.Column(db.Integer, primary_key=True)
+    current_menu = db.Column(db.String)
+    special_index = db.Column(db.Integer, default=0)
 
-    user_id = Column(Integer, ForeignKey('users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     user = relationship("User", back_populates="user_cache")
+
+    def __repr__(self):
+        return '<current_menu: %s>' % self.current_menu
 
     def update(self, current_menu=None, special_index=None):
         self.current_menu = current_menu if current_menu else self.current_menu
@@ -114,12 +115,12 @@ class UserCache(Base):
         return self
 
 
-# Place
+# Place ##########################################################################################
 
-class TypePlace(Base):
+class TypePlace(db.Model):
     __tablename__ = 'type_place'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
     places = relationship("Place", back_populates="type_place")
 
     @staticmethod
@@ -133,21 +134,27 @@ class TypePlace(Base):
             type_place = TypePlace(name=name)
         return type_place
 
+    def __repr__(self):
+        return self.name
 
-class Place(Base):
+
+class Place(db.Model):
     __tablename__ = 'place'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False, unique=True)
-    map_url = Column(String)
-    img_name = Column(String)
-    adress = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False, unique=True)
+    map_url = db.Column(db.String)
+    img_name = db.Column(db.String)
+    adress = db.Column(db.String)
 
-    type_place_id = Column(Integer, ForeignKey('type_place.id'))
+    type_place_id = db.Column(db.Integer, db.ForeignKey('type_place.id'))
     type_place = relationship("TypePlace", back_populates="places")
     faculties = relationship("Faculty", back_populates="place")
     schedules = relationship("Schedule_place", back_populates="place")
     managers = relationship("Manager", back_populates="place")
     phones = relationship("Phone_place", back_populates="place")
+
+    def __repr__(self):
+        return self.name
 
     @staticmethod
     def get_places_by_type(type_name):
@@ -209,24 +216,49 @@ class Place(Base):
         db.commit()
         return self
 
+# class Day_of_week(db.Model):
+#     __tablename__ = 'day_of_week'
+#     id = db.Column(db.Integer, primary_key=True)
+#     name = db.Column(db.String)
+#     schedules_place = relationship("Schedule_place", back_populates="day_of_week")
+#     schedules_dean_office = relationship("Schedule_dean_office", back_populates="day_of_week")
+#
+#
+#     @staticmethod
+#     def get_day_of_week(name):
+#         return db.query(Day_of_week).filter_by(name=name).first()
+#
+#     @staticmethod
+#     def create(name):
+#         day_of_week = Day_of_week.get_day_of_week(name)
+#         if not day_of_week:
+#             day_of_week = Day_of_week(name=name)
+#             db.add(day_of_week)
+#             db.commit()
+#         return day_of_week
+#
+#     def __repr__(self):
+#         return self.name
 
-class Schedule_place(Base):
+class Schedule_place(db.Model):
     __tablename__ = 'schedule_place'
-    id = Column(Integer, primary_key=True)
-    start_time = Column(Time)
-    end_time = Column(Time)
-    pause_start_time = Column(Time)
-    pause_end_time = Column(Time)
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.Time)
+    end_time = db.Column(db.Time)
+    pause_start_time = db.Column(db.Time)
+    pause_end_time = db.Column(db.Time)
 
-    place_id = Column(Integer, ForeignKey('place.id'))
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship("Place", back_populates="schedules")
-    day_of_week_id = Column(Integer, ForeignKey('day_of_week.id'))
-    day_of_week = relationship("Day_of_week", back_populates="schedules_place")
+    day_of_week = db.Column(days_of_week_enum)
+
+    def __repr__(self):
+        return '%s. %s - %s (%s - %s)' % (self.day_of_week.name, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
 
     @staticmethod
     def get_schedule(place, day_name):
         return db.query(Schedule_place).filter_by(place=place,
-                                                  day_of_week=Day_of_week.get_day_of_week(day_name)).first()
+                                                  day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
@@ -237,43 +269,25 @@ class Schedule_place(Base):
         return schedule
 
     def add_day_of_week(self, name):
-        self.day_of_week = Day_of_week.create(name)
+        self.day_of_week = name
         db.commit()
         return self
 
 
-class Day_of_week(Base):
-    __tablename__ = 'day_of_week'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    schedules_place = relationship("Schedule_place", back_populates="day_of_week")
-    schedules_dean_office = relationship("Schedule_dean_office", back_populates="day_of_week")
-
-    @staticmethod
-    def get_day_of_week(name):
-        return db.query(Day_of_week).filter_by(name=name).first()
-
-    @staticmethod
-    def create(name):
-        day_of_week = Day_of_week.get_day_of_week(name)
-        if not day_of_week:
-            day_of_week = Day_of_week(name=name)
-            db.add(day_of_week)
-            db.commit()
-        return day_of_week
-
-
-class Manager(Base):
+class Manager(db.Model):
     __tablename__ = 'managers'
-    id = Column(Integer, primary_key=True)
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    patronymic = Column(String, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    patronymic = db.Column(db.String, nullable=False)
 
-    place_id = Column(Integer, ForeignKey('place.id'))
+    def __repr__(self):
+        return '%s %s %s' % (self.first_name, self.last_name, self.patronymic)
+
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship("Place", back_populates="managers")
 
-    post_id = Column(Integer, ForeignKey('post.id'))
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
     post = relationship("Post", back_populates="managers")
 
     @staticmethod
@@ -295,11 +309,14 @@ class Manager(Base):
         return self
 
 
-class Post(Base):
+class Post(db.Model):
     __tablename__ = 'post'
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String)
     managers = relationship("Manager", back_populates="post")
+
+    def __repr__(self):
+        return self.name
 
     @staticmethod
     def get_post(name):
@@ -315,27 +332,33 @@ class Post(Base):
         return post
 
 
-class Phone_place(Base):
+class Phone_place(db.Model):
     __tablename__ = 'phone_place'
-    id = Column(Integer, primary_key=True)
-    phone = Column(String)
+    id = db.Column(db.Integer, primary_key=True)
+    phone = db.Column(db.String)
 
-    place_id = Column(Integer, ForeignKey('place.id'))
+    def __repr__(self):
+        return self.phone
+
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship("Place", back_populates="phones")
 
 
-# Faculty
+# Faculty ##########################################################################################
 
-class Specialty(Base):
+class Specialty(db.Model):
     __tablename__ = 'specialty'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    name = Column(String, nullable=False)
-    abbreviation = Column(String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    abbreviation = db.Column(db.String, nullable=False)
 
-    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="specialties")
     types = relationship("Type_specialty", back_populates="specialty")
+
+    def __repr__(self):
+        return self.name
 
     @staticmethod
     def get_specialty(name):
@@ -357,20 +380,23 @@ class Specialty(Base):
         return self
 
 
-class Department(Base):
+class Department(db.Model):
     __tablename__ = 'department'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    name = Column(String, nullable=False)
-    abbreviation = Column(String, nullable=False)
-    cabinet = Column(String, nullable=False)
-    description = Column(String, nullable=False)
-    phone = Column(String, nullable=False)
+    name = db.Column(db.String, nullable=False)
+    abbreviation = db.Column(db.String, nullable=False)
+    cabinet = db.Column(db.String, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    phone = db.Column(db.String, nullable=False)
 
-    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="departments")
 
     manager = relationship("Manager_department", uselist=False, back_populates="department")
+
+    def __repr__(self):
+        return self.name
 
     @staticmethod
     def get_department(name):
@@ -392,22 +418,58 @@ class Department(Base):
         return self
 
 
-class Faculty(Base):
-    __tablename__ = 'faculty'
-    id = Column(Integer, primary_key=True)
-    name = Column(String, nullable=False)
-    abbreviation = Column(String)
-    cabinet_dean = Column(String)
-    cabinet_dean_office = Column(String)
-    phone = Column(String)
+class Schedule_dean_office(db.Model):
+    __tablename__ = 'schedule_dean_office'
+    id = db.Column(db.Integer, primary_key=True)
+    start_time = db.Column(db.Time)
+    end_time = db.Column(db.Time)
+    pause_start_time = db.Column(db.Time)
+    pause_end_time = db.Column(db.Time)
 
-    place_id = Column(Integer, ForeignKey('place.id'))
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="schedules")
+    day_of_week = db.Column(days_of_week_enum)
+
+    @staticmethod
+    def get_schedule(faculty, day_name):
+        return db.query(Schedule_dean_office).filter_by(faculty=faculty,
+                                                        day_of_week=day_name).first()
+
+    def __repr__(self):
+        return '%s. %s - %s (%s - %s)' % (self.day_of_week.name, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
+
+    @staticmethod
+    def create(start_time, end_time, pause_start_time, pause_end_time):
+        schedule = Schedule_dean_office(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
+                                        pause_end_time=pause_end_time)
+        db.add(schedule)
+        db.commit()
+        return schedule
+
+    def add_day_of_week(self, name):
+        self.day_of_week = name
+        db.commit()
+        return self
+
+class Faculty(db.Model):
+    __tablename__ = 'faculty'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String, nullable=False)
+    abbreviation = db.Column(db.String)
+    cabinet_dean = db.Column(db.String)
+    cabinet_dean_office = db.Column(db.String)
+    phone = db.Column(db.String)
+
+    place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship('Place', back_populates="faculties")
 
     schedules = relationship("Schedule_dean_office", back_populates="faculty")
     dean = relationship("Dean", uselist=False, back_populates="faculty")
     departments = relationship("Department", back_populates="faculty")
     specialties = relationship("Specialty", back_populates="faculty")
+
+    def __repr__(self):
+        return self.name
 
     @staticmethod
     def get_faculty(name):
@@ -447,48 +509,19 @@ class Faculty(Base):
         return self
 
 
-class Schedule_dean_office(Base):
-    __tablename__ = 'schedule_dean_office'
-    id = Column(Integer, primary_key=True)
-    start_time = Column(Time)
-    end_time = Column(Time)
-    pause_start_time = Column(Time)
-    pause_end_time = Column(Time)
-
-    faculty_id = Column(Integer, ForeignKey('faculty.id'))
-    faculty = relationship("Faculty", back_populates="schedules")
-    day_of_week_id = Column(Integer, ForeignKey('day_of_week.id'))
-    day_of_week = relationship("Day_of_week", back_populates="schedules_dean_office")
-
-    @staticmethod
-    def get_schedule(faculty, day_name):
-        return db.query(Schedule_dean_office).filter_by(faculty=faculty,
-                                                        day_of_week=Day_of_week.get_day_of_week(day_name)).first()
-
-    @staticmethod
-    def create(start_time, end_time, pause_start_time, pause_end_time):
-        schedule = Schedule_dean_office(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
-                                        pause_end_time=pause_end_time)
-        db.add(schedule)
-        db.commit()
-        return schedule
-
-    def add_day_of_week(self, name):
-        self.day_of_week = Day_of_week.create(name)
-        db.commit()
-        return self
-
-
-class Dean(Base):
+class Dean(db.Model):
     __tablename__ = 'dean'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    patronymic = Column(String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    patronymic = db.Column(db.String, nullable=False)
 
-    faculty_id = Column(Integer, ForeignKey('faculty.id'))
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="dean")
+
+    def __repr__(self):
+        return '%s %s %s' % (self.first_name, self.last_name, self.patronymic)
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
@@ -504,16 +537,19 @@ class Dean(Base):
         return dean
 
 
-class Manager_department(Base):
+class Manager_department(db.Model):
     __tablename__ = 'manager_department'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    first_name = Column(String, nullable=False)
-    last_name = Column(String, nullable=False)
-    patronymic = Column(String, nullable=False)
+    first_name = db.Column(db.String, nullable=False)
+    last_name = db.Column(db.String, nullable=False)
+    patronymic = db.Column(db.String, nullable=False)
 
-    department_id = Column(Integer, ForeignKey('department.id'))
+    department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
     department = relationship("Department", back_populates="manager")
+
+    def __repr__(self):
+        return '%s %s %s' % (self.first_name, self.last_name, self.patronymic)
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
@@ -530,16 +566,19 @@ class Manager_department(Base):
         return manager
 
 
-class Type_specialty(Base):
+class Type_specialty(db.Model):
     __tablename__ = 'type_specialty'
-    id = Column(Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
 
-    code = Column(String, nullable=False)
-    type = Column(Enum('Бакалавриат', 'Магистратура', 'Аспирантура', name="type_specialty_enum"), nullable=False)
-    duration = Column(Integer, nullable=False)
+    code = db.Column(db.String, nullable=False)
+    type = db.Column(db.Enum('Бакалавриат', 'Магистратура', 'Аспирантура', name="type_specialty_enum"), nullable=False)
+    duration = db.Column(db.Integer, nullable=False)
 
-    specialty_id = Column(Integer, ForeignKey('specialty.id'))
+    specialty_id = db.Column(db.Integer, db.ForeignKey('specialty.id'))
     specialty = relationship("Specialty", back_populates="types")
+
+    def __repr__(self):
+        return self.code
 
     @staticmethod
     def get_type_specialty(code):
@@ -556,4 +595,4 @@ class Type_specialty(Base):
 
 
 # Создание таблицы
-Base.metadata.create_all(engine)
+# db.Model.metadata.create_all(engine)
