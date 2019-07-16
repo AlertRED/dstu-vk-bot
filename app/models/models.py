@@ -17,6 +17,7 @@ class UserAnswer(db.Model):
 
     def __repr__(self):
         return self.answer
+
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -36,24 +37,24 @@ class User(db.Model):
 
     def inc_request(self, inc=1):
         self.total_requests += inc
-        db.commit()
+        db.session.commit()
         return self
 
     def add_answer(self, answer):
         self.answers.append(UserAnswer(answer=answer))
-        db.commit()
+        db.session.commit()
         return self
 
     def set_answers(self, answers: list):
         self.answers.clear()
         for answer in answers:
             self.answers.append(UserAnswer(answer))
-        db.commit()
+        db.session.commit()
         return self
 
     def clear_answers(self):
         self.answers = []
-        db.commit()
+        db.session.commit()
         return self
 
     def set_index(self, index: int):
@@ -69,7 +70,7 @@ class User(db.Model):
         self.first_name = first_name if first_name else self.first_name
         self.last_name = last_name if last_name else self.last_name
         self.total_requests = total_requests if total_requests else self.total_requests
-        db.commit()
+        db.session.commit()
         return self
 
     def create_cache(self, start_menu=None):
@@ -79,15 +80,15 @@ class User(db.Model):
 
     @staticmethod
     def get_user(vk_id):
-        return db.query(User).filter_by(vk_id=vk_id).first()
+        return db.session.query(User).filter_by(vk_id=vk_id).first()
 
     @staticmethod
     def create(vk_id, first_name, last_name):
         user = User.get_user(vk_id)
         if not user:
             user = User(vk_id, first_name=first_name, last_name=last_name)
-            db.add(user)
-            db.commit()
+            db.session.add(user)
+            db.session.commit()
         return user
 
     def __init__(self, vk_id: int, first_name: str, last_name: str):
@@ -111,7 +112,7 @@ class UserCache(db.Model):
     def update(self, current_menu=None, special_index=None):
         self.current_menu = current_menu if current_menu else self.current_menu
         self.special_index = special_index if special_index else self.special_index
-        db.commit()
+        db.session.commit()
         return self
 
 
@@ -125,7 +126,7 @@ class TypePlace(db.Model):
 
     @staticmethod
     def get_type_place(name):
-        return db.query(TypePlace).filter_by(name=name).first()
+        return db.session.query(TypePlace).filter_by(name=name).first()
 
     @staticmethod
     def create(name):
@@ -159,20 +160,20 @@ class Place(db.Model):
     @staticmethod
     def get_places_by_type(type_name):
         type_place = TypePlace.get_type_place(type_name)
-        places = db.query(Place).filter_by(type_place=type_place).all()
+        places = db.session.query(Place).filter_by(type_place=type_place).all()
         return places
 
     @staticmethod
     def get_place(name):
-        return db.query(Place).filter_by(name=name).first()
+        return db.session.query(Place).filter_by(name=name).first()
 
     @staticmethod
     def create(name, map_url, img_name, adress):
         place = Place.get_place(name)
         if not place:
             place = Place(name=name, map_url=map_url, img_name=img_name, adress=adress)
-            db.add(place)
-            db.commit()
+            db.session.add(place)
+            db.session.commit()
         return place
 
     def update(self, name=None, map_url=None, img_name=None, adress=None, type_place=None, faculties=None,
@@ -187,7 +188,7 @@ class Place(db.Model):
         self.schedules = schedules if schedules else self.schedules
         self.managers = managers if managers else self.managers
         self.phones = phones if phones else self.phones
-        db.commit()
+        db.session.commit()
         return self
 
     def add_manager(self, first_name, last_name, patronymic, post_name):
@@ -197,15 +198,15 @@ class Place(db.Model):
     def set_phones(self, phones: list):
         for phone in self.phones:
             db.delete(phone)
-        db.commit()
+        db.session.commit()
         for phone in phones:
             self.phones.append(Phone_place(phone=phone))
-        db.commit()
+        db.session.commit()
         return self
 
     def add_type_place(self, type_name):
         self.type_place = TypePlace.create(type_name)
-        db.commit()
+        db.session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):
@@ -213,32 +214,8 @@ class Place(db.Model):
         if not schedule:
             self.schedules.append(
                 Schedule_place.create(start_time, end_time, pause_start_time, pause_end_time).add_day_of_week(day_name))
-        db.commit()
+        db.session.commit()
         return self
-
-# class Day_of_week(db.Model):
-#     __tablename__ = 'day_of_week'
-#     id = db.Column(db.Integer, primary_key=True)
-#     name = db.Column(db.String)
-#     schedules_place = relationship("Schedule_place", back_populates="day_of_week")
-#     schedules_dean_office = relationship("Schedule_dean_office", back_populates="day_of_week")
-#
-#
-#     @staticmethod
-#     def get_day_of_week(name):
-#         return db.query(Day_of_week).filter_by(name=name).first()
-#
-#     @staticmethod
-#     def create(name):
-#         day_of_week = Day_of_week.get_day_of_week(name)
-#         if not day_of_week:
-#             day_of_week = Day_of_week(name=name)
-#             db.add(day_of_week)
-#             db.commit()
-#         return day_of_week
-#
-#     def __repr__(self):
-#         return self.name
 
 class Schedule_place(db.Model):
     __tablename__ = 'schedule_place'
@@ -253,24 +230,24 @@ class Schedule_place(db.Model):
     day_of_week = db.Column(days_of_week_enum)
 
     def __repr__(self):
-        return '%s. %s - %s (%s - %s)' % (self.day_of_week.name, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
+        return '%s. %s - %s (%s - %s)' % (self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
 
     @staticmethod
     def get_schedule(place, day_name):
-        return db.query(Schedule_place).filter_by(place=place,
+        return db.session.query(Schedule_place).filter_by(place=place,
                                                   day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
         schedule = Schedule_place(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                   pause_end_time=pause_end_time)
-        db.add(schedule)
-        db.commit()
+        db.session.add(schedule)
+        db.session.commit()
         return schedule
 
     def add_day_of_week(self, name):
         self.day_of_week = name
-        db.commit()
+        db.session.commit()
         return self
 
 
@@ -292,7 +269,7 @@ class Manager(db.Model):
 
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
-        return db.query(Manager).filter_by(first_name=first_name, last_name=last_name,
+        return db.session.query(Manager).filter_by(first_name=first_name, last_name=last_name,
                                            patronymic=patronymic).first()
 
     @staticmethod
@@ -300,8 +277,8 @@ class Manager(db.Model):
         manager = Manager.get_manager(first_name, last_name, patronymic)
         if not manager:
             manager = Manager(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.add(manager)
-            db.commit()
+            db.session.add(manager)
+            db.session.commit()
         return manager
 
     def add_post(self, post_name):
@@ -320,15 +297,15 @@ class Post(db.Model):
 
     @staticmethod
     def get_post(name):
-        return db.query(Post).filter_by(name=name).first()
+        return db.session.query(Post).filter_by(name=name).first()
 
     @staticmethod
     def create(name):
         post = Post.get_post(name)
         if not post:
             post = Post(name=name)
-            db.add(post)
-            db.commit()
+            db.session.add(post)
+            db.session.commit()
         return post
 
 
@@ -362,15 +339,15 @@ class Specialty(db.Model):
 
     @staticmethod
     def get_specialty(name):
-        return db.query(Specialty).filter_by(name=name).first()
+        return db.session.query(Specialty).filter_by(name=name).first()
 
     @staticmethod
     def create(name, abbreviation):
         specialty = Specialty.get_specialty(name)
         if not specialty:
             specialty = Specialty(name=name, abbreviation=abbreviation)
-            db.add(specialty)
-            db.commit()
+            db.session.add(specialty)
+            db.session.commit()
         return specialty
 
     def add_type(self, code, type, duration):
@@ -400,7 +377,7 @@ class Department(db.Model):
 
     @staticmethod
     def get_department(name):
-        return db.query(Department).filter_by(name=name).first()
+        return db.session.query(Department).filter_by(name=name).first()
 
     @staticmethod
     def create(name, abbreviation=None, cabinet=None, description=None, phone=None):
@@ -408,13 +385,13 @@ class Department(db.Model):
         if not department:
             department = Department(name=name, abbreviation=abbreviation, cabinet=cabinet, description=description,
                                     phone=phone)
-            db.add(department)
-            db.commit()
+            db.session.add(department)
+            db.session.commit()
         return department
 
     def add_manager(self, first_name, last_name, patronymic):
         self.manager = Manager.create(first_name, last_name, patronymic)
-        db.commit()
+        db.session.commit()
         return self
 
 
@@ -432,23 +409,23 @@ class Schedule_dean_office(db.Model):
 
     @staticmethod
     def get_schedule(faculty, day_name):
-        return db.query(Schedule_dean_office).filter_by(faculty=faculty,
+        return db.session.query(Schedule_dean_office).filter_by(faculty=faculty,
                                                         day_of_week=day_name).first()
 
     def __repr__(self):
-        return '%s. %s - %s (%s - %s)' % (self.day_of_week.name, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
+        return '%s. %s - %s (%s - %s)' % (self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
         schedule = Schedule_dean_office(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                         pause_end_time=pause_end_time)
-        db.add(schedule)
-        db.commit()
+        db.session.add(schedule)
+        db.session.commit()
         return schedule
 
     def add_day_of_week(self, name):
         self.day_of_week = name
-        db.commit()
+        db.session.commit()
         return self
 
 class Faculty(db.Model):
@@ -459,6 +436,10 @@ class Faculty(db.Model):
     cabinet_dean = db.Column(db.String)
     cabinet_dean_office = db.Column(db.String)
     phone = db.Column(db.String)
+    start_time = db.Column(db.Time)
+    end_time = db.Column(db.Time)
+    pause_start_time = db.Column(db.Time)
+    pause_end_time = db.Column(db.Time)
 
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship('Place', back_populates="faculties")
@@ -473,7 +454,7 @@ class Faculty(db.Model):
 
     @staticmethod
     def get_faculty(name):
-        return db.query(Faculty).filter_by(name=name).first()
+        return db.session.query(Faculty).filter_by(name=name).first()
 
     @staticmethod
     def create(name, abbreviation, cabinet_dean, cabinet_dean_office, phone):
@@ -481,13 +462,13 @@ class Faculty(db.Model):
         if not faculty:
             faculty = Faculty(name=name, abbreviation=abbreviation, cabinet_dean=cabinet_dean,
                               cabinet_dean_office=cabinet_dean_office, phone=phone)
-            db.add(faculty)
-            db.commit()
+            db.session.add(faculty)
+            db.session.commit()
         return faculty
 
     def add_dean(self, first_name, last_name, patronymic):
         self.dean = Dean.create(first_name, last_name, patronymic)
-        db.commit()
+        db.session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):
@@ -525,15 +506,15 @@ class Dean(db.Model):
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
-        return db.query(Dean).filter_by(first_name=first_name, last_name=last_name, patronymic=patronymic).first()
+        return db.session.query(Dean).filter_by(first_name=first_name, last_name=last_name, patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
         dean = Dean.get_dean(first_name, last_name, patronymic)
         if not dean:
             dean = Dean(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.add(dean)
-            db.commit()
+            db.session.add(dean)
+            db.session.commit()
         return dean
 
 
@@ -553,7 +534,7 @@ class Manager_department(db.Model):
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
-        return db.query(Manager_department).filter_by(first_name=first_name, last_name=last_name,
+        return db.session.query(Manager_department).filter_by(first_name=first_name, last_name=last_name,
                                                       patronymic=patronymic).first()
 
     @staticmethod
@@ -561,8 +542,8 @@ class Manager_department(db.Model):
         manager = Manager_department.get_dean(first_name, last_name, patronymic)
         if not manager:
             manager = Dean(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.add(manager)
-            db.commit()
+            db.session.add(manager)
+            db.session.commit()
         return manager
 
 
@@ -582,17 +563,17 @@ class Type_specialty(db.Model):
 
     @staticmethod
     def get_type_specialty(code):
-        return db.query(Type_specialty).filter_by(code=code).first()
+        return db.session.query(Type_specialty).filter_by(code=code).first()
 
     @staticmethod
     def create(code, type, duration):
         type_specialty = Type_specialty.get_type_specialty(code)
         if not type_specialty:
             type_specialty = Type_specialty(code=code, type=type, duration=duration)
-            db.add(type_specialty)
-            db.commit()
+            db.session.add(type_specialty)
+            db.session.commit()
         return type_specialty
 
 
 # Создание таблицы
-# db.Model.metadata.create_all(engine)
+db.Model.metadata.create_all(db.engine)

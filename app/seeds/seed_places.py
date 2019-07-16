@@ -1,9 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.models import db, Place
-from app.daos.place_dao import placeDAO
 
 db = Session(bind=db)
-placeDAO = placeDAO(db)
 
 Place.create('Главный корпус',
              map_url='https://www.google.com/maps/place/%D0%94%D0%93%D0%A2%D0%A3/@47.2372723,39.7116784,19.1z/data=!4m8!1m2!2m1!1z0LrQsNGA0YLRiw!3m4!1s0x40e3bbd25efc8dab:0xe71795934da757ba!8m2!3d47.2373015!4d39.7121356?hl=ru',

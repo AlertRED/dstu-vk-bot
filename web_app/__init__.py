@@ -8,9 +8,9 @@ app.config.from_object(Config)
 
 db = SQLAlchemy(app)
 
-from web_app.admin import *
 migrate = Migrate(app, db)
 
 if __name__ == '__main__':
+    from web_app.admin import *
     app.debug = True
     app.run()
