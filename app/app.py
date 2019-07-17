@@ -5,9 +5,9 @@ from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
 from app.menues import MenuTree
+
 from app.models.models_menu import TypeItem
 from app.controller import Controller
-# from app.daos.user_dao import userDAO
 from app.models.models import User
 import random
 import logging

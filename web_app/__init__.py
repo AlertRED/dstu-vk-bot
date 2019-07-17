@@ -3,14 +3,16 @@ from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
 from config.conf import Config
-app = Flask(__name__)
-app.config.from_object(Config)
 
-db = SQLAlchemy(app)
+flask_app = Flask(__name__)
+flask_app.config.from_object(Config)
 
-migrate = Migrate(app, db)
+# db = SQLAlchemy(flask_app, engine_options={'pool_size': 10, 'max_overflow': 2})
+db = SQLAlchemy(flask_app)
 
 if __name__ == '__main__':
     from web_app.admin import *
-    app.debug = True
-    app.run()
+
+    migrate = Migrate(flask_app, db)
+    flask_app.debug = False
+    flask_app.run()

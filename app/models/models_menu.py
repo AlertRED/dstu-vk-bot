@@ -40,21 +40,21 @@ class Menu(Item):
     # получить ответ от меню
     def get_answer(self, request, *args, **kwargs):
         result = self.items.get(request, None)
-        return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs, request=request)
+        return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
+                                                                                         request=request)
 
     def _add_item(self, index, item, type_item: TypeItem = TypeItem.DEFAULT):
         self.items[index] = item, type_item
 
     # добавить пункт меню
     def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
-        self._add_item(index,Item(name, method), type_item)
+        self._add_item(index, Item(name, method), type_item)
 
     # добавить пункт меню
     def add_special_item(self, index, name, messages: list, method, type_item: TypeItem = TypeItem.SIMPLE):
         special = SpecialMenu(name, messages, method)
         special.parent = self
         self._add_item(index, special, type_item)
-
 
     # добавить вложенное меню
     def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU):
@@ -90,15 +90,16 @@ class SpecialMenu(Menu):
     def call(self, *args, **kwargs):
         index_answer = kwargs.get('special_index', 0)
         list_answers = kwargs.get('special_answers')
+
         if index_answer > 0:
             list_answers.append(kwargs.get('request'))
 
         if self.is_end(index_answer):
-            return {"answer": self.method(list_answers),
+            return {"answer": self.method(list_answers=list_answers, vk_id=kwargs.get('vk_id', None)),
                     "new_menu": self.parent,
                     "special_index": 0}
         else:
             return {"answer": self.messages[index_answer],
                     "new_menu": self,
-                    "special_index": index_answer+1,
+                    "special_index": index_answer + 1,
                     "special_answers": list_answers}

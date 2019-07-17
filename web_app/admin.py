@@ -2,13 +2,14 @@ from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
 from app.models.models import *
-from web_app import app
+from web_app import flask_app
 
-admin = Admin(app, name='DataBase')
+admin = Admin(flask_app, name='DataBase')
 
 admin.add_view(ModelView(User, db.session, name='Пользователи', category='Пользователи'))
 admin.add_view(ModelView(UserCache, db.session, name='Кэш пользователей', category='Пользователи'))
 admin.add_view(ModelView(UserAnswer, db.session, name='Ответы пользователей', category='Пользователи'))
+admin.add_view(ModelView(Review, db.session, name='Отзывы', category='Пользователи'))
 
 admin.add_view(ModelView(Place, db.session, name='Места', category='Места'))
 admin.add_view(ModelView(TypePlace, db.session, name='Тип места', category='Места'))

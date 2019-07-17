@@ -1,10 +1,23 @@
 from datetime import datetime
 from sqlalchemy.orm import relationship
-import web_app.__init__ as app
-db = app.db
+import web_app.__init__ as flask
+
+db = flask.db
 
 days_of_week = ('пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс')
 days_of_week_enum = db.Enum(*days_of_week, name="days_of_week")
+
+# Отзывы
+class Review(db.Model):
+    __tablename__ = 'reviews'
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    user = relationship("User", back_populates="reviews")
+
+    def __repr__(self):
+        return self.message
 
 # User
 class UserAnswer(db.Model):
@@ -13,10 +26,11 @@ class UserAnswer(db.Model):
     answer = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
-    user = relationship("User", backref="user_answers")
+    user = relationship("User", back_populates="answers")
 
     def __repr__(self):
         return self.answer
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -31,24 +45,33 @@ class User(db.Model):
 
     answers = relationship("UserAnswer", back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
+    reviews = relationship("Review", back_populates="user")
 
     def __repr__(self):
-        return '<vk_id: %s>' % self.vk_id
+        return '%s %s' % (self.last_name, self.first_name)
 
     def inc_request(self, inc=1):
         self.total_requests += inc
         db.session.commit()
         return self
 
+    def add_review(self, message):
+        self.reviews.append(Review(message=message))
+        db.session.commit()
+        return self
+
+    # не используется
     def add_answer(self, answer):
         self.answers.append(UserAnswer(answer=answer))
         db.session.commit()
         return self
 
     def set_answers(self, answers: list):
-        self.answers.clear()
+        for answer in self.answers:
+            db.session.delete(answer)
+        db.session.commit()
         for answer in answers:
-            self.answers.append(UserAnswer(answer))
+            self.answers.append(UserAnswer(answer=answer))
         db.session.commit()
         return self
 
@@ -111,7 +134,7 @@ class UserCache(db.Model):
 
     def update(self, current_menu=None, special_index=None):
         self.current_menu = current_menu if current_menu else self.current_menu
-        self.special_index = special_index if special_index else self.special_index
+        self.special_index = special_index if special_index is not None else self.special_index
         db.session.commit()
         return self
 
@@ -197,7 +220,7 @@ class Place(db.Model):
 
     def set_phones(self, phones: list):
         for phone in self.phones:
-            db.delete(phone)
+            db.session.delete(phone)
         db.session.commit()
         for phone in phones:
             self.phones.append(Phone_place(phone=phone))
@@ -217,6 +240,7 @@ class Place(db.Model):
         db.session.commit()
         return self
 
+
 class Schedule_place(db.Model):
     __tablename__ = 'schedule_place'
     id = db.Column(db.Integer, primary_key=True)
@@ -230,12 +254,13 @@ class Schedule_place(db.Model):
     day_of_week = db.Column(days_of_week_enum)
 
     def __repr__(self):
-        return '%s. %s - %s (%s - %s)' % (self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
+        return '%s. %s - %s (%s - %s)' % (
+        self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
 
     @staticmethod
     def get_schedule(place, day_name):
         return db.session.query(Schedule_place).filter_by(place=place,
-                                                  day_of_week=day_name).first()
+                                                          day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
@@ -270,7 +295,7 @@ class Manager(db.Model):
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
         return db.session.query(Manager).filter_by(first_name=first_name, last_name=last_name,
-                                           patronymic=patronymic).first()
+                                                   patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
@@ -410,10 +435,11 @@ class Schedule_dean_office(db.Model):
     @staticmethod
     def get_schedule(faculty, day_name):
         return db.session.query(Schedule_dean_office).filter_by(faculty=faculty,
-                                                        day_of_week=day_name).first()
+                                                                day_of_week=day_name).first()
 
     def __repr__(self):
-        return '%s. %s - %s (%s - %s)' % (self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
+        return '%s. %s - %s (%s - %s)' % (
+        self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
@@ -428,6 +454,7 @@ class Schedule_dean_office(db.Model):
         db.session.commit()
         return self
 
+
 class Faculty(db.Model):
     __tablename__ = 'faculty'
     id = db.Column(db.Integer, primary_key=True)
@@ -436,10 +463,6 @@ class Faculty(db.Model):
     cabinet_dean = db.Column(db.String)
     cabinet_dean_office = db.Column(db.String)
     phone = db.Column(db.String)
-    start_time = db.Column(db.Time)
-    end_time = db.Column(db.Time)
-    pause_start_time = db.Column(db.Time)
-    pause_end_time = db.Column(db.Time)
 
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship('Place', back_populates="faculties")
@@ -453,8 +476,15 @@ class Faculty(db.Model):
         return self.name
 
     @staticmethod
-    def get_faculty(name):
-        return db.session.query(Faculty).filter_by(name=name).first()
+    def all():
+        return db.session.query(Faculty).all()
+
+    @staticmethod
+    def get_faculty(name=None, abbreviation=None):
+        if name:
+            return db.session.query(Faculty).filter_by(name=name).first()
+        elif abbreviation:
+            return db.session.query(Faculty).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
     def create(name, abbreviation, cabinet_dean, cabinet_dean_office, phone):
@@ -466,7 +496,7 @@ class Faculty(db.Model):
             db.session.commit()
         return faculty
 
-    def add_dean(self, first_name, last_name, patronymic):
+    def add_dean(self, last_name, first_name, patronymic):
         self.dean = Dean.create(first_name, last_name, patronymic)
         db.session.commit()
         return self
@@ -506,7 +536,8 @@ class Dean(db.Model):
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
-        return db.session.query(Dean).filter_by(first_name=first_name, last_name=last_name, patronymic=patronymic).first()
+        return db.session.query(Dean).filter_by(first_name=first_name, last_name=last_name,
+                                                patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
@@ -535,7 +566,7 @@ class Manager_department(db.Model):
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
         return db.session.query(Manager_department).filter_by(first_name=first_name, last_name=last_name,
-                                                      patronymic=patronymic).first()
+                                                              patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
