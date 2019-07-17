@@ -188,16 +188,15 @@ class MenuTree:
         menu.add_basic_item('Какая-то специальность', "", lambda **kwargs: ('инфа', None))
         return menu
 
+    def get_abbreviation_lambda(self, faculty):
+        return lambda **kwargs: self.get_format_faculty(name=faculty.name)
+
     def get_faculty_menu(self, button_name: str):
         menu = Menu(button_name)
 
         for faculty in Faculty.all():
             menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
-
-            if faculty.abbreviation:
-                menu_faculty.add_basic_item(faculty.abbreviation, '', lambda **kwargs: self.get_format_faculty(abbreviation=kwargs['request']))
-            else:
-                menu_faculty.add_basic_item(faculty.name, '', lambda **kwargs: self.get_format_faculty(name=kwargs['request']))
+            menu_faculty.add_basic_item('Информация о факультете', '', self.get_abbreviation_lambda(faculty))
 
             departments_of_faculty = self.get_departments(faculty.name)
             menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
