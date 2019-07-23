@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule_dean_office, Faculty, \
-    Dean, Department, Specialty, Type_specialty, Manager_department
+from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, Manager, ScheduleDeanOffice, Faculty, \
+    Dean, Department, Specialty, TypeSpecialty, ManagerDepartment
 
 
 class facultyDAO:
@@ -20,24 +20,24 @@ class facultyDAO:
         self.db.commit()
 
     def create_or_update_manager(self, first_name: str, last_name: str, patronymic: str, department: Department):
-        maneger = self.db.query(Manager_department).filter_by(department=department).first()
+        maneger = self.db.query(ManagerDepartment).filter_by(department=department).first()
         if maneger:
             maneger.first_name = first_name
             maneger.last_name = last_name
             maneger.patronymic = patronymic
         else:
-            maneger = Manager_department(first_name=first_name, last_name=last_name, patronymic=patronymic,
-                                         department=department)
+            maneger = ManagerDepartment(first_name=first_name, last_name=last_name, patronymic=patronymic,
+                                        department=department)
             self.db.add(maneger)
         self.db.commit()
 
     def create_or_update_type_specialty(self, code: str, duration: int, type: str, specialty: Specialty):
-        type_specialty = self.db.query(Type_specialty).filter_by(specialty=specialty, type=type).first()
+        type_specialty = self.db.query(TypeSpecialty).filter_by(specialty=specialty, type=type).first()
         if type_specialty:
             type_specialty.code = code
             type_specialty.duration = duration
         else:
-            type_specialty = Type_specialty(duration=duration, code=code, type=type, specialty=specialty)
+            type_specialty = TypeSpecialty(duration=duration, code=code, type=type, specialty=specialty)
             self.db.add(type_specialty)
         self.db.commit()
 

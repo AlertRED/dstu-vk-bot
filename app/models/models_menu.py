@@ -21,21 +21,19 @@ class Item:
 class Menu(Item):
     menues: dict = {}
 
-    def __init__(self, name):
+    def __init__(self, name, method=None):
         super().__init__(name, None)
         self.name = name
+        self.method = method
         self.parent = None
         self.items = {}
         Menu.menues[self.name] = self
 
     def get_menu(self):
-        text_menu = " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
-        # text_menu += "\n".join(
-        #     ["%s. %s" % (key, node.name) for key, node in self.items.items()])
-        return text_menu
+        return " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
 
     def call(self, *args, **kwargs):
-        return {"answer": None, "new_menu": self}
+        return {"answer": self.method(*args, **kwargs) if self.method else None, "new_menu": self}
 
     # получить ответ от меню
     def get_answer(self, request, *args, **kwargs):
@@ -43,29 +41,31 @@ class Menu(Item):
         return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
                                                                                          request=request)
 
-    def _add_item(self, index, item, type_item: TypeItem = TypeItem.DEFAULT):
-        self.items[index] = item, type_item
+    def _add_item(self, index, item_of_menu, type_item: TypeItem = TypeItem.DEFAULT):
+        self.items[index] = item_of_menu, type_item
 
     # добавить пункт меню
     def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
         self._add_item(index, Item(name, method), type_item)
 
     # добавить пункт меню
-    def add_special_item(self, index, name, messages: list, method, type_item: TypeItem = TypeItem.SIMPLE):
-        special = SpecialMenu(name, messages, method)
-        special.parent = self
+    def add_special_item(self, index, name, messages: list, method, is_back=True, back_point_text="Назад",
+                         type_item: TypeItem = TypeItem.SIMPLE):
+        special = SpecialMenu(name, messages, method, self)
         self._add_item(index, special, type_item)
+        if is_back:
+            special.add_back_point(special.parent, back_point_text)
 
     # добавить вложенное меню
     def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU):
-        self.items[index] = [menu, type_item]
+        self._add_item(index, menu, type_item)
         menu.parent = self
         if is_back:
             menu.add_back_point(menu.parent, back_point_text)
 
     def add_back_point(self, menu, back_point_text):
-        index = back_point_text if back_point_text else menu.name
-        self._add_item(index, menu, TypeItem.BACK)
+        name_back_button = back_point_text if back_point_text else menu.name
+        self._add_item(name_back_button, menu, TypeItem.BACK)
 
     def get_story(self):
         menu = self
@@ -78,11 +78,20 @@ class Menu(Item):
 
 class SpecialMenu(Menu):
 
-    def __init__(self, name: str, messages: list, method):
+    def __init__(self, name: str, messages: list, method, parent = None):
         super().__init__(name)
         self.messages = messages
-        self.parent = None
+        self.parent = parent
         self.method = method
+
+    def get_answer(self, request, *args, **kwargs):
+        result = self.items.get(request, None)
+        answer = result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
+                                                                                         request=request)
+        if result and result[1] is TypeItem.BACK:
+            answer['special_index'] = 0
+            answer['special_answers'] = []
+        return answer
 
     def is_end(self, number: int):
         return (len(self.messages) - 1) < number

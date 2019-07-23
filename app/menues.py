@@ -77,15 +77,15 @@ class MenuTree:
 
         self.schedule_menu = Menu('Узнать расписание')
 
-        self.schedule_menu.add_special_item('Мое расписание', "", [('Я не знаю вашу группу\n' \
+        self.schedule_menu.add_special_item('Мое расписание', "Мое расписание", [('Я не знаю вашу группу\n' \
                                                                     'Введите название чтобы я запомнил\n' \
                                                                     'Например ВПР41 или вПр-41, как угодно :)', None)],
-                                            lambda *args: None)
+                                            lambda *args, **kwargs: ('222', None))
 
-        self.schedule_menu.add_special_item('Расписание группы', "", [('Введите название чтобы я запомнил\n' \
+        self.schedule_menu.add_special_item('Расписание группы', "Мое расписание", [('Введите название чтобы я запомнил\n' \
                                                                        'Например ВПР41 или вПр-41, как угодно :)',
                                                                        None)],
-                                            lambda *args: None)
+                                            lambda *args, **kwargs: ('111', None))
 
         # Факультеты и кафедры
 
@@ -168,9 +168,6 @@ class MenuTree:
                     i.day_of_week, i.start_time.strftime("%H:%M"), i.end_time.strftime("%H:%M"))
                 for i in faculty.schedules) + "\n"
         return result, None
-
-    def foo(self, **kwargs):
-        return "bdd"
 
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)

@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, Phone_place, Manager, Schedule_place
+from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, Manager, SchedulePlace
 
 
 class placeDAO:
@@ -33,14 +33,14 @@ class placeDAO:
 
     def _update_or_create_schedule(self, place, day_of_week, start_time=None, end_time=None,
                                    pause_start_time=None, pause_end_time=None):
-        schedule = self.db.query(Schedule_place).filter_by(place=place, day_of_week=day_of_week).first()
+        schedule = self.db.query(SchedulePlace).filter_by(place=place, day_of_week=day_of_week).first()
         if not schedule and place and day_of_week:
-            schedule = Schedule_place(start_time=start_time,
-                                      end_time=end_time,
-                                      pause_start_time=pause_start_time,
-                                      pause_end_time=pause_end_time,
-                                      place=place,
-                                      day_of_week=day_of_week)
+            schedule = SchedulePlace(start_time=start_time,
+                                     end_time=end_time,
+                                     pause_start_time=pause_start_time,
+                                     pause_end_time=pause_end_time,
+                                     place=place,
+                                     day_of_week=day_of_week)
             self.db.add(schedule)
         else:
             schedule.start_time = start_time
@@ -53,9 +53,9 @@ class placeDAO:
         return schedule
 
     def _first_or_create_phone_place(self, phone, place):
-        phone_place = self.db.query(Phone_place).filter_by(place=place, phone=phone).first()
+        phone_place = self.db.query(PhonePlace).filter_by(place=place, phone=phone).first()
         if not phone_place and phone and place:
-            phone_place = Phone_place(phone=phone, place=place)
+            phone_place = PhonePlace(phone=phone, place=place)
             self.db.add(phone_place)
             self.db.commit()
         return phone_place
