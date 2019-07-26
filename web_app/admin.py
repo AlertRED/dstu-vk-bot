@@ -14,9 +14,8 @@ admin.add_view(ModelView(Review, db.session, name='Отзывы', category='По
 admin.add_view(ModelView(Place, db.session, name='Места', category='Места'))
 admin.add_view(ModelView(TypePlace, db.session, name='Тип места', category='Места'))
 admin.add_view(ModelView(SchedulePlace, db.session, name='Расписание', category='Места'))
-admin.add_view(ModelView(Manager, db.session, name='Управляющий', category='Места'))
+admin.add_view(ModelView(ManagerPlace, db.session, name='Управляющий', category='Места'))
 admin.add_view(ModelView(Post, db.session, name='Должность управляющего', category='Места'))
-admin.add_view(ModelView(PhonePlace, db.session, name='Телефон места', category='Места'))
 
 admin.add_view(ModelView(Faculty, db.session, name='Факультеты', category='Структура университета'))
 admin.add_view(ModelView(Dean, db.session, name='Деканы', category='Структура университета'))
