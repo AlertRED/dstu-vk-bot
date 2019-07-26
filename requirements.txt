@@ -7,3 +7,4 @@ alembic
 Flask-Admin
 flask-sqlalchemy
 flask-migrate
+gunicorn
