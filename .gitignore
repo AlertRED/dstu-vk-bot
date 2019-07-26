@@ -2,4 +2,4 @@
 __pycache__
 venv
 config/history.log
-#config/conf.py
+config/conf.py
