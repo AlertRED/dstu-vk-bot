@@ -1,12 +1,7 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-
 from app.models.models import *
 from web_app import flask_app
-
-@flask_app.route('/tests')
-def tests():
-    return 'tests'
 
 admin = Admin(flask_app, name='DataBase', url='/')
 
@@ -30,7 +25,3 @@ admin.add_view(
     ModelView(ManagerDepartment, db.session, name='Управляющие кафедрами', category='Структура университета'))
 admin.add_view(ModelView(Specialty, db.session, name='Специальности', category='Структура университета'))
 admin.add_view(ModelView(TypeSpecialty, db.session, name='Типы специальностей', category='Структура университета'))
-
-# if __name__ == '__main__':
-#     app.debug = True
-#     app.run()
