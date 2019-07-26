@@ -12,7 +12,11 @@ db = SQLAlchemy(flask_app)
 
 @flask_app.route('/')
 def hello_world():
-    return redirect('/admin')
+    return redirect('/admin')\
+
+@flask_app.route('/test')
+def test():
+    return 'test'
 
 if __name__ == '__main__':
     from web_app.admin import *
