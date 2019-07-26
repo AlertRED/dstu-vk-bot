@@ -1,6 +1,5 @@
 from app.models.models import *
 
-
 class TypePlace(db.Model):
     __tablename__ = 'type_place'
     id = db.Column(db.Integer, primary_key=True)
@@ -36,8 +35,8 @@ class Place(db.Model):
     faculties = relationship("Faculty", back_populates="place")
     departments = relationship("Department", back_populates="place")
     schedules = relationship("SchedulePlace", back_populates="place")
-    managers = relationship("Manager", back_populates="place")
-    phones = db.Column(ARRAY(db.String))
+    managers = relationship("ManagerPlace", back_populates="place")
+    phones = db.Column(ARRAY(db.String), server_default="{}")
 
     def __repr__(self):
         return self.name
@@ -77,7 +76,7 @@ class Place(db.Model):
         return self
 
     def add_manager(self, first_name, last_name, patronymic, post_name):
-        self.managers.append(Manager.create(first_name, last_name, patronymic).add_post(post_name))
+        self.managers.append(ManagerDepartment.create(first_name, last_name, patronymic).add_post(post_name))
         return self
 
     def set_phones(self, phones: list):
@@ -147,8 +146,8 @@ class SchedulePlace(db.Model):
 
 
 
-class Manager(db.Model):
-    __tablename__ = 'managers'
+class ManagerPlace(db.Model):
+    __tablename__ = 'manager_place'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
@@ -165,14 +164,14 @@ class Manager(db.Model):
 
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
-        return db.session.query(Manager).filter_by(first_name=first_name, last_name=last_name,
-                                                   patronymic=patronymic).first()
+        return db.session.query(ManagerDepartment).filter_by(first_name=first_name, last_name=last_name,
+                                                             patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
-        manager = Manager.get_manager(first_name, last_name, patronymic)
+        manager = ManagerPlace.get_manager(first_name, last_name, patronymic)
         if not manager:
-            manager = Manager(first_name=first_name, last_name=last_name, patronymic=patronymic)
+            manager = ManagerDepartment(first_name=first_name, last_name=last_name, patronymic=patronymic)
             db.session.add(manager)
             db.session.commit()
         return manager
@@ -186,7 +185,7 @@ class Post(db.Model):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
-    managers = relationship("Manager", back_populates="post")
+    managers = relationship("ManagerPlace", back_populates="post")
 
     def __repr__(self):
         return self.name

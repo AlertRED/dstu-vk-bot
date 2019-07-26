@@ -1,4 +1,4 @@
-from app.models.models import Place, Faculty, User
+from app.models.models import Place, Faculty, User, Department
 from app.models.models_menu import Menu
 from app import answer_functions as spec_foo
 
@@ -78,20 +78,22 @@ class MenuTree:
         self.schedule_menu = Menu('Узнать расписание')
 
         self.schedule_menu.add_special_item('Мое расписание', "Мое расписание", [('Я не знаю вашу группу\n' \
-                                                                    'Введите название чтобы я запомнил\n' \
-                                                                    'Например ВПР41 или вПр-41, как угодно :)', None)],
+                                                                                  'Введите название чтобы я запомнил\n' \
+                                                                                  'Например ВПР41 или вПр-41, как угодно :)',
+                                                                                  None)],
                                             lambda *args, **kwargs: ('222', None))
 
-        self.schedule_menu.add_special_item('Расписание группы', "Мое расписание", [('Введите название чтобы я запомнил\n' \
-                                                                       'Например ВПР41 или вПр-41, как угодно :)',
-                                                                       None)],
+        self.schedule_menu.add_special_item('Расписание группы', "Мое расписание",
+                                            [('Введите название чтобы я запомнил\n' \
+                                              'Например ВПР41 или вПр-41, как угодно :)',
+                                              None)],
                                             lambda *args, **kwargs: ('111', None))
 
         # Факультеты и кафедры
 
         self.faculties_and_departments_menu = Menu('Факультеты и кафедры')
         self.faculties_menu = self.get_faculty_menu('Факультеты')
-        self.departments_menu = Menu('Кафедры')
+        self.departments_menu = self.get_department_menu('Кафедры')
         self.specialty = Menu('Направления')
 
         # self.specialty.add_basic_item('Программная инженерия', '', self.pi_specialty)
@@ -118,7 +120,8 @@ class MenuTree:
         self.root.add_menu_item(self.faculties_and_departments_menu.name, self.faculties_and_departments_menu)
         self.root.add_menu_item(self.grants_menu.name, self.grants_menu)
         self.root.add_menu_item(self.settings_menu.name, self.settings_menu)
-        self.root.add_special_item("Оставить отзыв или предложение", "Оставить отзыв или предложение", [('Введите ваше предложение:', None)],
+        self.root.add_special_item("Оставить отзыв или предложение", "Оставить отзыв или предложение",
+                                   [('Введите ваше предложение:', None)],
                                    self.add_sentence)
         self.root.add_basic_item("О Боте", "", spec_foo.about_me)
 
@@ -126,7 +129,7 @@ class MenuTree:
         User.get_user(kwargs['vk_id']).add_review(kwargs['list_answers'][0])
         return 'Спасибо за отзыв😊', None
 
-
+    ## формат вывода
     def get_format_place(self, name):
         place = Place.get_place(name)
         if not place:
@@ -154,14 +157,14 @@ class MenuTree:
         result = "Название: " + faculty.name + "\n"
         if faculty.abbreviation:
             result += "Аббревиатура: %s\n" % faculty.abbreviation
-        if faculty.phone:
-            result += "📞Телефон: %s\n" % faculty.phone
+        if faculty.phones:
+            result += "📞Телефон: %s\n" % faculty.phones
         if faculty.dean:
             result += "👤Декан: %s %s %s\n" % (faculty.dean.last_name, faculty.dean.first_name, faculty.dean.patronymic)
         if faculty.cabinet_dean:
-            result += "📍Кабинет декана: %s\n" % faculty.cabinet_dean
+            result += "📍Кабинет декана: %s\n" % ', '.join(faculty.cabinet_dean)
         if faculty.cabinet_dean_office:
-            result += "📍Кабинет деканата: %s\n" % faculty.cabinet_dean_office
+            result += "📍Кабинет деканата: %s\n" % ', '.join(faculty.cabinet_dean_office)
         if faculty.schedules:
             result += "🕗Расписание деканата: \n" + '\n'.join(
                 '%s: %s - %s' % (
@@ -169,13 +172,64 @@ class MenuTree:
                 for i in faculty.schedules) + "\n"
         return result, None
 
+    def get_format_department(self, name=None, abbreviation=None):
+        department = Department.get_department(name, abbreviation)
+        if not department:
+            return 'Извините, запрашевоемое место еще не добавлено', None
+        result = "Название: " + department.name + "\n"
+        if department.abbreviation:
+            result += "Аббревиатура: %s\n" % department.abbreviation
+        if department.phones:
+            result += "📞Телефон: %s\n" % ', '.join(department.phones)
+        if department.manager:
+            result += "👤Заведующий: %s %s %s\n" % (department.manager.last_name, department.manager.first_name, department.manager.patronymic)
+        if department.cabinets:
+            result += "📍Кабинет: %s\n" % ', '.join(department.cabinets)
+        if department.schedules:
+            result += "🕗Расписание кафедры: \n" + '\n'.join(
+                '%s: %s - %s' % (
+                    i.day_of_week, i.start_time.strftime("%H:%M"), i.end_time.strftime("%H:%M"))
+                for i in department.schedules) + "\n"
+        return result, None
+
+    ## генераторы меню
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)
         for place in Place.get_places_by_type(place_type):
             menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
         return menu
 
-    def get_departments(self, faculty_name):
+    def get_faculty_menu(self, button_name: str):
+        menu = Menu(button_name)
+
+        for faculty in Faculty.all():
+            menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
+            menu_faculty.add_basic_item('Информация о факультете', '', self.get_faculty_lambda(faculty))
+
+            departments_of_faculty = self.get_departments_menu_by_faculty(faculty.abbreviation if faculty.abbreviation else faculty.name)
+            menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
+
+            specialties_of_faculty = self.get_specialties(faculty.name)
+            menu_faculty.add_menu_item(specialties_of_faculty.name, specialties_of_faculty)
+
+            # menu_faculty.add_menu_item('Направления', self.get_department)
+            menu.add_menu_item(menu_faculty.name, menu_faculty)
+        # print(menu.items.get('Авиастроение')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
+        # print(menu.items.get('ИиВТ')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
+        return menu
+
+    def get_department_menu(self, button_name: str):
+        menu = Menu(button_name)
+
+        for department in Department.all():
+            menu_department = Menu(department.abbreviation if department.abbreviation else department.name)
+            menu_department.add_basic_item('Информация о кафедре', '', self.get_department_lambda(department))
+            menu.add_menu_item(menu_department.name, menu_department)
+        return menu
+
+
+    ## остальное
+    def get_departments_menu_by_faculty(self, faculty_name):
         menu = Menu('Кафедры факультета')
         menu.add_basic_item('Какая-то кафедра', "", lambda **kwargs: ('инфа', None))
         return menu
@@ -185,23 +239,8 @@ class MenuTree:
         menu.add_basic_item('Какая-то специальность', "", lambda **kwargs: ('инфа', None))
         return menu
 
-    def get_abbreviation_lambda(self, faculty):
+    def get_faculty_lambda(self, faculty):
         return lambda **kwargs: self.get_format_faculty(name=faculty.name)
 
-    def get_faculty_menu(self, button_name: str):
-        menu = Menu(button_name)
-
-        for faculty in Faculty.all():
-            menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
-            menu_faculty.add_basic_item('Информация о факультете', '', self.get_abbreviation_lambda(faculty))
-
-            departments_of_faculty = self.get_departments(faculty.name)
-            menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
-
-            specialties_of_faculty = self.get_specialties(faculty.name)
-            menu_faculty.add_menu_item(specialties_of_faculty.name, specialties_of_faculty)
-
-            # menu_faculty.add_menu_item('Направления', self.get_department)
-            menu.add_menu_item(menu_faculty.name, menu_faculty)
-
-        return menu
+    def get_department_lambda(self, department):
+        return lambda **kwargs: self.get_format_department(name=department.name)

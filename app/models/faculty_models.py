@@ -88,7 +88,7 @@ class ManagerDepartment(db.Model):
     patronymic = db.Column(db.String, nullable=False)
 
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
-    department = relationship("Department", back_populates="manager")
+    department = relationship("Department", uselist=False, back_populates="manager")
 
     def __repr__(self):
         return '%s %s %s' % (self.first_name, self.last_name, self.patronymic)
@@ -102,14 +102,14 @@ class ManagerDepartment(db.Model):
     def create(first_name, last_name, patronymic):
         manager = ManagerDepartment.get_manager(first_name, last_name, patronymic)
         if not manager:
-            manager = Dean(first_name=first_name, last_name=last_name, patronymic=patronymic)
+            manager = ManagerDepartment(first_name=first_name, last_name=last_name, patronymic=patronymic)
             db.session.add(manager)
             db.session.commit()
         return manager
 
 
-class ScheduleDepartment(db.Model, Schedule):
-    __tablename__ = 'schedule_dean_office'
+class ScheduleDepartment(db.Model):
+    __tablename__ = 'schedule_department'
 
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.Time)
@@ -119,7 +119,7 @@ class ScheduleDepartment(db.Model, Schedule):
     day_of_week = db.Column(days_of_week_enum)
 
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
-    department = relationship("Faculty", back_populates="schedules")
+    department = relationship("Department", back_populates="schedules")
 
     def __repr__(self):
         return '%s. %s - %s (%s - %s)' % (
@@ -132,18 +132,16 @@ class ScheduleDepartment(db.Model, Schedule):
 
     @staticmethod
     def get_schedule(department, day_name):
-        return db.session.query(ScheduleDeanOffice).filter_by(department=department,
+        return db.session.query(ScheduleDepartment).filter_by(department=department,
                                                               day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
-        schedule = ScheduleDeanOffice(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
+        schedule = ScheduleDepartment(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                       pause_end_time=pause_end_time)
         db.session.add(schedule)
         db.session.commit()
         return schedule
-
-
 
 
 class Department(db.Model):
@@ -151,16 +149,16 @@ class Department(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     name = db.Column(db.String, nullable=False)
-    abbreviation = db.Column(db.String, nullable=False)
-    description = db.Column(db.String, nullable=False)
-    phones = db.Column(ARRAY(db.String))
-    cabinets = db.Column(ARRAY(db.String))
+    abbreviation = db.Column(db.String)
+    description = db.Column(db.String)
+    phones = db.Column(ARRAY(db.String), server_default="{}")
+    cabinets = db.Column(ARRAY(db.String), server_default="{}")
 
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship('Place', back_populates="departments")
 
     schedules = relationship("ScheduleDepartment", back_populates="department")
-    specialties = relationship("Specialty", back_populates="departments")
+    specialties = relationship("Specialty", back_populates="department")
 
     faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="departments")
@@ -171,21 +169,27 @@ class Department(db.Model):
         return self.name
 
     @staticmethod
-    def get_department(name):
-        return db.session.query(Department).filter_by(name=name).first()
+    def get_department(name=None, abbreviation=None):
+        if name:
+            return db.session.query(Department).filter_by(name=name).first()
+        return db.session.query(Department).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
-    def create(name, abbreviation=None, cabinet=None, description=None, phone=None):
+    def all():
+        return db.session.query(Department).all()
+
+    @staticmethod
+    def create(name, abbreviation=None, cabinets=None, description=None, phones=None):
         department = Department.get_department(name)
         if not department:
-            department = Department(name=name, abbreviation=abbreviation, cabinet=cabinet, description=description,
-                                    phone=phone)
+            department = Department(name=name, abbreviation=abbreviation, cabinets=cabinets, description=description,
+                                    phones=phones)
             db.session.add(department)
             db.session.commit()
         return department
 
     def add_manager(self, first_name, last_name, patronymic):
-        self.manager = Manager.create(first_name, last_name, patronymic)
+        self.manager = ManagerDepartment.create(first_name, last_name, patronymic)
         db.session.commit()
         return self
 
@@ -194,13 +198,13 @@ class Department(db.Model):
         db.session.commit()
         return self
 
-    def add_place(self, place: Place):
+    def add_place(self, place):
         self.place = place
         db.session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):
-        schedule = ScheduleDeanOffice.get_schedule(self, day_name)
+        schedule = ScheduleDepartment.get_schedule(self, day_name)
         if not schedule:
             self.schedules.append(
                 ScheduleDepartment.create(start_time, end_time, pause_start_time, pause_end_time).add_day_of_week(
@@ -219,6 +223,9 @@ class ScheduleDeanOffice(db.Model):
 
     day_of_week = db.Column(days_of_week_enum)
 
+    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
+    faculty = relationship("Faculty", back_populates="schedules")
+
     def __repr__(self):
         return '%s. %s - %s (%s - %s)' % (
             self.day_of_week, self.start_time, self.end_time, self.pause_start_time, self.pause_end_time)
@@ -228,11 +235,7 @@ class ScheduleDeanOffice(db.Model):
         db.session.commit()
         return self
 
-    faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
-    faculty = relationship("Faculty", back_populates="schedules")
 
-    schedule_id = db.Column(db.Integer, db.ForeignKey('schedule.id'))
-    schedule = relationship("Schedule", back_populates="schedules")
 
     @staticmethod
     def get_schedule(faculty, day_name):
@@ -294,10 +297,10 @@ class Faculty(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
     abbreviation = db.Column(db.String)
-    cabinet_dean = db.Column(ARRAY(db.String))
-    cabinet_dean_office = db.Column(ARRAY(db.String))
+    cabinet_dean = db.Column(ARRAY(db.String), server_default="{}")
+    cabinet_dean_office = db.Column(ARRAY(db.String), server_default="{}")
 
-    phones = db.Column(ARRAY(db.String))
+    phones = db.Column(ARRAY(db.String), server_default="{}")
 
     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
     place = relationship('Place', back_populates="faculties")
@@ -322,11 +325,11 @@ class Faculty(db.Model):
             return db.session.query(Faculty).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
-    def create(name, abbreviation, cabinet_dean, cabinet_dean_office, phone):
+    def create(name, abbreviation, cabinet_dean, cabinet_dean_office, phones):
         faculty = Faculty.get_faculty(name)
         if not faculty:
             faculty = Faculty(name=name, abbreviation=abbreviation, cabinet_dean=cabinet_dean,
-                              cabinet_dean_office=cabinet_dean_office, phone=phone)
+                              cabinet_dean_office=cabinet_dean_office, phones=phones)
             db.session.add(faculty)
             db.session.commit()
         return faculty
