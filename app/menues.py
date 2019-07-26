@@ -182,7 +182,8 @@ class MenuTree:
         if department.phones:
             result += "📞Телефон: %s\n" % ', '.join(department.phones)
         if department.manager:
-            result += "👤Заведующий: %s %s %s\n" % (department.manager.last_name, department.manager.first_name, department.manager.patronymic)
+            result += "👤Заведующий: %s %s %s\n" % (
+                department.manager.last_name, department.manager.first_name, department.manager.patronymic)
         if department.cabinets:
             result += "📍Кабинет: %s\n" % ', '.join(department.cabinets)
         if department.schedules:
@@ -206,7 +207,7 @@ class MenuTree:
             menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
             menu_faculty.add_basic_item('Информация о факультете', '', self.get_faculty_lambda(faculty))
 
-            departments_of_faculty = self.get_departments_menu_by_faculty(faculty.abbreviation if faculty.abbreviation else faculty.name)
+            departments_of_faculty = self.get_department_menu('Кафедры факультета', faculty)
             menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
 
             specialties_of_faculty = self.get_specialties(faculty.name)
@@ -218,22 +219,15 @@ class MenuTree:
         # print(menu.items.get('ИиВТ')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
         return menu
 
-    def get_department_menu(self, button_name: str):
+    def get_department_menu(self, button_name: str, faculty: Faculty = None):
         menu = Menu(button_name)
-
-        for department in Department.all():
+        for department in Department.all(faculty):
             menu_department = Menu(department.abbreviation if department.abbreviation else department.name)
             menu_department.add_basic_item('Информация о кафедре', '', self.get_department_lambda(department))
             menu.add_menu_item(menu_department.name, menu_department)
         return menu
 
-
     ## остальное
-    def get_departments_menu_by_faculty(self, faculty_name):
-        menu = Menu('Кафедры факультета')
-        menu.add_basic_item('Какая-то кафедра', "", lambda **kwargs: ('инфа', None))
-        return menu
-
     def get_specialties(self, faculty_name):
         menu = Menu('Специальности факультета')
         menu.add_basic_item('Какая-то специальность', "", lambda **kwargs: ('инфа', None))

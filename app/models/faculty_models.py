@@ -175,8 +175,10 @@ class Department(db.Model):
         return db.session.query(Department).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
-    def all():
-        return db.session.query(Department).all()
+    def all(faculty=None):
+        if faculty:
+            return db.session.query(Department).filter_by(faculty=faculty).all()
+        return db.session.query(Department).filter_by().all()
 
     @staticmethod
     def create(name, abbreviation=None, cabinets=None, description=None, phones=None):

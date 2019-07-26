@@ -78,7 +78,7 @@ Department.create('Системы приводов', abbreviation='СП', cabine
 
 
 Department.create('Физика', abbreviation=None, cabinets=['433', '433а', '437', '437а'], phones=['2738516', '2738305']). \
-    add_manager('Благин', 'Анатолий', 'Вячеславович').add_faculty(faculty).add_place(Place.get_place('Глаыный корпус')).\
+    add_manager('Благин', 'Анатолий', 'Вячеславович').add_faculty(faculty).add_place(Place.get_place('Главный корпус')).\
     add_schedule('пн', '8:30', '17:00'). \
     add_schedule('вт', '8:30', '17:00'). \
     add_schedule('ср', '8:30', '17:00'). \
@@ -87,7 +87,7 @@ Department.create('Физика', abbreviation=None, cabinets=['433', '433а', '
 
 
 Department.create('Электротехника и электроника', abbreviation='ЭиЭ', cabinets=['258', '260'], phones=['2738541', '2738301']). \
-    add_manager('Лаврентьев', 'Анатолий', 'Александрович').add_faculty(faculty).add_place(Place.get_place('Глаыный корпус')).\
+    add_manager('Лаврентьев', 'Анатолий', 'Александрович').add_faculty(faculty).add_place(Place.get_place('Главный корпус')).\
     add_schedule('пн', '8:30', '17:00'). \
     add_schedule('вт', '8:30', '17:00'). \
     add_schedule('ср', '8:30', '17:00'). \
