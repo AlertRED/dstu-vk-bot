@@ -4,7 +4,11 @@ from flask_admin.contrib.sqla import ModelView
 from app.models.models import *
 from web_app import flask_app
 
-admin = Admin(flask_app, name='DataBase')
+@flask_app.route('/tests')
+def tests():
+    return 'tests'
+
+admin = Admin(flask_app, name='DataBase', url='/')
 
 admin.add_view(ModelView(User, db.session, name='Пользователи', category='Пользователи'))
 admin.add_view(ModelView(UserCache, db.session, name='Кэш пользователей', category='Пользователи'))
