@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
@@ -93,15 +94,14 @@ class app:
     # запуск цикла
     def run(self):
         while True:
-            # try:
+            try:
             # получаем сообщения
-            messages = self.vk.method("messages.getConversations",
-                                      {"offset": 0, "count": 20, "filter": "unanswered"})
-            if messages["count"] >= 1:
-                user_id = messages["items"][0]["last_message"]["from_id"]
-                text_message = messages["items"][0]["last_message"]["text"]
-                logging.info("From id: %d, message: %s" % (user_id, text_message))
-                self.handling_message(user_id, text_message)
-            # except Exception as E:
-            #     logging.error(E)
-            # time.sleep(1)
+                messages = self.vk.method("messages.getConversations",
+                                          {"offset": 0, "count": 20, "filter": "unanswered"})
+                if messages["count"] >= 1:
+                    user_id = messages["items"][0]["last_message"]["from_id"]
+                    text_message = messages["items"][0]["last_message"]["text"]
+                    logging.info("From id: %d, message: %s" % (user_id, text_message))
+                    self.handling_message(user_id, text_message)
+            except Exception as E:
+                logging.error(E)
