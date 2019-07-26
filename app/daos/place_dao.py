@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, Manager, SchedulePlace
+from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, ManagerDepartment, SchedulePlace
 
 
 class placeDAO:
@@ -61,14 +61,14 @@ class placeDAO:
         return phone_place
 
     def _update_or_create_manager(self, place, first_name, last_name, patronymic, post=None):
-        manager = self.db.query(Manager).filter_by(place=place, first_name=first_name, last_name=last_name,
-                                                   patronymic=patronymic).first()
+        manager = self.db.query(ManagerDepartment).filter_by(place=place, first_name=first_name, last_name=last_name,
+                                                             patronymic=patronymic).first()
         if not manager and first_name and last_name and patronymic:
-            manager = Manager(first_name=first_name,
-                              last_name=last_name,
-                              patronymic=patronymic,
-                              place=place,
-                              post=post)
+            manager = ManagerDepartment(first_name=first_name,
+                                        last_name=last_name,
+                                        patronymic=patronymic,
+                                        place=place,
+                                        post=post)
             self.db.add(manager)
         else:
             manager.post = post
