@@ -19,7 +19,7 @@ class Item:
 
 
 class Menu(Item):
-    menues: dict = {}
+    menues: list = []
 
     def __init__(self, name, method=None):
         super().__init__(name, None)
@@ -27,7 +27,8 @@ class Menu(Item):
         self.method = method
         self.parent = None
         self.items = {}
-        Menu.menues[self.name] = self
+        Menu.menues.append(self)
+        self.index = len(Menu.menues)-1
 
     def get_menu(self):
         return " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
@@ -63,7 +64,7 @@ class Menu(Item):
         if is_back:
             menu.add_back_point(menu.parent, back_point_text)
 
-    def add_back_point(self, menu, back_point_text):
+    def add_back_point(self, menu, back_point_text: str):
         name_back_button = back_point_text if back_point_text else menu.name
         self._add_item(name_back_button, menu, TypeItem.BACK)
 

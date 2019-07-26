@@ -134,7 +134,7 @@ class UserCache(db.Model):
         return '<current_menu: %s>' % self.current_menu
 
     def update(self, current_menu=None, special_index=None):
-        self.current_menu = current_menu if current_menu else self.current_menu
+        self.current_menu = current_menu if current_menu is not None else self.current_menu
         self.special_index = special_index if special_index is not None else self.special_index
         db.session.commit()
         return self
