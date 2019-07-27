@@ -1,4 +1,4 @@
-from app.models.models import Place, Faculty, User, Department
+from app.models.orm_models import Place, Faculty, User, Department
 from app.models.models_menu import Menu
 from app import answer_functions as spec_foo
 

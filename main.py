@@ -12,6 +12,6 @@ vk_upload = VkUpload(vk)
 app = app(db, vk, vk_upload)
 
 if __name__ == '__main__':
-    import app.models.models as models
+    import app.models.orm_models as orm_models
     import app.seeds.seeds as seeds
     app.run()

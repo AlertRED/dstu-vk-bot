@@ -1,4 +1,8 @@
-from app.models.models import *
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy.orm import relationship
+
+from app.models.orm_models import days_of_week_enum
+from web_app import db
 
 
 # специальность

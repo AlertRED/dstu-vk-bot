@@ -1,5 +1,5 @@
 from app.models.models_menu import Menu
-from app.models.models import User
+from app.models.orm_models import User
 
 
 class Controller:

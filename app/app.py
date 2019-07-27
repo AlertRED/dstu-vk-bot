@@ -9,7 +9,7 @@ from app.menues import MenuTree
 
 from app.models.models_menu import TypeItem
 from app.controller import Controller
-from app.models.models import User
+from app.models.orm_models import User
 import random
 import logging
 

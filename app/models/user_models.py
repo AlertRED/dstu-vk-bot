@@ -1,7 +1,11 @@
-from app.models.models import *
+from datetime import datetime
+from sqlalchemy.orm import relationship
 
+from web_app import db
 
 # Отзывы
+
+
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)

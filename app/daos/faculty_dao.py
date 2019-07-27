@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, ManagerDepartment, ScheduleDeanOffice, Faculty, \
+from app.models.orm_models import Place, TypePlace, Day_of_week, Post, PhonePlace, ManagerDepartment, ScheduleDeanOffice, Faculty, \
     Dean, Department, Specialty, TypeSpecialty, ManagerDepartment
 
 

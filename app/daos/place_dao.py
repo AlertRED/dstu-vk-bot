@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import Place, TypePlace, Day_of_week, Post, PhonePlace, ManagerDepartment, SchedulePlace
+from app.models.orm_models import Place, TypePlace, Day_of_week, Post, PhonePlace, ManagerDepartment, SchedulePlace
 
 
 class placeDAO:
