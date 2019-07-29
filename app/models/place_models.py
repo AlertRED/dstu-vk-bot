@@ -2,9 +2,7 @@
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
-import app.models.orm_models as orm
-from web_app.flask_app import db
-days_of_week_enum = orm.days_of_week_enum
+from app.models.orm_models import db, days_of_week_enum
 
 
 class TypePlace(db.Model):

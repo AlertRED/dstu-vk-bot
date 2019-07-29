@@ -1,11 +1,11 @@
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
-from app.models.orm_models import days_of_week_enum
-from web_app.flask_app import db
+from app.models.orm_models import db, days_of_week_enum
 
 
 # специальность
+
 
 class TypeSpecialty(db.Model):
     __tablename__ = 'type_specialty'
