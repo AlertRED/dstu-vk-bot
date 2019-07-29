@@ -1,11 +1,8 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from app.models.faculty_models import Faculty, Dean, ScheduleDeanOffice, Department, ManagerDepartment, Specialty, \
-    TypeSpecialty
-from app.models.place_models import Place, TypePlace, SchedulePlace, ManagerPlace, Post
-from app.models.user_models import User, UserCache, UserAnswer, Review
-from web_app import flask_app, db
+from app.models.orm_models import *
+from web_app.flask_app import db, flask_app
 
 admin = Admin(flask_app, name='DataBase', url='/')
 

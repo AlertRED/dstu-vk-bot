@@ -1,8 +1,11 @@
+
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
-from app.models.orm_models import days_of_week_enum
-from web_app import db
+import app.models.orm_models as orm
+from web_app.flask_app import db
+days_of_week_enum = orm.days_of_week_enum
+
 
 class TypePlace(db.Model):
     __tablename__ = 'type_place'
@@ -80,7 +83,7 @@ class Place(db.Model):
         return self
 
     def add_manager(self, first_name, last_name, patronymic, post_name):
-        self.managers.append(ManagerDepartment.create(first_name, last_name, patronymic).add_post(post_name))
+        self.managers.append(ManagerPlace.create(first_name, last_name, patronymic).add_post(post_name))
         return self
 
     def set_phones(self, phones: list):
@@ -168,14 +171,14 @@ class ManagerPlace(db.Model):
 
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
-        return db.session.query(ManagerDepartment).filter_by(first_name=first_name, last_name=last_name,
+        return db.session.query(ManagerPlace).filter_by(first_name=first_name, last_name=last_name,
                                                              patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
         manager = ManagerPlace.get_manager(first_name, last_name, patronymic)
         if not manager:
-            manager = ManagerDepartment(first_name=first_name, last_name=last_name, patronymic=patronymic)
+            manager = ManagerPlace(first_name=first_name, last_name=last_name, patronymic=patronymic)
             db.session.add(manager)
             db.session.commit()
         return manager

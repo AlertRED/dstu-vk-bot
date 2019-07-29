@@ -2,10 +2,9 @@ import json
 import os
 import time
 
-from sqlalchemy.orm import Session
 from vk_api import VkApi, VkUpload
 
-from app.menues import MenuTree
+import app.menues as menues
 
 from app.models.models_menu import TypeItem
 from app.controller import Controller
@@ -14,21 +13,19 @@ import random
 import logging
 
 
-class app:
+class app_bot:
 
-    def __init__(self, db: Session, vk: VkApi, vk_upload: VkUpload):
+    def __init__(self, vk: VkApi, vk_upload: VkUpload):
         self.colors = {TypeItem.DEFAULT: 'default',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
                        TypeItem.SIMPLE: 'primary'}
-
-        self.db = db
         # self.userDAO = userDAO()
         self.controller = Controller()
         self.vk = vk
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-        self.menues = MenuTree()
+        self.menues = menues.MenuTree()
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')

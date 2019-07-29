@@ -1,6 +1,11 @@
-from app.models.orm_models import Place, Faculty, User, Department
+import app.models.orm_models as models
 from app.models.models_menu import Menu
 from app import answer_functions as spec_foo
+
+User = models.User
+Place = models.Place
+Department = models.Department
+Faculty = models.Faculty
 
 
 class MenuTree:

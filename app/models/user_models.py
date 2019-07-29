@@ -1,10 +1,12 @@
 from datetime import datetime
+
 from sqlalchemy.orm import relationship
 
-from web_app import db
+import app.models.orm_models as orm
+from web_app.flask_app import db
+days_of_week_enum = orm.days_of_week_enum
 
 # Отзывы
-
 
 class Review(db.Model):
     __tablename__ = 'reviews'

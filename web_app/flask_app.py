@@ -7,8 +7,3 @@ flask_app = Flask(__name__)
 flask_app.config.from_object(Config)
 db = SQLAlchemy(flask_app)
 migrate = Migrate(flask_app, db)
-
-from web_app.admin import *
-
-if __name__ == '__main__':
-    flask_app.run()
