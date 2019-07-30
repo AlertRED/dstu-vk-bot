@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import relationship
 
-from app.models.orm_models import db
+from app.models.models import db
 
 
 # Отзывы

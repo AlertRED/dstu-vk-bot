@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from app.models.orm_models import db
+from app.models.models import db
 
 
 class Log(db.Model):

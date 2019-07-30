@@ -1,11 +1,8 @@
-from app.models.models_menu import Menu
-from app.models.orm_models import User
+from app.models_menu import Menu
+from app.models.models import User
 
 
 class Controller:
-
-    # def __init__(self, userDAO):
-    #     self.userDAO = userDAO
 
     def parse_answer(self, data_answer: dict, user: User, current_menu: Menu):
         answer = data_answer.get("answer", None)

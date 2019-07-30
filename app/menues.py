@@ -1,5 +1,5 @@
-import app.models.orm_models as models
-from app.models.models_menu import Menu
+import app.models.models as models
+from app.models_menu import Menu
 from app import answer_functions as spec_foo
 
 User = models.User

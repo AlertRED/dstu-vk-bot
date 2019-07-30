@@ -1,21 +1,19 @@
 import json
 import os
-import time
 
 from vk_api import VkApi, VkUpload
 
-import app.menues as menues
-
-from app.models.models_menu import TypeItem
+from app.menues import MenuTree
+from app.models_menu import TypeItem
 from app.controller import Controller
-from app.models.orm_models import User, Log
+from app.models.models import User, Log
 import random
 import logging
 
 
-class app_bot:
+class App:
 
-    def __init__(self, vk: VkApi, vk_upload: VkUpload):
+    def __init__(self, vk: VkApi, vk_upload: VkUpload, menues_tree: MenuTree):
         self.colors = {TypeItem.DEFAULT: 'default',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
@@ -25,7 +23,7 @@ class app_bot:
         self.vk = vk
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-        self.menues = menues.MenuTree()
+        self.menues = menues_tree
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
@@ -93,7 +91,7 @@ class app_bot:
         while True:
             user_id = None
             try:
-            # получаем сообщения
+                # получаем сообщения
                 messages = self.vk.method("messages.getConversations",
                                           {"offset": 0, "count": 20, "filter": "unanswered"})
                 if messages["count"] >= 1:

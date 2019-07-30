@@ -1,4 +1,4 @@
-from app.models.orm_models import Faculty
+from app.models.models import Faculty
 
 Faculty.create('Авиастроение', None, ['227'], ['228'], None). \
     add_dean('Зимонов', 'Олег', 'Владимирович'). \

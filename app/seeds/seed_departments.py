@@ -1,4 +1,4 @@
-from app.models.orm_models import Department, Faculty, Place
+from app.models.models import Department, Faculty, Place
 
 faculty = Faculty.get_faculty(name='Авиастроение')
 Department.create('Авиастроение', abbreviation=None, cabinets=['402'], phones=['2589179', '2977566']). \

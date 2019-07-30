@@ -1,7 +1,7 @@
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from app.models.orm_models import *
+from app.models.models import *
 from web_app.flask_app import db, flask_app
 
 admin = Admin(flask_app, name='DataBase', url='/')
