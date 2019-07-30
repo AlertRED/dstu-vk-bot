@@ -26,5 +26,4 @@ admin.add_view(
     ModelView(ManagerDepartment, db.session, name='Управляющие кафедрами', category='Структура университета'))
 admin.add_view(ModelView(Specialty, db.session, name='Специальности', category='Структура университета'))
 admin.add_view(ModelView(TypeSpecialty, db.session, name='Типы специальностей', category='Структура университета'))
-
-
+admin.add_view(ModelView(Log, db.session, name='Ошибки'))
