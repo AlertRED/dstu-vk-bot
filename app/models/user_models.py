@@ -3,9 +3,8 @@ from sqlalchemy.orm import relationship
 
 from app.models.orm_models import db
 
+
 # Отзывы
-
-
 class Review(db.Model):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)

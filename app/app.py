@@ -8,7 +8,7 @@ import app.menues as menues
 
 from app.models.models_menu import TypeItem
 from app.controller import Controller
-from app.models.orm_models import User
+from app.models.orm_models import User, Log
 import random
 import logging
 
@@ -60,7 +60,7 @@ class app_bot:
         keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
         return str(keyboard.decode('utf-8'))
 
-    def send_message(self, answer, menu, id_user, request):
+    def send_message(self, answer, menu, id_user):
         if answer:
             result = ""
             if answer[1]:
@@ -71,7 +71,7 @@ class app_bot:
             self.vk.method("messages.send",
                            {"peer_id": id_user,
                             "message": answer[0],
-                            "keyboard": self.get_keyboard(menu.items) if menu.items else None,
+                            "keyboard": self.get_keyboard(menu.items) if menu and menu.items else None,
                             "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
@@ -86,11 +86,12 @@ class app_bot:
         user = User.create(user_id, user_info[0]['first_name'],
                            user_info[0]['last_name']).create_cache(self.menues.root.index).inc_request()
         answer, menu = self.controller.get_answer(text_message, user)
-        self.send_message(answer, menu, user_id, text_message)
+        self.send_message(answer, menu, user_id)
 
     # запуск цикла
     def run(self):
         while True:
+            user_id = None
             try:
             # получаем сообщения
                 messages = self.vk.method("messages.getConversations",
@@ -100,5 +101,8 @@ class app_bot:
                     text_message = messages["items"][0]["last_message"]["text"]
                     logging.info("From id: %d, message: %s" % (user_id, text_message))
                     self.handling_message(user_id, text_message)
+
             except Exception as E:
-                logging.error(E)
+                Log.create(text=str(E), vk_id=user_id)
+                if user_id:
+                    self.send_message(('Вы что-то сломали:(', None), self.menues.root, user_id)
