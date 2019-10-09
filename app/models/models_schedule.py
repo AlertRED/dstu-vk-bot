@@ -38,6 +38,12 @@ class Group(db.Model):
         db.session.commit()
         return self
 
+    def get_schedule(self, day=None, week=None, semester=None, number=None):
+        return [subject for subject in self.subjects if
+                ((week is None) or subject.week == week) and
+                ((semester is None) or subject.semester == semester) and
+                ((day is None) or subject.day_of_week == day) and
+                ((number is None) or subject.number == number)]
 
 
 # Преподаватель
@@ -76,6 +82,7 @@ class Subject(db.Model):
     number = db.Column(db.Integer)  # номер пары
     week = db.Column(db.Integer)  # номер недели
     semester = db.Column(db.Integer)
+    # cabinet = db.Column(db.String)
 
     day_of_week = db.Column(days_of_week_enum)
 
@@ -94,7 +101,7 @@ class Subject(db.Model):
                                                    day_of_week=day_of_week).first()
 
     @staticmethod
-    def create(name, number, week, semester, day_of_week):
+    def create(name, number, week, semester, day_of_week, cabinet):
         subject = Subject.get_subject(name, number, week, semester, day_of_week)
         if not subject:
             subject = Subject(name=name, number=number, week=week, semester=semester, day_of_week=day_of_week)
