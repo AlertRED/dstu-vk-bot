@@ -9,6 +9,7 @@ from app.models.models_user import *
 from app.models.models_faculty import *
 from app.models.models_place import *
 from app.models.models_other import *
+from app.models.models_schedule import *
 
 # Создание таблиц
 db.Model.metadata.create_all(db.engine)

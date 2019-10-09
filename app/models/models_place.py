@@ -1,4 +1,3 @@
-
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
 
@@ -82,6 +81,7 @@ class Place(db.Model):
 
     def add_manager(self, first_name, last_name, patronymic, post_name):
         self.managers.append(ManagerPlace.create(first_name, last_name, patronymic).add_post(post_name))
+        db.session.commit()  # не было не тестилось
         return self
 
     def set_phones(self, phones: list):
@@ -135,7 +135,6 @@ class SchedulePlace(db.Model):
         db.session.commit()
         return self
 
-
     @staticmethod
     def get_schedule(place, day_name):
         return db.session.query(SchedulePlace).filter_by(place=place,
@@ -148,7 +147,6 @@ class SchedulePlace(db.Model):
         db.session.add(schedule)
         db.session.commit()
         return schedule
-
 
 
 class ManagerPlace(db.Model):
@@ -170,7 +168,7 @@ class ManagerPlace(db.Model):
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
         return db.session.query(ManagerPlace).filter_by(first_name=first_name, last_name=last_name,
-                                                             patronymic=patronymic).first()
+                                                        patronymic=patronymic).first()
 
     @staticmethod
     def create(first_name, last_name, patronymic):
@@ -207,7 +205,6 @@ class Post(db.Model):
             db.session.add(post)
             db.session.commit()
         return post
-
 
 # class PhonePlace(db.Model):
 #     __tablename__ = 'phone_place'
