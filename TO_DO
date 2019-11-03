@@ -1,0 +1,6 @@
+1)
+INFO  [alembic.ddl.postgresql] Detected sequence named 'dean_id_seq' as owned by integer column 'dean(id)', assuming SERIAL and omitting
+INFO  [alembic.ddl.postgresql] Detected sequence named 'type_specialty_id_seq' as owned by integer column 'type_specialty(id)', assuming SERIAL and omitting
+...
+
+2)
