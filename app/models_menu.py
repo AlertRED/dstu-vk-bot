@@ -28,7 +28,7 @@ class Menu(Item):
         self.parent = None
         self.items = {}
         Menu.menues.append(self)
-        self.index = len(Menu.menues)-1
+        self.index = len(Menu.menues) - 1
 
     def get_menu(self):
         return " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
@@ -51,8 +51,11 @@ class Menu(Item):
 
     # добавить пункт меню
     def add_special_item(self, index, name, messages: list, method, is_back=True, back_point_text="Назад",
-                         type_item: TypeItem = TypeItem.SIMPLE):
+                         type_item: TypeItem = TypeItem.SIMPLE, prepare=None):
         special = SpecialMenu(name, messages, method, self)
+        if prepare is not None:
+            special.prepare_condition = prepare['condition']
+            special.prepare_method = prepare['method']
         self._add_item(index, special, type_item)
         if is_back:
             special.add_back_point(special.parent, back_point_text)
@@ -79,16 +82,18 @@ class Menu(Item):
 
 class SpecialMenu(Menu):
 
-    def __init__(self, name: str, messages: list, method, parent = None):
+    def __init__(self, name: str, messages: list, method, parent=None):
         super().__init__(name)
         self.messages = messages
         self.parent = parent
         self.method = method
+        self.prepare_condition = None
+        self.prepare_method = None
 
     def get_answer(self, request, *args, **kwargs):
         result = self.items.get(request, None)
         answer = result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
-                                                                                         request=request)
+                                                                                           request=request)
         if result and result[1] is TypeItem.BACK:
             answer['special_index'] = 0
             answer['special_answers'] = []
@@ -97,7 +102,18 @@ class SpecialMenu(Menu):
     def is_end(self, number: int):
         return (len(self.messages) - 1) < number
 
+    def prepare(self, *args, **kwargs):
+        return self.prepare_condition and self.prepare_method and self.prepare_condition(*args, **kwargs)
+
     def call(self, *args, **kwargs):
+
+        if self.prepare(*args, **kwargs):
+            return {
+                'answer': self.prepare_method(*args, **kwargs),
+                'new_menu': self.parent,
+                'special_index': 0
+            }
+
         index_answer = kwargs.get('special_index', 0)
         list_answers = kwargs.get('special_answers')
 
@@ -108,8 +124,8 @@ class SpecialMenu(Menu):
             return {"answer": self.method(list_answers=list_answers, vk_id=kwargs.get('vk_id', None)),
                     "new_menu": self.parent,
                     "special_index": 0}
-        else:
-            return {"answer": self.messages[index_answer],
-                    "new_menu": self,
-                    "special_index": index_answer + 1,
-                    "special_answers": list_answers}
+
+        return {"answer": self.messages[index_answer],
+                "new_menu": self,
+                "special_index": index_answer + 1,
+                "special_answers": list_answers}

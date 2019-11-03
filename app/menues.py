@@ -1,4 +1,5 @@
 import app.models.models as models
+from app.models.models_schedule import Group
 from app.models_menu import Menu
 from app import answer_functions as spec_foo
 
@@ -86,13 +87,17 @@ class MenuTree:
                                                                                   'Введите название чтобы я запомнил\n' \
                                                                                   'Например ВПР41 или вПр-41, как угодно :)',
                                                                                   None)],
-                                            lambda *args, **kwargs: ('222', None))
+                                            self.save_group,
+                                            prepare={'condition': lambda *args, **kwargs: User.get_user(
+                                                kwargs['vk_id']).group_name,
+                                                     'method': lambda *args, **kwargs: self.get_schedule_of_group(
+                                                         list_answers=[User.get_user(
+                                                             kwargs['vk_id']).group_name])})
 
-        self.schedule_menu.add_special_item('Расписание группы', "Мое расписание",
-                                            [('Введите название чтобы я запомнил\n' \
-                                              'Например ВПР41 или вПр-41, как угодно :)',
+        self.schedule_menu.add_special_item('Расписание группы', "Расписание группы",
+                                            [('Введите название группы',
                                               None)],
-                                            lambda *args, **kwargs: ('111', None))
+                                            self.get_schedule_of_group)
 
         # Факультеты и кафедры
 
@@ -119,6 +124,12 @@ class MenuTree:
         # Настройки
 
         self.settings_menu = Menu('Настройки')
+        self.settings_menu.add_special_item('Изменить название моей группы', "Изменить название моей группы",
+                                            [('Введите название вашей группы\n' \
+                                              'Например ВПР41 или вПр-41, как угодно :)',
+                                              None)],
+                                            self.save_group)
+
 
         self.root.add_menu_item(self.places_menu.name, self.places_menu)
         self.root.add_menu_item(self.schedule_menu.name, self.schedule_menu)
@@ -129,6 +140,40 @@ class MenuTree:
                                    [('Введите ваше предложение:', None)],
                                    self.add_sentence)
         self.root.add_basic_item("О Боте", "", spec_foo.about_me)
+
+    def save_group(self, *args, **kwargs):
+        if len(kwargs['list_answers']) > 0 and Group.get_group(kwargs['list_answers'][0]):
+            User.get_user(kwargs['vk_id']).update(group_name=kwargs['list_answers'][0])
+            return 'Я запомнил вашу группу. Поменять ее можно в настройках.', None
+        return 'Я не знаю такую группу', None
+
+    def get_schedule_of_group(self, *args, **kwargs):
+        group = Group.get_group(kwargs['list_answers'][0])
+        days = {'Понедельник': 'пн',
+                'Вторник': 'вт',
+                'Среда': 'ср',
+                'Четверг': 'чт',
+                'Пятница': 'пт',
+                'Суббота': 'сб',
+                'Воскресенье': 'вс'}
+        if group:
+            answer = '▫ Номер пары ▫ Название ▫ Кабинет ▫'
+            answer += '\n⬆Верхняя неделя'
+            for long, short in days.items():
+                schedule = sorted(group.get_schedule(day=short, week=2), key=lambda x: x.number)
+                if len(schedule) == 0:
+                    continue
+                answer += '\n➖' + long + '\n' + '\n'.join(
+                    '№%i: %s' % (i.number, i.name) for i in schedule)
+            answer += '\n⬇Нижняя неделя'
+            for long, short in days.items():
+                schedule = sorted(group.get_schedule(day=short, week=1), key=lambda x: x.number)
+                if len(schedule) == 0:
+                    continue
+                answer += '\n➖' + long + '\n' + '\n'.join(
+                    '№%i: %s' % (i.number, i.name) for i in schedule)
+            return answer, None
+        return 'Группа не найдена', None
 
     def add_sentence(self, *args, **kwargs):
         User.get_user(kwargs['vk_id']).add_review(kwargs['list_answers'][0])
