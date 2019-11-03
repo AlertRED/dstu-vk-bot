@@ -18,8 +18,10 @@ scraper = ScrapePage()
 # Start: 31884
 # End: 33841
 
+# ВПР41 - 32342
+
 errors = 0
-for i in range(31884, 33841):
+for i in range(32342, 32343):
     i -= errors
     try:
         data = scraper.get_schedule(str(i))
@@ -51,6 +53,7 @@ for i in range(31884, 33841):
                     first_name, last_name, patronymic = None, None, None
                 subject.set_teacher(first_name, last_name, patronymic)
                 group.add_subject(subject)
+                print(subject)
             if item[-1] in ('В нед.', '*'):
                 subject = Subject.create(item[correct_index + 1], numbers[time], 2, 1, days[day['day_name']])
                 try:
@@ -59,4 +62,10 @@ for i in range(31884, 33841):
                     first_name, last_name, patronymic = None, None, None
                 subject.set_teacher(first_name, last_name, patronymic)
                 group.add_subject(subject)
+                print(subject)
+
     print(log + 'True')
+
+# print(Group.get_group('ВПР41').get_schedule(day='пн'))
+
+

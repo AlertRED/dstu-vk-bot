@@ -90,17 +90,17 @@ class App:
     def run(self):
         while True:
             user_id = None
-            try:
-                # получаем сообщения
-                messages = self.vk.method("messages.getConversations",
-                                          {"offset": 0, "count": 20, "filter": "unanswered"})
-                if messages["count"] >= 1:
-                    user_id = messages["items"][0]["last_message"]["from_id"]
-                    text_message = messages["items"][0]["last_message"]["text"]
-                    logging.info("From id: %d, message: %s" % (user_id, text_message))
-                    self.handling_message(user_id, text_message)
+            # try:
+            # получаем сообщения
+            messages = self.vk.method("messages.getConversations",
+                                      {"offset": 0, "count": 20, "filter": "unanswered"})
+            if messages["count"] >= 1:
+                user_id = messages["items"][0]["last_message"]["from_id"]
+                text_message = messages["items"][0]["last_message"]["text"]
+                logging.info("From id: %d, message: %s" % (user_id, text_message))
+                self.handling_message(user_id, text_message)
 
-            except Exception as E:
-                Log.create(text=str(E), vk_id=user_id)
-                if user_id:
-                    self.send_message(('Вы что-то сломали:(', None), self.menues.root, user_id)
+            # except Exception as E:
+            #     Log.create(text=str(E), vk_id=user_id)
+            #     if user_id:
+            #         self.send_message(('Вы что-то сломали:(', None), self.menues.root, user_id)
