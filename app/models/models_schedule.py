@@ -9,6 +9,7 @@ class Group(db.Model):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
+    original_name = db.Column(db.String)
     year = db.Column(db.String)
     number_by_site = db.Column(db.Integer)
     semester = db.Column(db.Integer)
@@ -82,7 +83,7 @@ class Subject(db.Model):
     number = db.Column(db.Integer)  # номер пары
     week = db.Column(db.Integer)  # номер недели
     semester = db.Column(db.Integer)
-    # cabinet = db.Column(db.String)
+    cabinet = db.Column(db.String)
 
     day_of_week = db.Column(days_of_week_enum)
 
@@ -93,7 +94,7 @@ class Subject(db.Model):
     teacher = relationship("Teacher", back_populates="subjects")
 
     def __repr__(self):
-        return self.name
+        return '%s: %s' % (self.day_of_week, self.name)
 
     @staticmethod
     def get_subject(name, number, week, semester, day_of_week):
@@ -101,7 +102,7 @@ class Subject(db.Model):
                                                    day_of_week=day_of_week).first()
 
     @staticmethod
-    def create(name, number, week, semester, day_of_week, cabinet):
+    def create(name, number, week, semester, day_of_week):
         subject = Subject.get_subject(name, number, week, semester, day_of_week)
         if not subject:
             subject = Subject(name=name, number=number, week=week, semester=semester, day_of_week=day_of_week)

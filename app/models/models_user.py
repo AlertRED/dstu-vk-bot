@@ -44,6 +44,7 @@ class User(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     total_requests = db.Column(db.Integer, default=0)
+    group_name = db.Column(db.String)
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
@@ -92,11 +93,12 @@ class User(db.Model):
         self.user_cache.update(current_menu=menu_name)
         return self
 
-    def update(self, vk_id=None, first_name=None, last_name=None, total_requests=None):
+    def update(self, vk_id=None, first_name=None, last_name=None, total_requests=None, group_name=None):
         self.vk_id = vk_id if vk_id else self.vk_id
         self.first_name = first_name if first_name else self.first_name
         self.last_name = last_name if last_name else self.last_name
         self.total_requests = total_requests if total_requests else self.total_requests
+        self.group_name = group_name if group_name else self.group_name
         db.session.commit()
         return self
 
