@@ -9,6 +9,7 @@ from app.controller import Controller
 from app.models.models import User, Log
 import random
 import logging
+import threading
 
 
 class App:
@@ -98,7 +99,9 @@ class App:
                 user_id = messages["items"][0]["last_message"]["from_id"]
                 text_message = messages["items"][0]["last_message"]["text"]
                 logging.info("From id: %d, message: %s" % (user_id, text_message))
-                self.handling_message(user_id, text_message)
+
+                if not any(thread.name == str(user_id) for thread in threading.enumerate()):
+                    threading.Thread(target=self.handling_message, args=(user_id, text_message), name=user_id).start()
 
             # except Exception as E:
             #     Log.create(text=str(E), vk_id=user_id)
