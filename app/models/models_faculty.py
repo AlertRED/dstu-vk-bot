@@ -1,12 +1,9 @@
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-
 from app.models.models import db, days_of_week_enum
 
 
 # специальность
-
-
 class TypeSpecialty(db.Model):
     __tablename__ = 'type_specialty'
     id = db.Column(db.Integer, primary_key=True)
@@ -45,7 +42,7 @@ class Specialty(db.Model):
     faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
     faculty = relationship("Faculty", back_populates="specialties")
     department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
-    department = relationship("Department", uselist=False,  back_populates="specialties")
+    department = relationship("Department", uselist=False, back_populates="specialties")
     types = relationship("TypeSpecialty", back_populates="specialty")
 
     def __repr__(self):
@@ -72,17 +69,6 @@ class Specialty(db.Model):
 
 
 # кафедра
-# class PhoneDepartment(db.Model):
-#     __tablename__ = 'phone_department'
-#     id = db.Column(db.Integer, primary_key=True)
-#     phone = db.Column(db.String)
-#
-#     department_id = db.Column(db.Integer, db.ForeignKey('department.id'))
-#     department = relationship("Department", back_populates="phones")
-#
-#     def __repr__(self):
-#         return self.phone
-
 
 class ManagerDepartment(db.Model):
     __tablename__ = 'manager_department'
@@ -242,8 +228,6 @@ class ScheduleDeanOffice(db.Model):
         db.session.commit()
         return self
 
-
-
     @staticmethod
     def get_schedule(faculty, day_name):
         return db.session.query(ScheduleDeanOffice).filter_by(faculty=faculty,
@@ -256,18 +240,6 @@ class ScheduleDeanOffice(db.Model):
         db.session.add(schedule)
         db.session.commit()
         return schedule
-
-
-# class PhoneFaculty(db.Model):
-#     __tablename__ = 'phone_faculty'
-#     id = db.Column(db.Integer, primary_key=True)
-#     phone = db.Column(db.String)
-#
-#     faculty_id = db.Column(db.Integer, db.ForeignKey('faculty.id'))
-#     faculty = relationship("Faculty", back_populates="phones")
-#
-#     def __repr__(self):
-#         return self.phone
 
 
 class Dean(db.Model):
@@ -355,11 +327,11 @@ class Faculty(db.Model):
         return self
 
     def add_departament(self, departament: Department):
-        if not departament in self.departments:
+        if departament not in self.departments:
             self.departments.append(departament)
         return self
 
     def add_specialty(self, specialty: Specialty):
-        if not specialty in self.specialties:
+        if specialty not in self.specialties:
             self.specialties.append(specialty)
         return self

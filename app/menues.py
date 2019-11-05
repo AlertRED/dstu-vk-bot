@@ -15,7 +15,6 @@ class MenuTree:
         self.root = Menu("Главное меню")
 
         # ДГТУ и АСА
-
         self.places_menu = Menu('Места и объекты')
         self.dstu_menu = Menu('ДГТУ')
         self.asa_menu = Menu('АСА')
@@ -106,23 +105,10 @@ class MenuTree:
         self.departments_menu = self.get_department_menu('Кафедры')
         self.specialty = Menu('Направления')
 
-        # self.specialty.add_basic_item('Программная инженерия', '', self.pi_specialty)
-        # self.specialty.add_basic_item('Компьютерная безопасность', '', self.pi_specialty)
-        # self.specialty.add_basic_item('Прикладная математика', '', self.pi_specialty)
-
-        # self.departments_menu.add_basic_item('ПОВТиАС', '', self.povtias_department)
-        # self.departments_menu.add_menu_item(self.specialty.name, self.specialty)
-        #
-        # self.faculties_menu.add_basic_item('ИиВТ', '', self.iivt_faculty)
-        # self.faculties_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
-        # self.faculties_menu.add_basic_item('МКиМТ', '', self.mkmt_faculty)
-        # self.faculties_menu.add_basic_item('АМиУ', '', self.amiu_faculty)
-
         self.faculties_and_departments_menu.add_menu_item(self.faculties_menu.name, self.faculties_menu)
         self.faculties_and_departments_menu.add_menu_item(self.departments_menu.name, self.departments_menu)
 
         # Настройки
-
         self.settings_menu = Menu('Настройки')
         self.settings_menu.add_special_item('Изменить название моей группы', "Изменить название моей группы",
                                             [('Введите название вашей группы\n' \

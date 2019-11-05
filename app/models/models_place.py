@@ -1,6 +1,5 @@
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.orm import relationship
-
 from app.models.models import db, days_of_week_enum
 
 
@@ -90,15 +89,6 @@ class Place(db.Model):
             self.phones.append(phone)
         db.session.commit()
         return self
-
-    # def set_phones(self, phones: list):
-    #     for phone in self.phones:
-    #         db.session.delete(phone)
-    #     db.session.commit()
-    #     for phone in phones:
-    #         self.phones.append(PhonePlace(phone=phone))
-    #     db.session.commit()
-    #     return self
 
     def add_type_place(self, type_name):
         self.type_place = TypePlace.create(type_name)
@@ -205,14 +195,3 @@ class Post(db.Model):
             db.session.add(post)
             db.session.commit()
         return post
-
-# class PhonePlace(db.Model):
-#     __tablename__ = 'phone_place'
-#     id = db.Column(db.Integer, primary_key=True)
-#     phone = db.Column(db.String)
-#
-#     def __repr__(self):
-#         return self.phone
-#
-#     place_id = db.Column(db.Integer, db.ForeignKey('place.id'))
-#     place = relationship("Place", back_populates="phones")
