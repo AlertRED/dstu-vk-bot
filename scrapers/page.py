@@ -1,6 +1,6 @@
 from time import sleep
 
-from scraper.scraper_schedule import ScrapePage
+from scrapers.scraper_schedule import ScrapePage
 from app.models.models_schedule import Group, Subject
 
 numbers = {'8-30': 1, '10-15': 2, '12-00': 3, '14-15': 4, '16-00': 5, '17-45': 6, '19:30': 7}
