@@ -1,4 +1,6 @@
 from datetime import datetime
+
+from sqlalchemy import func
 from sqlalchemy.orm import relationship
 from app.models.models import db
 
@@ -44,6 +46,10 @@ class User(db.Model):
     last_name = db.Column(db.String, nullable=False)
     total_requests = db.Column(db.Integer, default=0)
     group_name = db.Column(db.String)
+
+    remind = db.Column(db.Boolean, default=False)
+    remind_date = db.Column(db.DateTime)
+
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
@@ -53,6 +59,17 @@ class User(db.Model):
 
     def __repr__(self):
         return '%s %s' % (self.last_name, self.first_name)
+
+    @staticmethod
+    def get_users_with_min_remind_date():
+        min_count = db.session.query(func.min(User.total_requests)).first()
+        users = db.session.query(User).filter_by(total_requests=min_count).all()
+        return min_count, users
+
+    def set_remind(self, remind: bool):
+        self.remind = remind
+        db.session.commit()
+        return self
 
     def inc_request(self, inc=1):
         self.total_requests += inc
