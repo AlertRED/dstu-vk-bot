@@ -38,12 +38,12 @@ class Group(db.Model):
         db.session.commit()
         return self
 
-    def get_schedule(self, day=None, week=None, semester=None, number=None):
+    def get_schedule(self, day=None, week=None, semester=None, number=None) -> list:
         return [subject for subject in self.subjects if
                 ((week is None) or subject.week == week) and
                 ((semester is None) or subject.semester == semester) and
                 ((day is None) or subject.day_of_week == day) and
-                ((number is None) or subject.number == number)]
+                ((number is None) or subject.number == number)][::-1]
 
 
 # Преподаватель
