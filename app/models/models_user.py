@@ -1,8 +1,9 @@
-from datetime import datetime
+from datetime import datetime, date, time, timedelta
 
 from sqlalchemy import func
 from sqlalchemy.orm import relationship
-from app.models.models import db
+from app.models.models import db, pairs_time, days_of_week
+from app.models.models_schedule import Group
 
 
 # Отзывы
@@ -47,8 +48,9 @@ class User(db.Model):
     total_requests = db.Column(db.Integer, default=0)
     group_name = db.Column(db.String)
 
-    remind = db.Column(db.Boolean, default=False)
+    remind = db.Column(db.Boolean, default=False, nullable=False)
     remind_date = db.Column(db.DateTime)
+    remind_offset = db.Column(db.Integer, default=0, nullable=False)  # change on offset and Time type
 
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
@@ -60,11 +62,27 @@ class User(db.Model):
     def __repr__(self):
         return '%s %s' % (self.last_name, self.first_name)
 
+    def refresh_nearest_remind(self):
+        date_now = datetime.now()
+        for i in range(0 + date_now.weekday(), 13 + date_now.weekday()):
+            schedule = self.get_group().get_schedule(days_of_week[i % 7], i // 7)
+            if schedule:
+                self.remind_date = datetime(date_now.year, date_now.month, date_now.day + (i - date_now.weekday()))
+                offset_hours = pairs_time[schedule[0].number].hour - self.remind_offset // 60
+                offset_minutes = pairs_time[schedule[0].number].minute - self.remind_offset % 60
+                self.remind_date += timedelta(hours=offset_hours, minutes=offset_minutes)
+                db.session.commit()
+                break
+        return self
+
+    def get_group(self) -> Group:
+        return Group.get_group(self.group_name)
+
     @staticmethod
-    def get_users_with_min_remind_date():
-        min_count = db.session.query(func.min(User.total_requests)).first()
-        users = db.session.query(User).filter_by(total_requests=min_count).all()
-        return min_count, users
+    def get_users_remind():
+        min_date = db.session.query(func.min(User.remind_date)).first()
+        users = db.session.query(User).filter_by(remind_date=min_date, remind=True).all()
+        return min_date, users
 
     def set_remind(self, remind: bool):
         self.remind = remind
