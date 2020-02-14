@@ -89,7 +89,7 @@ class App:
 
     # запуск цикла
     def run(self):
-        print('[*] Запуск цикла')
+        print('[*] Цикл обработки сообщений запущен')
         while True:
             user_id = None
             # try:
