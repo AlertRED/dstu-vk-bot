@@ -10,6 +10,7 @@ vk_upload = VkUpload(vk)
 print('Успешно')
 app = App(vk, vk_upload, menues.MenuTree())
 
+
 if __name__ == '__main__':
     import app.models.models as orm_models
     import app.seeds.seeds as seeds
