@@ -14,7 +14,7 @@ class DistributionApp:
 
     # Возвращает ближайших по времени пользователей для отправки им расписания
     @staticmethod
-    def get_near_time_users():
+    def __get_near_time_users():
         while True:
             (min_time,), users = User.get_users_remind()
             if not min_time:
@@ -31,7 +31,7 @@ class DistributionApp:
     @staticmethod
     def run():
         while True:
-            min_time, users = DistributionApp.get_near_time_users()
+            min_time, users = DistributionApp.__get_near_time_users()
             if users:
                 delay_seconds = int((min_time - datetime.now()).total_seconds())
                 weekday = min_time.weekday()
