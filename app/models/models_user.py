@@ -52,7 +52,7 @@ class User(Base):
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-    answers = relationship("UserAnswer", uselist=False, back_populates="user")
+    answers = relationship("UserAnswer", uselist=True, back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
     reviews = relationship("Review", back_populates="user")
 

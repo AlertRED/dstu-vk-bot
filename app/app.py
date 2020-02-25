@@ -12,11 +12,13 @@ import threading
 
 class App:
 
-    def __init__(self, vk: VkApi, vk_upload: VkUpload, menus_tree: MenuTree, Controller, models):
-        self.colors = {TypeItem.DEFAULT: 'default',
+    __button_colors = {TypeItem.DEFAULT: 'default',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
                        TypeItem.SIMPLE: 'primary'}
+
+    def __init__(self, vk: VkApi, vk_upload: VkUpload, menus_tree: MenuTree, Controller, models):
+
         self.controller = Controller()
         self.vk = vk
         self.models = models
@@ -27,7 +29,8 @@ class App:
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
 
-    def get_button(self, label, color, payload=""):
+    @staticmethod
+    def __get_button_json(label, color, payload=""):
         return {
             "action": {
                 "type": "text",
@@ -37,18 +40,19 @@ class App:
             "color": color
         }
 
-    def get_keyboard(self, items: dict):
+    @staticmethod
+    def __get_keyboard(items: dict):
         buttons = []
         group = []
 
         for label, obj in items.items():
             limit = 30 // (len(group) + 1)
-            group.append((label, self.colors.get(obj[1], "default")))
+            group.append((label, App.__button_colors.get(obj[1], "default")))
             if any(map(lambda x: len(x[0]) > limit, group)) or (len(group) > 4):
-                buttons.append(list(map(lambda i: self.get_button(label=i[0], color=i[1]), group[:-1])))
+                buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group[:-1])))
                 group = group[-1:]
         else:
-            buttons.append(list(map(lambda i: self.get_button(label=i[0], color=i[1]), group)))
+            buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group)))
 
         keyboard = {
             "one_time": True,
@@ -57,7 +61,7 @@ class App:
         keyboard = json.dumps(keyboard, ensure_ascii=False).encode('utf-8')
         return str(keyboard.decode('utf-8'))
 
-    def send_message(self, answer, menu, id_user):
+    def __send_message(self, answer, menu, id_user):
         if answer:
             result = ""
             if answer[1]:
@@ -68,22 +72,22 @@ class App:
             self.vk.method("messages.send",
                            {"peer_id": id_user,
                             "message": answer[0],
-                            "keyboard": self.get_keyboard(menu.items) if menu and menu.items else None,
+                            "keyboard": self.__get_keyboard(menu.items) if menu and menu.items else None,
                             "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
             self.vk.method("messages.send",
                            {"peer_id": id_user, "message": menu.get_menu(),
-                            "keyboard": self.get_keyboard(menu.items),
+                            "keyboard": self.__get_keyboard(menu.items),
                             "random_id": random.randint(1, 2147483647)})
 
     # обработка сообщения
-    def handling_message(self, user_id: int, text_message: str):
+    def __handling_message(self, user_id: int, text_message: str):
         user_info = self.vk.method("users.get", values={"user_ids": user_id})
         user = self.models.User.create(user_id, user_info[0]['first_name'],
                            user_info[0]['last_name']).create_cache(self.menus.root.index).inc_request()
         answer, menu = self.controller.get_answer(text_message, user)
-        self.send_message(answer, menu, user_id)
+        self.__send_message(answer, menu, user_id)
 
     # запуск цикла
     def run(self):
@@ -100,7 +104,7 @@ class App:
                 logging.info("From id: %d, message: %s" % (user_id, text_message))
 
                 if not any(thread.name == str(user_id) for thread in threading.enumerate()):
-                    threading.Thread(target=self.handling_message, args=(user_id, text_message), name=user_id).start()
+                    threading.Thread(target=self.__handling_message, args=(user_id, text_message), name=user_id).start()
 
             # except Exception as E:
             #     Log.create(text=str(E), vk_id=user_id)
