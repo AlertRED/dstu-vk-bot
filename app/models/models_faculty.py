@@ -1,10 +1,7 @@
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import relationship
-from app.models.models import db, days_of_week_enum
-
+from app.models.orm_models import *
 
 # специальность
-class TypeSpecialty(db.Model):
+class TypeSpecialty(Base):
     __tablename__ = 'type_specialty'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -20,19 +17,19 @@ class TypeSpecialty(db.Model):
 
     @staticmethod
     def get_type_specialty(code):
-        return db.session.query(TypeSpecialty).filter_by(code=code).first()
+        return session.query(TypeSpecialty).filter_by(code=code).first()
 
     @staticmethod
     def create(code, type, duration):
         type_specialty = TypeSpecialty.get_type_specialty(code)
         if not type_specialty:
             type_specialty = TypeSpecialty(code=code, type=type, duration=duration)
-            db.session.add(type_specialty)
-            db.session.commit()
+            session.add(type_specialty)
+            session.commit()
         return type_specialty
 
 
-class Specialty(db.Model):
+class Specialty(Base):
     __tablename__ = 'specialty'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -50,15 +47,15 @@ class Specialty(db.Model):
 
     @staticmethod
     def get_specialty(name):
-        return db.session.query(Specialty).filter_by(name=name).first()
+        return session.query(Specialty).filter_by(name=name).first()
 
     @staticmethod
     def create(name, abbreviation):
         specialty = Specialty.get_specialty(name)
         if not specialty:
             specialty = Specialty(name=name, abbreviation=abbreviation)
-            db.session.add(specialty)
-            db.session.commit()
+            session.add(specialty)
+            session.commit()
         return specialty
 
     def add_type(self, code, type, duration):
@@ -70,7 +67,7 @@ class Specialty(db.Model):
 
 # кафедра
 
-class ManagerDepartment(db.Model):
+class ManagerDepartment(Base):
     __tablename__ = 'manager_department'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -86,7 +83,7 @@ class ManagerDepartment(db.Model):
 
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
-        return db.session.query(ManagerDepartment).filter_by(first_name=first_name, last_name=last_name,
+        return session.query(ManagerDepartment).filter_by(first_name=first_name, last_name=last_name,
                                                              patronymic=patronymic).first()
 
     @staticmethod
@@ -94,12 +91,12 @@ class ManagerDepartment(db.Model):
         manager = ManagerDepartment.get_manager(first_name, last_name, patronymic)
         if not manager:
             manager = ManagerDepartment(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.session.add(manager)
-            db.session.commit()
+            session.add(manager)
+            session.commit()
         return manager
 
 
-class ScheduleDepartment(db.Model):
+class ScheduleDepartment(Base):
     __tablename__ = 'schedule_department'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -118,24 +115,24 @@ class ScheduleDepartment(db.Model):
 
     def add_day_of_week(self, name):
         self.day_of_week = name
-        db.session.commit()
+        session.commit()
         return self
 
     @staticmethod
     def get_schedule(department, day_name):
-        return db.session.query(ScheduleDepartment).filter_by(department=department,
+        return session.query(ScheduleDepartment).filter_by(department=department,
                                                               day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
         schedule = ScheduleDepartment(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                       pause_end_time=pause_end_time)
-        db.session.add(schedule)
-        db.session.commit()
+        session.add(schedule)
+        session.commit()
         return schedule
 
 
-class Department(db.Model):
+class Department(Base):
     __tablename__ = 'department'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -162,14 +159,14 @@ class Department(db.Model):
     @staticmethod
     def get_department(name=None, abbreviation=None):
         if name:
-            return db.session.query(Department).filter_by(name=name).first()
-        return db.session.query(Department).filter_by(abbreviation=abbreviation).first()
+            return session.query(Department).filter_by(name=name).first()
+        return session.query(Department).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
     def all(faculty=None):
         if faculty:
-            return db.session.query(Department).filter_by(faculty=faculty).all()
-        return db.session.query(Department).filter_by().all()
+            return session.query(Department).filter_by(faculty=faculty).all()
+        return session.query(Department).filter_by().all()
 
     @staticmethod
     def create(name, abbreviation=None, cabinets=None, description=None, phones=None):
@@ -177,23 +174,23 @@ class Department(db.Model):
         if not department:
             department = Department(name=name, abbreviation=abbreviation, cabinets=cabinets, description=description,
                                     phones=phones)
-            db.session.add(department)
-            db.session.commit()
+            session.add(department)
+            session.commit()
         return department
 
     def add_manager(self, first_name, last_name, patronymic):
         self.manager = ManagerDepartment.create(first_name, last_name, patronymic)
-        db.session.commit()
+        session.commit()
         return self
 
     def add_faculty(self, faculty):
         self.faculty = faculty
-        db.session.commit()
+        session.commit()
         return self
 
     def add_place(self, place):
         self.place = place
-        db.session.commit()
+        session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):
@@ -206,7 +203,7 @@ class Department(db.Model):
 
 
 # факультет
-class ScheduleDeanOffice(db.Model):
+class ScheduleDeanOffice(Base):
     __tablename__ = 'schedule_dean_office'
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.Time)
@@ -225,24 +222,24 @@ class ScheduleDeanOffice(db.Model):
 
     def add_day_of_week(self, name):
         self.day_of_week = name
-        db.session.commit()
+        session.commit()
         return self
 
     @staticmethod
     def get_schedule(faculty, day_name):
-        return db.session.query(ScheduleDeanOffice).filter_by(faculty=faculty,
+        return session.query(ScheduleDeanOffice).filter_by(faculty=faculty,
                                                               day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
         schedule = ScheduleDeanOffice(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                       pause_end_time=pause_end_time)
-        db.session.add(schedule)
-        db.session.commit()
+        session.add(schedule)
+        session.commit()
         return schedule
 
 
-class Dean(db.Model):
+class Dean(Base):
     __tablename__ = 'dean'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -258,7 +255,7 @@ class Dean(db.Model):
 
     @staticmethod
     def get_dean(first_name, last_name, patronymic):
-        return db.session.query(Dean).filter_by(first_name=first_name, last_name=last_name,
+        return session.query(Dean).filter_by(first_name=first_name, last_name=last_name,
                                                 patronymic=patronymic).first()
 
     @staticmethod
@@ -266,12 +263,12 @@ class Dean(db.Model):
         dean = Dean.get_dean(first_name, last_name, patronymic)
         if not dean:
             dean = Dean(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.session.add(dean)
-            db.session.commit()
+            session.add(dean)
+            session.commit()
         return dean
 
 
-class Faculty(db.Model):
+class Faculty(Base):
     __tablename__ = 'faculty'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -294,14 +291,14 @@ class Faculty(db.Model):
 
     @staticmethod
     def all():
-        return db.session.query(Faculty).all()
+        return session.query(Faculty).all()
 
     @staticmethod
     def get_faculty(name=None, abbreviation=None):
         if name:
-            return db.session.query(Faculty).filter_by(name=name).first()
+            return session.query(Faculty).filter_by(name=name).first()
         elif abbreviation:
-            return db.session.query(Faculty).filter_by(abbreviation=abbreviation).first()
+            return session.query(Faculty).filter_by(abbreviation=abbreviation).first()
 
     @staticmethod
     def create(name, abbreviation, cabinet_dean, cabinet_dean_office, phones):
@@ -309,13 +306,13 @@ class Faculty(db.Model):
         if not faculty:
             faculty = Faculty(name=name, abbreviation=abbreviation, cabinet_dean=cabinet_dean,
                               cabinet_dean_office=cabinet_dean_office, phones=phones)
-            db.session.add(faculty)
-            db.session.commit()
+            session.add(faculty)
+            session.commit()
         return faculty
 
     def add_dean(self, last_name, first_name, patronymic):
         self.dean = Dean.create(first_name, last_name, patronymic)
-        db.session.commit()
+        session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):

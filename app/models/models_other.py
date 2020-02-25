@@ -1,8 +1,7 @@
-from datetime import datetime
-from app.models.models import db
+from app.models.orm_models import *
 
 
-class Log(db.Model):
+class Log(Base):
     __tablename__ = 'log'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -13,6 +12,6 @@ class Log(db.Model):
     @staticmethod
     def create(text, vk_id=None):
         log = Log(text=text, vk_id=vk_id)
-        db.session.add(log)
-        db.session.commit()
+        session.add(log)
+        session.commit()
         return log

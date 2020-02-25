@@ -2,7 +2,7 @@ from time import sleep
 
 from vk_api import VkApi
 
-from app.models.models import *
+from app.models.orm_models import *
 from datetime import datetime
 
 

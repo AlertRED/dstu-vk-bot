@@ -1,13 +1,8 @@
-from datetime import datetime, date, time, timedelta
-
-from sqlalchemy import func
-from sqlalchemy.orm import relationship
-from app.models.models import db, pairs_time, days_of_week
-from app.models.models_schedule import Group
+from app.models.orm_models import *
 
 
 # Отзывы
-class Review(db.Model):
+class Review(Base):
     __tablename__ = 'reviews'
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String)
@@ -18,7 +13,7 @@ class Review(db.Model):
 
     def set_resolved(self, resolved: bool):
         self.resolved = resolved
-        db.session.commit()
+        session.commit()
         return self
 
     def __repr__(self):
@@ -26,7 +21,7 @@ class Review(db.Model):
 
 
 # User
-class UserAnswer(db.Model):
+class UserAnswer(Base):
     __tablename__ = 'user_answers'
     id = db.Column(db.Integer, primary_key=True)
     answer = db.Column(db.String)
@@ -38,7 +33,7 @@ class UserAnswer(db.Model):
         return self.answer
 
 
-class User(db.Model):
+class User(Base):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
 
@@ -46,7 +41,9 @@ class User(db.Model):
     first_name = db.Column(db.String, nullable=False)
     last_name = db.Column(db.String, nullable=False)
     total_requests = db.Column(db.Integer, default=0)
-    group_name = db.Column(db.String)
+    group_id = db.Column(db.Integer, db.ForeignKey('group.id'))
+
+    group = relationship("Group", back_populates="users")
 
     remind = db.Column(db.Boolean, default=False, nullable=False)
     remind_date = db.Column(db.DateTime)
@@ -55,7 +52,7 @@ class User(db.Model):
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
-    answers = relationship("UserAnswer", back_populates="user")
+    answers = relationship("UserAnswer", uselist=False, back_populates="user")
     user_cache = relationship("UserCache", uselist=False, back_populates="user")
     reviews = relationship("Review", back_populates="user")
 
@@ -71,52 +68,52 @@ class User(db.Model):
                 offset_hours = pairs_time[schedule[0].number].hour - self.remind_offset // 60
                 offset_minutes = pairs_time[schedule[0].number].minute - self.remind_offset % 60
                 self.remind_date += timedelta(hours=offset_hours, minutes=offset_minutes)
-                db.session.commit()
+                session.commit()
                 break
         return self
 
-    def get_group(self) -> Group:
-        return Group.get_group(self.group_name)
+    def get_group(self):
+        return self.group
 
     @staticmethod
     def get_users_remind():
-        min_date = db.session.query(func.min(User.remind_date)).first()
-        users = db.session.query(User).filter_by(remind_date=min_date, remind=True).all()
+        min_date = session.query(func.min(User.remind_date)).first()
+        users = session.query(User).filter_by(remind_date=min_date, remind=True).all()
         return min_date, users
 
     def set_remind(self, remind: bool):
         self.remind = remind
-        db.session.commit()
+        session.commit()
         return self
 
     def inc_request(self, inc=1):
         self.total_requests += inc
-        db.session.commit()
+        session.commit()
         return self
 
     def add_review(self, message):
         self.reviews.append(Review(message=message))
-        db.session.commit()
+        session.commit()
         return self
 
     # не используется
     def add_answer(self, answer):
         self.answers.append(UserAnswer(answer=answer))
-        db.session.commit()
+        session.commit()
         return self
 
     def set_answers(self, answers: list):
         for answer in self.answers:
-            db.session.delete(answer)
-        db.session.commit()
+            session.delete(answer)
+        session.commit()
         for answer in answers:
             self.answers.append(UserAnswer(answer=answer))
-        db.session.commit()
+        session.commit()
         return self
 
     def clear_answers(self):
         self.answers = []
-        db.session.commit()
+        session.commit()
         return self
 
     def set_index(self, index: int):
@@ -133,7 +130,7 @@ class User(db.Model):
         self.last_name = last_name if last_name else self.last_name
         self.total_requests = total_requests if total_requests else self.total_requests
         self.group_name = group_name if group_name else self.group_name
-        db.session.commit()
+        session.commit()
         return self
 
     def create_cache(self, start_menu=None):
@@ -143,15 +140,15 @@ class User(db.Model):
 
     @staticmethod
     def get_user(vk_id):
-        return db.session.query(User).filter_by(vk_id=vk_id).first()
+        return session.query(User).filter_by(vk_id=vk_id).first()
 
     @staticmethod
     def create(vk_id, first_name, last_name):
         user = User.get_user(vk_id)
         if not user:
             user = User(vk_id, first_name=first_name, last_name=last_name)
-            db.session.add(user)
-            db.session.commit()
+            session.add(user)
+            session.commit()
         return user
 
     def __init__(self, vk_id: int, first_name: str, last_name: str):
@@ -160,7 +157,7 @@ class User(db.Model):
         self.last_name = last_name
 
 
-class UserCache(db.Model):
+class UserCache(Base):
     __tablename__ = 'user_cache'
     id = db.Column(db.Integer, primary_key=True)
     current_menu = db.Column(db.String)
@@ -175,5 +172,5 @@ class UserCache(db.Model):
     def update(self, current_menu=None, special_index=None):
         self.current_menu = current_menu if current_menu is not None else self.current_menu
         self.special_index = special_index if special_index is not None else self.special_index
-        db.session.commit()
+        session.commit()
         return self

@@ -1,6 +1,17 @@
+from flask import Flask
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from config.conf import Config
 
-import web_app.admin
-from web_app.flask_app import flask_app
+
+flask_app = Flask(__name__)
+flask_app.config.from_object(Config)
+db = SQLAlchemy(flask_app)
+migrate = Migrate(flask_app, db)
+
+from app.models import orm_models
+
 
 if __name__ == '__main__':
+    from web_app.admin import *
     flask_app.run()

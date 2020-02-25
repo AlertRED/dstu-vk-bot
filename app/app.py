@@ -5,8 +5,6 @@ from vk_api import VkApi, VkUpload
 
 from app.menues import MenuTree
 from app.models_menu import TypeItem
-from app.controller import Controller
-from app.models.models import User, Log
 import random
 import logging
 import threading
@@ -14,17 +12,17 @@ import threading
 
 class App:
 
-    def __init__(self, vk: VkApi, vk_upload: VkUpload, menues_tree: MenuTree):
+    def __init__(self, vk: VkApi, vk_upload: VkUpload, menus_tree: MenuTree, Controller, models):
         self.colors = {TypeItem.DEFAULT: 'default',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
                        TypeItem.SIMPLE: 'primary'}
-        # self.userDAO = userDAO()
         self.controller = Controller()
         self.vk = vk
+        self.models = models
         self.vk_upload = vk_upload
         self.images_dir = os.path.join(os.getcwd(), 'images')
-        self.menues = menues_tree
+        self.menus = menus_tree
 
         logging.basicConfig(filename="config/history.log", level=logging.INFO, format='%(asctime)s %(message)s',
                             datefmt='[%m-%d-%Y %I:%M:%S]')
@@ -82,8 +80,8 @@ class App:
     # обработка сообщения
     def handling_message(self, user_id: int, text_message: str):
         user_info = self.vk.method("users.get", values={"user_ids": user_id})
-        user = User.create(user_id, user_info[0]['first_name'],
-                           user_info[0]['last_name']).create_cache(self.menues.root.index).inc_request()
+        user = self.models.User.create(user_id, user_info[0]['first_name'],
+                           user_info[0]['last_name']).create_cache(self.menus.root.index).inc_request()
         answer, menu = self.controller.get_answer(text_message, user)
         self.send_message(answer, menu, user_id)
 

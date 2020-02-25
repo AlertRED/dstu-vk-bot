@@ -1,9 +1,7 @@
-from sqlalchemy.dialects.postgresql import ARRAY
-from sqlalchemy.orm import relationship
-from app.models.models import db, days_of_week_enum
+from app.models.orm_models import *
 
 
-class TypePlace(db.Model):
+class TypePlace(Base):
     __tablename__ = 'type_place'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False)
@@ -11,7 +9,7 @@ class TypePlace(db.Model):
 
     @staticmethod
     def get_type_place(name):
-        return db.session.query(TypePlace).filter_by(name=name).first()
+        return session.query(TypePlace).filter_by(name=name).first()
 
     @staticmethod
     def create(name):
@@ -24,7 +22,7 @@ class TypePlace(db.Model):
         return self.name
 
 
-class Place(db.Model):
+class Place(Base):
     __tablename__ = 'place'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable=False, unique=True)
@@ -47,20 +45,20 @@ class Place(db.Model):
     @staticmethod
     def get_places_by_type(type_name):
         type_place = TypePlace.get_type_place(type_name)
-        places = db.session.query(Place).filter_by(type_place=type_place).all()
+        places = session.query(Place).filter_by(type_place=type_place).all()
         return places
 
     @staticmethod
     def get_place(name):
-        return db.session.query(Place).filter_by(name=name).first()
+        return session.query(Place).filter_by(name=name).first()
 
     @staticmethod
     def create(name, map_url, img_name, adress):
         place = Place.get_place(name)
         if not place:
             place = Place(name=name, map_url=map_url, img_name=img_name, adress=adress)
-            db.session.add(place)
-            db.session.commit()
+            session.add(place)
+            session.commit()
         return place
 
     def update(self, name=None, map_url=None, img_name=None, adress=None, type_place=None, faculties=None,
@@ -75,24 +73,24 @@ class Place(db.Model):
         self.schedules = schedules if schedules else self.schedules
         self.managers = managers if managers else self.managers
         self.phones = phones if phones else self.phones
-        db.session.commit()
+        session.commit()
         return self
 
     def add_manager(self, first_name, last_name, patronymic, post_name):
         self.managers.append(ManagerPlace.create(first_name, last_name, patronymic).add_post(post_name))
-        db.session.commit()  # не было не тестилось
+        session.commit()  # не было не тестилось
         return self
 
     def set_phones(self, phones: list):
         self.phones.clear()
         for phone in phones:
             self.phones.append(phone)
-        db.session.commit()
+        session.commit()
         return self
 
     def add_type_place(self, type_name):
         self.type_place = TypePlace.create(type_name)
-        db.session.commit()
+        session.commit()
         return self
 
     def add_schedule(self, day_name, start_time, end_time, pause_start_time=None, pause_end_time=None):
@@ -100,11 +98,11 @@ class Place(db.Model):
         if not schedule:
             self.schedules.append(
                 SchedulePlace.create(start_time, end_time, pause_start_time, pause_end_time).add_day_of_week(day_name))
-        db.session.commit()
+        session.commit()
         return self
 
 
-class SchedulePlace(db.Model):
+class SchedulePlace(Base):
     __tablename__ = 'schedule_place'
     id = db.Column(db.Integer, primary_key=True)
     start_time = db.Column(db.Time)
@@ -122,24 +120,24 @@ class SchedulePlace(db.Model):
 
     def add_day_of_week(self, name):
         self.day_of_week = name
-        db.session.commit()
+        session.commit()
         return self
 
     @staticmethod
     def get_schedule(place, day_name):
-        return db.session.query(SchedulePlace).filter_by(place=place,
+        return session.query(SchedulePlace).filter_by(place=place,
                                                          day_of_week=day_name).first()
 
     @staticmethod
     def create(start_time, end_time, pause_start_time, pause_end_time):
         schedule = SchedulePlace(start_time=start_time, end_time=end_time, pause_start_time=pause_start_time,
                                  pause_end_time=pause_end_time)
-        db.session.add(schedule)
-        db.session.commit()
+        session.add(schedule)
+        session.commit()
         return schedule
 
 
-class ManagerPlace(db.Model):
+class ManagerPlace(Base):
     __tablename__ = 'manager_place'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String, nullable=False)
@@ -157,7 +155,7 @@ class ManagerPlace(db.Model):
 
     @staticmethod
     def get_manager(first_name, last_name, patronymic):
-        return db.session.query(ManagerPlace).filter_by(first_name=first_name, last_name=last_name,
+        return session.query(ManagerPlace).filter_by(first_name=first_name, last_name=last_name,
                                                         patronymic=patronymic).first()
 
     @staticmethod
@@ -165,8 +163,8 @@ class ManagerPlace(db.Model):
         manager = ManagerPlace.get_manager(first_name, last_name, patronymic)
         if not manager:
             manager = ManagerPlace(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.session.add(manager)
-            db.session.commit()
+            session.add(manager)
+            session.commit()
         return manager
 
     def add_post(self, post_name):
@@ -174,7 +172,7 @@ class ManagerPlace(db.Model):
         return self
 
 
-class Post(db.Model):
+class Post(Base):
     __tablename__ = 'post'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -185,13 +183,13 @@ class Post(db.Model):
 
     @staticmethod
     def get_post(name):
-        return db.session.query(Post).filter_by(name=name).first()
+        return session.query(Post).filter_by(name=name).first()
 
     @staticmethod
     def create(name):
         post = Post.get_post(name)
         if not post:
             post = Post(name=name)
-            db.session.add(post)
-            db.session.commit()
+            session.add(post)
+            session.commit()
         return post

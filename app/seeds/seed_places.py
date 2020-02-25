@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from app.models.models import db, Place
+from app.models.orm_models import db, Place
 
 db = Session(bind=db)
 

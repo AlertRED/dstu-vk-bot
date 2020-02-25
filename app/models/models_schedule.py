@@ -1,10 +1,7 @@
-from datetime import datetime
-from sqlalchemy.orm import relationship
-from app.models.models import db, days_of_week_enum
-
+from app.models.orm_models import *
 
 # Группа
-class Group(db.Model):
+class Group(Base):
     __tablename__ = 'group'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -15,6 +12,9 @@ class Group(db.Model):
     created_date = db.Column(db.DateTime, index=True, default=datetime.utcnow)
     update_date = db.Column(db.DateTime, onupdate=datetime.utcnow)
 
+    __SKIP = object()
+
+    users = relationship("User", back_populates="group")
     subjects = relationship("Subject", back_populates="group")
 
     def __repr__(self):
@@ -22,20 +22,20 @@ class Group(db.Model):
 
     @staticmethod
     def get_group(name):
-        return db.session.query(Group).filter_by(name=name).first()
+        return session.query(Group).filter_by(name=name).first()
 
     @staticmethod
     def create(name, year, number_by_site, semester):
         group = Group.get_group(name)
         if not group:
             group = Group(name=name, year=year, number_by_site=number_by_site, semester=semester)
-            db.session.add(group)
-            db.session.commit()
+            session.add(group)
+            session.commit()
         return group
 
     def add_subject(self, subject):
         self.subjects.append(subject)
-        db.session.commit()
+        session.commit()
         return self
 
     def get_schedule(self, day=None, week=None, semester=None, number=None) -> list:
@@ -47,7 +47,7 @@ class Group(db.Model):
 
 
 # Преподаватель
-class Teacher(db.Model):
+class Teacher(Base):
     __tablename__ = 'teacher'
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String)
@@ -61,7 +61,7 @@ class Teacher(db.Model):
 
     @staticmethod
     def get_teacher(first_name, last_name, patronymic):
-        return db.session.query(Teacher).filter_by(first_name=first_name, last_name=last_name,
+        return session.query(Teacher).filter_by(first_name=first_name, last_name=last_name,
                                                    patronymic=patronymic).first()
 
     @staticmethod
@@ -69,13 +69,13 @@ class Teacher(db.Model):
         teacher = Teacher.get_teacher(first_name, last_name, patronymic)
         if not teacher:
             teacher = Teacher(first_name=first_name, last_name=last_name, patronymic=patronymic)
-            db.session.add(teacher)
-            db.session.commit()
+            session.add(teacher)
+            session.commit()
         return teacher
 
 
 # Предмет в расписании
-class Subject(db.Model):
+class Subject(Base):
     __tablename__ = 'subject'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
@@ -97,7 +97,7 @@ class Subject(db.Model):
 
     @staticmethod
     def get_subject(name, number, week, semester, day_of_week):
-        return db.session.query(Subject).filter_by(name=name, number=number, week=week, semester=semester,
+        return session.query(Subject).filter_by(name=name, number=number, week=week, semester=semester,
                                                    day_of_week=day_of_week).first()
 
     @staticmethod
@@ -105,12 +105,12 @@ class Subject(db.Model):
         subject = Subject.get_subject(name, number, week, semester, day_of_week)
         if not subject:
             subject = Subject(name=name, number=number, week=week, semester=semester, day_of_week=day_of_week)
-            db.session.add(subject)
-            db.session.commit()
+            session.add(subject)
+            session.commit()
         return subject
 
     def set_teacher(self, first_name, last_name, patronymic):
         teacher = Teacher.create(first_name=first_name, last_name=last_name, patronymic=patronymic)
         self.teacher = teacher
-        db.session.commit()
+        session.commit()
         return self

@@ -1,9 +1,21 @@
-import web_app.flask_app as flask_app
-from datetime import datetime, date, time
+from datetime import datetime, date, time, timedelta
+from sqlalchemy import create_engine, Enum
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import func
+from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
+import sqlalchemy as db
+from sqlalchemy.orm import sessionmaker
 
-db = flask_app.db
+
+engine = create_engine('postgresql://postgres:1234@127.0.0.1/dstubot')
+Session = sessionmaker(bind=engine)
+session = Session()
+
+Base = declarative_base()
+
 days_of_week = ('пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс')
-days_of_week_enum = db.Enum(*days_of_week, name="days_of_week")
+days_of_week_enum = Enum(*days_of_week, name="days_of_week")
 pairs_time = (time(8, 30), time(10, 15), time(12, 00), time(14, 15), time(16, 00), time(17, 45), time(19, 30))
 
 
@@ -27,4 +39,4 @@ from app.models.models_other import *
 from app.models.models_schedule import *
 
 # Создание таблиц
-db.Model.metadata.create_all(db.engine)
+Base.metadata.create_all(engine)

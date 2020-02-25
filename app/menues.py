@@ -1,4 +1,4 @@
-import app.models.models as models
+import app.models.orm_models as models
 from app.models.models_schedule import Group
 from app.models_menu import Menu
 from app import answer_functions as spec_foo
