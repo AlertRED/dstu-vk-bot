@@ -7,8 +7,10 @@ from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
 
+from config.conf import Config
 
-engine = create_engine('postgresql://postgres:1234@127.0.0.1/dstubot')
+
+engine = create_engine(Config.DATABASE)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -38,5 +40,5 @@ from app.models.models_place import *
 from app.models.models_other import *
 from app.models.models_schedule import *
 
-# Создание таблиц
+# Создание таблиц если их еще нет в базе
 Base.metadata.create_all(engine)
