@@ -14,5 +14,6 @@ import app.models.orm_models as models
 app = App(vk, vk_upload, menues.MenuTree(), Controller, models)
 
 
+
 if __name__ == '__main__':
     app.run()
