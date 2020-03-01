@@ -36,9 +36,12 @@ class DistributionApp:
                 delay_seconds = int((min_time - datetime.now()).total_seconds())
                 weekday = min_time.weekday()
                 for i, user in enumerate(users):
-                    print(user.get_group().get_schedule(day=days_of_week[weekday], week=current_week(),
-                                                        semester=1)) #now_semester()
+                    # print(user.get_group().get_schedule(day=days_of_week[weekday], week=current_week(),
+                    #                                     semester=1)) #now_semester()
                     print(user)
+                    print(user.group.name)
+                    print(user.remind_date)
+                    print(days_of_week[weekday])
                     user.refresh_nearest_remind()
                 break
 
