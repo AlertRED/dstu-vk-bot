@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from config.conf import Config
+from config.conf import DevelopmentConfig as Config
 
 
 flask_app = Flask(__name__)
