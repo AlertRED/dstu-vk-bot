@@ -3,7 +3,7 @@ import os
 
 from vk_api import VkApi, VkUpload
 
-from app.menues import MenuTree
+from app.menus import MenuTree
 from app.models_menu import TypeItem
 import random
 import logging
