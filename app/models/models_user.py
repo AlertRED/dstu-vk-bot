@@ -1,4 +1,5 @@
-from app.models.orm_models import *
+from app.models.models_DB import *
+
 
 
 # Отзывы
@@ -64,10 +65,10 @@ class User(Base):
         for i in range(0 + date_now.weekday(), 13 + date_now.weekday()):
             schedule = self.get_group().get_schedule(days_of_week[i % 7], i // 7)
             if schedule:
-                self.remind_date = datetime(date_now.year, date_now.month, date_now.day + (i - date_now.weekday()))
+                self.remind_date = datetime(date_now.year, date_now.month, date_now.day)
                 offset_hours = pairs_time[schedule[0].number].hour - self.remind_offset // 60
                 offset_minutes = pairs_time[schedule[0].number].minute - self.remind_offset % 60
-                self.remind_date += timedelta(hours=offset_hours, minutes=offset_minutes)
+                self.remind_date += timedelta(days=i - date_now.weekday(), hours=offset_hours, minutes=offset_minutes)
                 session.commit()
                 break
         return self
@@ -129,7 +130,7 @@ class User(Base):
         self.first_name = first_name if first_name else self.first_name
         self.last_name = last_name if last_name else self.last_name
         self.total_requests = total_requests if total_requests else self.total_requests
-        self.group_name = group_name if group_name else self.group_name
+        self.group = Group.get_group(group_name)
         session.commit()
         return self
 

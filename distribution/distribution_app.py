@@ -2,7 +2,7 @@ from time import sleep
 
 from vk_api import VkApi
 
-from app.models.orm_models import *
+from app.models.models_DB import *
 from datetime import datetime
 
 
@@ -27,7 +27,7 @@ class DistributionApp:
                     user.refresh_nearest_remind()
         return min_time, users
 
-    # Осправляет сообщения ближайшим по времени пользователям с их расписанием и обновляет их время
+    # Отравляет сообщения ближайшим по времени пользователям с их расписанием и обновляет их время
     @staticmethod
     def run():
         while True:

@@ -1,4 +1,4 @@
-from app.models.orm_models import *
+from app.models.models_DB import *
 
 
 class Log(Base):

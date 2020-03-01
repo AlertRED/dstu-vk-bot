@@ -6,11 +6,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import ARRAY
 import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker
-
 from config.conf import Config
 
 
-engine = create_engine(Config.DATABASE)
+engine = create_engine(Config.SQLALCHEMY_DATABASE_URI)
 Session = sessionmaker(bind=engine)
 session = Session()
 
@@ -33,12 +32,12 @@ def current_week():
     days = (b - a).days + offset
     return 1 if ((days // 7) % 2 == 0) else 2
 
-
 from app.models.models_user import *
 from app.models.models_faculty import *
 from app.models.models_place import *
 from app.models.models_other import *
 from app.models.models_schedule import *
+
 
 # Создание таблиц если их еще нет в базе
 Base.metadata.create_all(engine)

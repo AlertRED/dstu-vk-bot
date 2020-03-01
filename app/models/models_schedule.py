@@ -1,4 +1,5 @@
-from app.models.orm_models import *
+from app.models.models_DB import *
+
 
 # Группа
 class Group(Base):

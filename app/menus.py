@@ -1,12 +1,6 @@
-import app.models.orm_models as models
-from app.models.models_schedule import Group
+import app.models.models_DB as models
 from app.models_menu import Menu
 from app import answer_functions as spec_foo
-
-User = models.User
-Place = models.Place
-Department = models.Department
-Faculty = models.Faculty
 
 
 class MenuTree:
@@ -87,10 +81,10 @@ class MenuTree:
                                                                                   'Например ВПР41 или вПр-41, как угодно :)',
                                                                                   None)],
                                             self.save_group,
-                                            prepare={'condition': lambda *args, **kwargs: User.get_user(
+                                            prepare={'condition': lambda *args, **kwargs: models.User.get_user(
                                                 kwargs['vk_id']).group_name,
                                                      'method': lambda *args, **kwargs: self.get_schedule_of_group(
-                                                         list_answers=[User.get_user(
+                                                         list_answers=[models.User.get_user(
                                                              kwargs['vk_id']).group_name])})
 
         self.schedule_menu.add_special_item('Расписание группы', "Расписание группы",
@@ -128,13 +122,13 @@ class MenuTree:
         self.root.add_basic_item("О Боте", "", spec_foo.about_me)
 
     def save_group(self, *args, **kwargs):
-        if len(kwargs['list_answers']) > 0 and Group.get_group(kwargs['list_answers'][0]):
-            User.get_user(kwargs['vk_id']).update(group_name=kwargs['list_answers'][0])
+        if len(kwargs['list_answers']) > 0 and models.Group.get_group(kwargs['list_answers'][0]):
+            models.User.get_user(kwargs['vk_id']).update(group_name=kwargs['list_answers'][0])
             return 'Я запомнил вашу группу. Поменять ее можно в настройках.', None
         return 'Я не знаю такую группу', None
 
     def get_schedule_of_group(self, *args, **kwargs):
-        group = Group.get_group(kwargs['list_answers'][0])
+        group = models.Group.get_group(kwargs['list_answers'][0])
         days = {'Понедельник': 'пн',
                 'Вторник': 'вт',
                 'Среда': 'ср',
@@ -162,12 +156,12 @@ class MenuTree:
         return 'Группа не найдена', None
 
     def add_sentence(self, *args, **kwargs):
-        User.get_user(kwargs['vk_id']).add_review(kwargs['list_answers'][0])
+        models.User.get_user(kwargs['vk_id']).add_review(kwargs['list_answers'][0])
         return 'Спасибо за отзыв😊', None
 
     ## формат вывода
     def get_format_place(self, name):
-        place = Place.get_place(name)
+        place = models.Place.get_place(name)
         if not place:
             return 'Извините, запрашевоемое место еще не добавлено'
         result = "Название: " + place.name + "\n"
@@ -187,7 +181,7 @@ class MenuTree:
         return result, place.img_name
 
     def get_format_faculty(self, name=None, abbreviation=None):
-        faculty = Faculty.get_faculty(name, abbreviation)
+        faculty = models.Faculty.get_faculty(name, abbreviation)
         if not faculty:
             return 'Извините, запрашевоемое место еще не добавлено', None
         result = "Название: " + faculty.name + "\n"
@@ -209,7 +203,7 @@ class MenuTree:
         return result, None
 
     def get_format_department(self, name=None, abbreviation=None):
-        department = Department.get_department(name, abbreviation)
+        department = models.Department.get_department(name, abbreviation)
         if not department:
             return 'Извините, запрашевоемое место еще не добавлено', None
         result = "Название: " + department.name + "\n"
@@ -232,14 +226,14 @@ class MenuTree:
     ## генераторы меню
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)
-        for place in Place.get_places_by_type(place_type):
+        for place in models.Place.get_places_by_type(place_type):
             menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
         return menu
 
     def get_faculty_menu(self, button_name: str):
         menu = Menu(button_name)
 
-        for faculty in Faculty.all():
+        for faculty in models.Faculty.all():
             menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
             menu_faculty.add_basic_item('Информация о факультете', '', self.get_faculty_lambda(faculty))
 
@@ -255,9 +249,9 @@ class MenuTree:
         # print(menu.items.get('ИиВТ')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
         return menu
 
-    def get_department_menu(self, button_name: str, faculty: Faculty = None):
+    def get_department_menu(self, button_name: str, faculty: models.Faculty = None):
         menu = Menu(button_name)
-        for department in Department.all(faculty):
+        for department in models.Department.all(faculty):
             menu_department = Menu(department.abbreviation if department.abbreviation else department.name)
             menu_department.add_basic_item('Информация о кафедре', '', self.get_department_lambda(department))
             menu.add_menu_item(menu_department.name, menu_department)
