@@ -32,12 +32,24 @@ def current_week():
     days = (b - a).days + offset
     return 1 if ((days // 7) % 2 == 0) else 2
 
+
+from app.models.models_other import *
+
+
+def change_notify(foo):
+    def wrapper():
+        Meta.get_first('change_db_notify').update(boolean=True)
+        func()
+    return wrapper
+
+
+Meta.create('change_db_notify')
+
 from app.models.models_user import *
 from app.models.models_faculty import *
 from app.models.models_place import *
-from app.models.models_other import *
 from app.models.models_schedule import *
 
-
 # Создание таблиц если их еще нет в базе
-Base.metadata.create_all(engine)
+# Base.metadata.create_all(engine)
+

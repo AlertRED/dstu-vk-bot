@@ -1,7 +1,6 @@
 from app.models.models_DB import *
 
 
-
 # Отзывы
 class Review(Base):
     __tablename__ = 'reviews'
@@ -82,6 +81,7 @@ class User(Base):
         users = session.query(User).filter_by(remind_date=min_date, remind=True).all()
         return min_date, users
 
+    @change_notify
     def set_remind(self, remind: bool):
         self.remind = remind
         session.commit()

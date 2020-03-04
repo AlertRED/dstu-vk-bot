@@ -34,6 +34,7 @@ class Group(Base):
             session.commit()
         return group
 
+    @change_notify
     def add_subject(self, subject):
         self.subjects.append(subject)
         session.commit()

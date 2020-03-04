@@ -32,7 +32,9 @@ class NotifyApp:
 
     @staticmethod
     def __is_changed_db():
-        return True
+        param = Meta.get_first('change_db_notify')
+        return param and param.get_and_change_boolean(boolean=False)
+
 
     @staticmethod
     def __send_notify(users, time: datetime):

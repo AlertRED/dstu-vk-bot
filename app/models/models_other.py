@@ -29,7 +29,7 @@ class Meta(Base):
     def create(name_param):
         param = Meta.get_first(name_param)
         if not param:
-            param = Meta(name_param)
+            param = Meta(name_param=name_param)
             session.add(param)
             session.commit()
         return param
@@ -38,9 +38,15 @@ class Meta(Base):
     def get_first(name_param):
         return session.query(Meta).filter_by(name_param=name_param).first()
 
-    def change(self, boolean=None, integer=None):
+    def update(self, boolean=None, integer=None):
         if boolean is not None:
             self.boolean = boolean
         if integer is not None:
             self.integer = integer
         session.commit()
+
+    def get_and_change_boolean(self, new_status):
+        result = self.boolean
+        self.update(boolean=new_status)
+        return result
+
