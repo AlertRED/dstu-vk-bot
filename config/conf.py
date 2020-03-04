@@ -22,7 +22,4 @@ class ProductionConfig(BaseConfig):
 
 Config = DevelopmentConfig
 
-#uTJzWrzTaWkqARVISptC
-
-
 
