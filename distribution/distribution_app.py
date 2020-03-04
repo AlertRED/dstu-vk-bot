@@ -54,16 +54,14 @@ class NotifyApp:
         while True:
             time, users = NotifyApp.__get_near_time_users()
             delay_seconds = int((time - datetime.now()).total_seconds())
-
             while delay_seconds > 2:
+                sleep(2)
                 if NotifyApp.__is_changed_db():
                     time, users = NotifyApp.__get_near_time_users()
                 delay_seconds = int((time - datetime.now()).total_seconds())
-            else:
-                if not users:
-                    continue
 
-            NotifyApp.__send_notify(users, time)
+            if users:
+                NotifyApp.__send_notify(users, time)
 
 
 if __name__ == '__main__':
