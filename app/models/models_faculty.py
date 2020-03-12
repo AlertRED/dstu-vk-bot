@@ -290,8 +290,8 @@ class Faculty(Base):
         return self.name
 
     @staticmethod
-    def all():
-        return session.query(Faculty).all()
+    def get_faculties(skip=0, limit=None):
+        return session.query(Faculty).offset(skip).limit(limit).all()
 
     @staticmethod
     def get_faculty(name=None, abbreviation=None):
