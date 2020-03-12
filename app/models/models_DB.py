@@ -37,9 +37,9 @@ from app.models.models_other import *
 
 
 def change_notify(foo):
-    def wrapper():
+    def wrapper(*args, **kwargs):
         Meta.get_first('change_db_notify').update(boolean=True)
-        func()
+        return foo(*args, **kwargs)
     return wrapper
 
 
