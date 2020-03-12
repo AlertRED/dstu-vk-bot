@@ -1,4 +1,5 @@
 from app.models.models_DB import *
+import app.models.models_DB as models_db
 
 
 # Отзывы
@@ -60,16 +61,18 @@ class User(Base):
         return '%s %s' % (self.last_name, self.first_name)
 
     def refresh_nearest_remind(self):
-        date_now = datetime.now()
-        for i in range(0 + date_now.weekday(), 13 + date_now.weekday()):
-            schedule = self.get_group().get_schedule(days_of_week[i % 7], i // 7)
+        current_date = datetime.now()
+        current_weekday = current_date.weekday()
+        current_week = models_db.current_week()
+        for i in range(1 + current_weekday, 14 + current_weekday):
+            schedule = self.get_group().get_schedule(day=days_of_week[i % 7],
+                                                     week=2 - (((i // 7) % 2 + current_week) % 2))
             if schedule:
-                self.remind_date = datetime(date_now.year, date_now.month, date_now.day)
+                self.remind_date = datetime(current_date.year, current_date.month, current_date.day)
                 offset_hours = pairs_time[schedule[0].number].hour - self.remind_offset // 60
                 offset_minutes = pairs_time[schedule[0].number].minute - self.remind_offset % 60
-                self.remind_date += timedelta(days=i - date_now.weekday(), hours=offset_hours, minutes=offset_minutes)
+                self.remind_date += timedelta(days=i - current_weekday, hours=offset_hours, minutes=offset_minutes)
                 session.commit()
-                break
         return self
 
     def get_group(self):
