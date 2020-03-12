@@ -5,7 +5,7 @@ class TypeItem(Enum):
     BACK = 1
     MENU = 2
     SIMPLE = 3
-    DEFAULT = 4
+    GATE = 4
 
 
 class Item:
@@ -42,8 +42,11 @@ class Menu(Item):
         return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
                                                                                          request=request)
 
-    def _add_item(self, index, item_of_menu, type_item: TypeItem = TypeItem.DEFAULT):
+    def _add_item(self, index, item_of_menu, type_item: TypeItem = TypeItem.GATE):
         self.items[index] = item_of_menu, type_item
+        if self.items.get('Назад'):
+            self.items['Назад'] = self.items.pop('Назад')
+
 
     # добавить пункт меню
     def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
