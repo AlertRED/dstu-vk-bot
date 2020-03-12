@@ -7,9 +7,12 @@ class Controller:
     @staticmethod
     def __parse_answer(data_answer: dict, user: User, current_menu: Menu):
         answer = data_answer.get("answer", None)
-        current_menu = data_answer.get("new_menu", current_menu)
+        new_menu = data_answer.get("new_menu", None)
         special_answers = data_answer.get("special_answers", [])
         special_index = data_answer.get("special_index", None)
+
+        if new_menu is not None:
+            current_menu = new_menu
 
         user.set_index(special_index).set_menu(current_menu.index).set_answers(special_answers)
         return answer, current_menu
