@@ -64,11 +64,13 @@ class Menu(Item):
             special.add_back_point(special.parent, back_point_text)
 
     # добавить вложенное меню
-    def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU):
+    def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU, is_heir=True):
         self._add_item(index, menu, type_item)
-        menu.parent = self
-        if is_back:
-            menu.add_back_point(menu.parent, back_point_text)
+
+        if is_heir:
+            menu.parent = self
+            if is_back:
+                menu.add_back_point(menu.parent, back_point_text)
 
     def add_back_point(self, menu, back_point_text: str):
         name_back_button = back_point_text if back_point_text else menu.name
