@@ -1,11 +1,13 @@
 import app.models.models_DB as models
-from app.models_menu import Menu
+from app.models_menu import Menu, TypeItem
 from app import answer_functions as spec_foo
 
 
 class MenuTree:
 
     def __init__(self):
+        self.max_items_per_slide = 7 * 4
+
         self.root = Menu("Главное меню")
 
         # ДГТУ и АСА
@@ -95,7 +97,7 @@ class MenuTree:
         # Факультеты и кафедры
 
         self.faculties_and_departments_menu = Menu('Факультеты и кафедры')
-        self.faculties_menu = self.get_faculty_menu('Факультеты')
+        self.faculties_menu = self.get_faculty_menu('Факультеты', over_back=self.root)
         self.departments_menu = self.get_department_menu('Кафедры')
         self.specialty = Menu('Направления')
 
@@ -110,7 +112,6 @@ class MenuTree:
                                               None)],
                                             self.save_group)
 
-
         self.root.add_menu_item(self.places_menu.name, self.places_menu)
         self.root.add_menu_item(self.schedule_menu.name, self.schedule_menu)
         self.root.add_menu_item(self.faculties_and_departments_menu.name, self.faculties_and_departments_menu)
@@ -120,6 +121,50 @@ class MenuTree:
                                    [('Введите ваше предложение:', None)],
                                    self.add_sentence)
         self.root.add_basic_item("О Боте", "", spec_foo.about_me)
+
+    @staticmethod
+    def distribution_menu_items(items):
+        row_len = 0
+        result = 0
+        results = []
+        count_items_in_row = 0
+        count_rows = 1
+        limit_row_len = 30
+        limit_items_in_row = 4
+        limit_rows = 5
+        for item in items:
+            row_len += len(item)
+            count_items_in_row += 1
+            result += 1
+            if not ((count_items_in_row == 0) or (
+                    row_len + len(item) < limit_row_len and count_items_in_row < limit_items_in_row)):
+                count_items_in_row = 0
+                row_len = 0
+                count_rows += 1
+                if count_rows == limit_rows:
+                    count_rows = 1
+                    results.append(result)
+        return results
+
+    def pagination(foo):
+        def wrapper(*args, **kwargs):
+            menu = foo(*args, **kwargs)
+            slices = MenuTree.distribution_menu_items(menu.items)
+            count = 0
+            next_menu = root = Menu(menu.name)
+            over_back = kwargs.get('over_back')
+            for i, item in enumerate(menu.items.items()):
+                if count < len(slices) and i == slices[count]:
+                    count += 1
+                    a = Menu('Далее')
+                    if over_back:
+                        next_menu.add_menu_item(over_back.name, over_back, type_item=TypeItem.GATE, is_heir=False)
+                    next_menu.add_menu_item(a.name, a, type_item=TypeItem.GATE)
+                    next_menu = a
+                next_menu.add_menu_item(index=item[0], menu=item[1][0], is_heir=item[1][1])
+            next_menu.add_menu_item(over_back.name, over_back, type_item=TypeItem.GATE, is_heir=False)
+            return root
+        return wrapper
 
     def save_group(self, *args, **kwargs):
         if len(kwargs['list_answers']) > 0 and models.Group.get_group(kwargs['list_answers'][0]):
@@ -223,30 +268,37 @@ class MenuTree:
                 for i in department.schedules) + "\n"
         return result, None
 
-    ## генераторы меню
+    # генераторы меню
     def get_place_menu(self, button_name: str, place_type: str):
         menu = Menu(button_name)
         for place in models.Place.get_places_by_type(place_type):
             menu.add_basic_item(place.name, "", lambda **kwargs: self.get_format_place(kwargs['request']))
         return menu
 
-    def get_faculty_menu(self, button_name: str):
+    @pagination
+    def get_faculty_menu(self, button_name: str, over_back=None):
         menu = Menu(button_name)
 
-        for faculty in models.Faculty.all():
-            menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
-            menu_faculty.add_basic_item('Информация о факультете', '', self.get_faculty_lambda(faculty))
+        faculties = models.Faculty.get_faculties()
+        if faculties:
+            # limit = limit_foo([i.abbreviation if i.abbreviation else i.name for i in faculties])
+            for faculty in faculties:
+                menu_faculty = Menu(faculty.abbreviation if faculty.abbreviation else faculty.name)
+                menu_faculty.add_basic_item('Информация о факультете', '', self.get_faculty_lambda(faculty))
 
-            departments_of_faculty = self.get_department_menu('Кафедры факультета', faculty)
-            menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
+                departments_of_faculty = self.get_department_menu('Кафедры факультета', faculty)
+                menu_faculty.add_menu_item(departments_of_faculty.name, departments_of_faculty)
 
-            specialties_of_faculty = self.get_specialties(faculty.name)
-            menu_faculty.add_menu_item(specialties_of_faculty.name, specialties_of_faculty)
+                specialties_of_faculty = self.get_specialties(faculty.name)
+                menu_faculty.add_menu_item(specialties_of_faculty.name, specialties_of_faculty)
 
-            # menu_faculty.add_menu_item('Направления', self.get_department)
-            menu.add_menu_item(menu_faculty.name, menu_faculty)
-        # print(menu.items.get('Авиастроение')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
-        # print(menu.items.get('ИиВТ')[0].items.get('Кафедры факультета')[0].items.get('Назад')[0])
+                menu.add_menu_item(menu_faculty.name, menu_faculty)
+
+            # next_menu = self.get_faculty_menu('Далее', start_index=start_index + limit, over_back=over_back, limit_foo=limit_foo)
+            # if next_menu.items:
+            #     if over_back:
+            #         menu.add_menu_item(over_back.name, over_back, type_item=TypeItem.GATE, is_heir=False)
+            #     menu.add_menu_item(next_menu.name, next_menu, type_item=TypeItem.GATE)
         return menu
 
     def get_department_menu(self, button_name: str, faculty: models.Faculty = None):
