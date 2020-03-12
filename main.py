@@ -11,7 +11,8 @@ vk._auth_token()
 vk_upload = VkUpload(vk)
 print('Успешно')
 
-app = App(vk, vk_upload, menus.MenuTree(), Controller, Models)
+
+app = App(vk, vk_upload, menus.MenuTree(), controller=Controller(), models=Models)
 
 
 if __name__ == '__main__':
