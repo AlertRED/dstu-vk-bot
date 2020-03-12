@@ -3,6 +3,7 @@ import os
 
 from vk_api import VkApi, VkUpload
 
+from app.controller import Controller
 from app.menus import MenuTree
 from app.models_menu import TypeItem
 import random
@@ -12,14 +13,14 @@ import threading
 
 class App:
 
-    __button_colors = {TypeItem.DEFAULT: 'default',
+    __button_colors = {TypeItem.GATE: 'primary',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
-                       TypeItem.SIMPLE: 'primary'}
+                       TypeItem.SIMPLE: 'default'}
 
-    def __init__(self, vk: VkApi, vk_upload: VkUpload, menus_tree: MenuTree, Controller, models):
+    def __init__(self, vk: VkApi, vk_upload: VkUpload, menus_tree: MenuTree, controller: Controller, models):
 
-        self.controller = Controller()
+        self.controller = controller
         self.vk = vk
         self.models = models
         self.vk_upload = vk_upload
@@ -51,8 +52,9 @@ class App:
             if any(map(lambda x: len(x[0]) > limit, group)) or (len(group) > 4):
                 buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group[:-1])))
                 group = group[-1:]
-        else:
-            buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group)))
+                if len(buttons) == 9:
+                    break
+        buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group)))
 
         keyboard = {
             "one_time": True,
