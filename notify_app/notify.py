@@ -52,7 +52,7 @@ class NotifyApp:
             print('[*] Поиск пользователей')
             time, users = NotifyApp.__get_near_time_users()
             print('[*] Пользователи найдены')
-            # time = datetime.now() + timedelta(seconds=1)
+            time = datetime.now() + timedelta(seconds=10)
             delay_seconds = int((time - datetime.now()).total_seconds())
             print('[*] Оставшееся время %i секунд' % delay_seconds)
             while delay_seconds > 0:
@@ -67,6 +67,7 @@ class NotifyApp:
                 delay_seconds = int((time - datetime.now()).total_seconds())
             if users:
                 self.__send_notify(users, time)
+                break
 
 
 if __name__ == '__main__':
