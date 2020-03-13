@@ -173,7 +173,7 @@ class MenuTree:
     def notify_change(self, *args, **kwargs):
         new_remind = not models.User.get_user(kwargs['vk_id']).remind
         models.User.get_user(kwargs['vk_id']).set_remind(new_remind)
-        return 'Напоминания %s' % ('включены' if new_remind else 'отключены')
+        return 'Напоминания %s' % ('включены' if new_remind else 'отключены'), None
 
     def save_group(self, *args, **kwargs):
         if len(kwargs['list_answers']) > 0 and models.Group.get_group(kwargs['list_answers'][0]):
