@@ -31,4 +31,5 @@ admin.add_view(ModelView(models_DB.Group, db.session, name='Группы', categ
 admin.add_view(ModelView(models_DB.Subject, db.session, name='Предметы', category='Расписание'))
 
 admin.add_view(ModelView(models_DB.Log, db.session, name='Ошибки'))
+admin.add_view(ModelView(models_DB.Meta, db.session, name='Meta'))
 
