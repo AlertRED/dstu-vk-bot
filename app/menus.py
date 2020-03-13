@@ -112,6 +112,9 @@ class MenuTree:
                                               None)],
                                             self.save_group)
 
+        self.settings_menu.add_basic_item('Отключить напоминания о парах', 'Отключить напоминания о парах',
+                                          method=self.notify_change)
+
         self.root.add_menu_item(self.places_menu.name, self.places_menu)
         self.root.add_menu_item(self.schedule_menu.name, self.schedule_menu)
         self.root.add_menu_item(self.faculties_and_departments_menu.name, self.faculties_and_departments_menu)
@@ -164,7 +167,13 @@ class MenuTree:
                 next_menu.add_menu_item(index=item[0], menu=item[1][0], is_heir=item[1][1])
             next_menu.add_menu_item(over_back.name, over_back, type_item=TypeItem.GATE, is_heir=False)
             return root
+
         return wrapper
+
+    def notify_change(self, *args, **kwargs):
+        new_remind = not models.User.get_user(kwargs['vk_id']).remind
+        models.User.get_user(kwargs['vk_id']).set_remind(new_remind)
+        return 'Напоминания %s' % ('включены' if new_remind else 'отключены')
 
     def save_group(self, *args, **kwargs):
         if len(kwargs['list_answers']) > 0 and models.Group.get_group(kwargs['list_answers'][0]):
