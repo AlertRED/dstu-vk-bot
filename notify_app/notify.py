@@ -40,10 +40,11 @@ class NotifyApp:
         for i, user in enumerate(users):
             user.refresh_nearest_remind()
             schedule = user.get_group().get_schedule(day=days_of_week[time.weekday()], week=current_week(), semester=1)
-            message = 'Напоминание\n'
-            message += 'День недели: %s Неделя: %s' % (days_of_week[time.weekday()], current_week())+'\n'
+            name_week = 'верхняя' if current_week() == 2 else 'нижняя'
+            message = '🔔Напоминание\n'
+            message += 'День недели: %s | Неделя: %s' % (days_of_week[time.weekday()], name_week)+'\n\n'
             message += '\n'.join(
-                '№%i: %s (%s)' % (item.number, item.name, item.cabinet if item.cabinet is not None else 'ауд. -') for
+                '%s: %s (%s)' % (pairs_time[item.number].strftime(format='%H:%M'), item.name, item.cabinet if item.cabinet is not None else 'ауд. - ') for
                 item in schedule)
             self.vk.method("messages.send",
                            {"peer_id": user.vk_id,
