@@ -84,7 +84,7 @@ class MenuTree:
                                                                                   None)],
                                             self.save_group,
                                             prepare={'condition': lambda *args, **kwargs: models.User.get_user(
-                                                kwargs['vk_id']).group_name,
+                                                kwargs['vk_id']).group.name,
                                                      'method': lambda *args, **kwargs: self.get_schedule_of_group(
                                                          list_answers=[models.User.get_user(
                                                              kwargs['vk_id']).group_name])})
