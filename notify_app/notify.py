@@ -49,13 +49,21 @@ class NotifyApp:
     # Отправляет сообщения ближайшим по времени пользователям с их расписанием и обновляет их время
     def run(self):
         while True:
+            print('[*] Поиск пользователей')
             time, users = NotifyApp.__get_near_time_users()
+            print('[*] Пользователи найдены')
             # time = datetime.now() + timedelta(seconds=1)
             delay_seconds = int((time - datetime.now()).total_seconds())
+            print('[*] Оставшееся время %i секунд' % delay_seconds)
             while delay_seconds > 0:
                 sleep(1)
                 if NotifyApp.__is_changed_db():
+                    print('[*] Изменение в базе')
+                    print('[*] Поиск пользователей')
                     time, users = NotifyApp.__get_near_time_users()
+                    print('[*] Пользователи найдены')
+                    delay_seconds = int((time - datetime.now()).total_seconds())
+                    print('[*] Оставшееся время %i секунд' % delay_seconds)
                 delay_seconds = int((time - datetime.now()).total_seconds())
             if users:
                 self.__send_notify(users, time)
