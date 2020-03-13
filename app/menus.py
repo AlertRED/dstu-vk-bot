@@ -87,7 +87,7 @@ class MenuTree:
                                                 kwargs['vk_id']).group.name,
                                                      'method': lambda *args, **kwargs: self.get_schedule_of_group(
                                                          list_answers=[models.User.get_user(
-                                                             kwargs['vk_id']).group_name])})
+                                                             kwargs['vk_id']).group.name])})
 
         self.schedule_menu.add_special_item('Расписание группы', "Расписание группы",
                                             [('Введите название группы',
