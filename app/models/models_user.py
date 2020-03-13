@@ -62,7 +62,7 @@ class User(Base):
     def refresh_nearest_remind(self):
         current_date = datetime.now()
         current_weekday = current_date.weekday()
-        current_week = current_week()
+        current_week = cw()
         for i in range(1 + current_weekday, 14 + current_weekday):
             schedule = self.get_group().get_schedule(day=days_of_week[i % 7],
                                                      week=2 - (((i // 7) % 2 + current_week) % 2))

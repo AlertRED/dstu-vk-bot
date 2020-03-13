@@ -32,6 +32,7 @@ def current_week():
     days = (b - a).days + offset
     return 1 if ((days // 7) % 2 == 0) else 2
 
+cw = current_week
 
 from app.models.models_other import *
 
