@@ -127,12 +127,17 @@ class User(Base):
         self.user_cache.update(current_menu=menu_name)
         return self
 
+    @change_notify
+    def __update_group(self, group_name=None):
+        self.group = self.group.get_group(group_name)
+
     def update(self, vk_id=None, first_name=None, last_name=None, total_requests=None, group_name=None):
         self.vk_id = vk_id if vk_id else self.vk_id
         self.first_name = first_name if first_name else self.first_name
         self.last_name = last_name if last_name else self.last_name
         self.total_requests = total_requests if total_requests else self.total_requests
-        self.group = Group.get_group(group_name)
+        if group_name and (not self.group or self.group.name != group_name):
+            self.__update_group(group_name=group_name)
         session.commit()
         return self
 
