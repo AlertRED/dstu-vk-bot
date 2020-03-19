@@ -167,7 +167,9 @@ class User(Base):
         self.last_name = last_name
 
     def add_dinamic_items(self, index_name, dinamic_name):
-        DinamicItems.create(index_name=index_name, dinamic_name=dinamic_name)
+        item = DinamicItems.create(index_name=index_name, dinamic_name=dinamic_name)
+        self.dinamic_items += item
+        session.commit()
         return self
 
     def delete_all_dinamic_items(self):
@@ -175,7 +177,7 @@ class User(Base):
         return self
 
     def get_dinamic_item(self, index_name=None, dinamic_name=None):
-        return DinamicItems.get_frist(dinamic_name=dinamic_name)
+        return self.dinamic_items.get_frist(dinamic_name=dinamic_name)
 
 
 class DinamicItems(Base):
