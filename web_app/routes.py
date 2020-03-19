@@ -8,6 +8,7 @@ admin = Admin(flask_app, name='DataBase', url='/')
 admin.add_view(ModelView(models_DB.User, db.session, name='Пользователи', category='Пользователи'))
 admin.add_view(ModelView(models_DB.UserCache, db.session, name='Кэш пользователей', category='Пользователи'))
 admin.add_view(ModelView(models_DB.UserAnswer, db.session, name='Ответы пользователей', category='Пользователи'))
+admin.add_view(ModelView(models_DB.DinamicItems, db.session, name='Динамические пункты', category='Пользователи'))
 admin.add_view(ModelView(models_DB.Review, db.session, name='Отзывы', category='Пользователи'))
 
 admin.add_view(ModelView(models_DB.Place, db.session, name='Места', category='Места'))
