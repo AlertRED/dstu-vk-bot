@@ -112,8 +112,11 @@ class MenuTree:
                                               None)],
                                             self.save_group)
 
-        self.settings_menu.add_basic_item('Отключить напоминания о парах', 'Отключить напоминания о парах',
-                                          method=self.notify_change)
+        self.settings_menu.add_basic_item('Отключить напоминания о парах',
+                                          'Отключить напоминания о парах',
+                                          method=self.notify_change,
+                                          call_name=lambda *args, **kwargs: ('Отключить' if
+                                              models.User.get_user(kwargs['user_id']).remind else 'Включить') + ' напоминания о парах')
 
         self.root.add_menu_item(self.places_menu.name, self.places_menu)
         self.root.add_menu_item(self.schedule_menu.name, self.schedule_menu)
@@ -302,12 +305,6 @@ class MenuTree:
                 menu_faculty.add_menu_item(specialties_of_faculty.name, specialties_of_faculty)
 
                 menu.add_menu_item(menu_faculty.name, menu_faculty)
-
-            # next_menu = self.get_faculty_menu('Далее', start_index=start_index + limit, over_back=over_back, limit_foo=limit_foo)
-            # if next_menu.items:
-            #     if over_back:
-            #         menu.add_menu_item(over_back.name, over_back, type_item=TypeItem.GATE, is_heir=False)
-            #     menu.add_menu_item(next_menu.name, next_menu, type_item=TypeItem.GATE)
         return menu
 
     def get_department_menu(self, button_name: str, faculty: models.Faculty = None):

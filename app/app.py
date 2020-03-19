@@ -12,7 +12,6 @@ import threading
 
 
 class App:
-
     __button_colors = {TypeItem.GATE: 'primary',
                        TypeItem.BACK: 'negative',
                        TypeItem.MENU: 'positive',
@@ -42,12 +41,13 @@ class App:
         }
 
     @staticmethod
-    def __get_keyboard(items: dict):
+    def __get_keyboard(items: dict, *args, **kwargs):
         buttons = []
         group = []
 
         for label, obj in items.items():
             limit = 30 // (len(group) + 1)
+            label = obj[2](*args, **kwargs) if obj[2] else label
             group.append((label, App.__button_colors.get(obj[1], "default")))
             if any(map(lambda x: len(x[0]) > limit, group)) or (len(group) > 4):
                 buttons.append(list(map(lambda i: App.__get_button_json(label=i[0], color=i[1]), group[:-1])))
@@ -74,20 +74,21 @@ class App:
             self.vk.method("messages.send",
                            {"peer_id": id_user,
                             "message": answer[0],
-                            "keyboard": self.__get_keyboard(menu.items) if menu and menu.items else None,
+                            "keyboard": self.__get_keyboard(menu.items,
+                                                            user_id=id_user) if menu and menu.items else None,
                             "attachment": result,
                             "random_id": random.randint(1, 2147483647)})
         elif menu:
             self.vk.method("messages.send",
                            {"peer_id": id_user, "message": menu.get_menu(),
-                            "keyboard": self.__get_keyboard(menu.items),
+                            "keyboard": self.__get_keyboard(menu.items, user_id=id_user),
                             "random_id": random.randint(1, 2147483647)})
 
     # обработка сообщения
     def __handling_message(self, user_id: int, text_message: str):
         user_info = self.vk.method("users.get", values={"user_ids": user_id})
         user = self.models.User.create(user_id, user_info[0]['first_name'],
-                           user_info[0]['last_name']).create_cache(self.menus.root.index).inc_request()
+                                       user_info[0]['last_name']).create_cache(self.menus.root.index).inc_request()
         answer, menu = self.controller.get_answer(text_message, user)
         self.__send_message(answer, menu, user_id)
 

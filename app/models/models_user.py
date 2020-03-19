@@ -45,6 +45,8 @@ class User(Base):
 
     group = relationship("Group", back_populates="users")
 
+    dinamic_items = relationship("DinamicItems", uselist=True, back_populates="user")
+
     remind = db.Column(db.Boolean, default=False, nullable=False)
     remind_date = db.Column(db.DateTime)
     remind_offset = db.Column(db.Integer, default=0, nullable=False)  # change on offset and Time type
@@ -163,6 +165,47 @@ class User(Base):
         self.vk_id = vk_id
         self.first_name = first_name
         self.last_name = last_name
+
+    def add_dinamic_items(self, index_name, dinamic_name):
+        DinamicItems.create(index_name=index_name, dinamic_name=dinamic_name)
+        return self
+
+    def delete_all_dinamic_items(self):
+        self.dinamic_items = []
+        session.commit()
+        return self
+
+    def get_dinamic_item(self, index_name=None, dinamic_name=None):
+        return DinamicItems.get_frist(dinamic_name=dinamic_name)
+
+
+class DinamicItems(Base):
+    __tablename__ = 'dinamic_items'
+    id = db.Column(db.Integer, primary_key=True)
+    index_name = db.Column(db.String)
+    dinamic_name = db.Column(db.String)
+
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    user = relationship("User", back_populates="dinamic_items")
+
+    @staticmethod
+    def get(index_name, dinamic_name):
+        return session.query(DinamicItems).filter_by(index_name=index_name, dinamic_name=dinamic_name).first()
+
+    @staticmethod
+    def create(index_name, dinamic_name):
+        item = DinamicItems.get(index_name=index_name, dinamic_name=dinamic_name)
+        if not item:
+            item = DinamicItems(index_name=index_name, dinamic_name=dinamic_name)
+            session.add(item)
+            session.commit()
+        return item
+
+    @staticmethod
+    def get_frist(index_name=None, dinamic_name=None):
+        return session.query(DinamicItems).filter_by(dinamic_name=dinamic_name).first()
+
+
 
 
 class UserCache(Base):
