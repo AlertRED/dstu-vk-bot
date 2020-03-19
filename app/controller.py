@@ -31,6 +31,7 @@ class Controller:
                                          vk_id=user.vk_id)
 
         result = self.__parse_answer(result, user, current_menu)
+        current_menu = result[1]
         user.delete_all_dinamic_items()
         for k, v in current_menu.items.items():
             if v[2] is not None:
