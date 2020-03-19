@@ -19,7 +19,7 @@ class Item:
 
 
 class Menu(Item):
-    menues: list = []
+    menus: list = []
 
     def __init__(self, name, method=None):
         super().__init__(name, None)
@@ -27,8 +27,8 @@ class Menu(Item):
         self.method = method
         self.parent = None
         self.items = {}
-        Menu.menues.append(self)
-        self.index = len(Menu.menues) - 1
+        Menu.menus.append(self)
+        self.index = len(Menu.menus) - 1
 
     def get_menu(self):
         return " > ".join(reversed(["[ %s ]" % i for i in self.get_story()]))
@@ -42,15 +42,14 @@ class Menu(Item):
         return result[0].call(*args, **kwargs, request=request) if result else self.call(*args, **kwargs,
                                                                                          request=request)
 
-    def _add_item(self, index, item_of_menu, type_item: TypeItem = TypeItem.GATE):
-        self.items[index] = item_of_menu, type_item
+    def _add_item(self, index, item_of_menu, type_item: TypeItem = TypeItem.GATE, call_name=None):
+        self.items[index] = item_of_menu, type_item, call_name
         if self.items.get('Назад'):
             self.items['Назад'] = self.items.pop('Назад')
 
-
     # добавить пункт меню
-    def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE):
-        self._add_item(index, Item(name, method), type_item)
+    def add_basic_item(self, index, name, method, type_item: TypeItem = TypeItem.SIMPLE, call_name=None):
+        self._add_item(index, Item(name, method), type_item, call_name)
 
     # добавить пункт меню
     def add_special_item(self, index, name, messages: list, method, is_back=True, back_point_text="Назад",
@@ -64,9 +63,8 @@ class Menu(Item):
             special.add_back_point(special.parent, back_point_text)
 
     # добавить вложенное меню
-    def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU, is_heir=True):
-        self._add_item(index, menu, type_item)
-
+    def add_menu_item(self, index, menu, is_back=True, back_point_text="Назад", type_item: TypeItem = TypeItem.MENU, is_heir=True, call_name=None):
+        self._add_item(index, menu, type_item, call_name)
         if is_heir:
             menu.parent = self
             if is_back:
