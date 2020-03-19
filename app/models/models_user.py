@@ -168,7 +168,7 @@ class User(Base):
 
     def add_dinamic_items(self, index_name, dinamic_name):
         item = DinamicItems.create(index_name=index_name, dinamic_name=dinamic_name)
-        self.dinamic_items += item
+        self.dinamic_items.append(item)
         session.commit()
         return self
 
@@ -177,7 +177,7 @@ class User(Base):
         return self
 
     def get_dinamic_item(self, index_name=None, dinamic_name=None):
-        return self.dinamic_items.get_frist(dinamic_name=dinamic_name)
+        return DinamicItems.get_frist(self, dinamic_name=dinamic_name)
 
 
 class DinamicItems(Base):
@@ -203,13 +203,14 @@ class DinamicItems(Base):
         return item
 
     @staticmethod
-    def get_frist(index_name=None, dinamic_name=None):
-        return session.query(DinamicItems).filter_by(dinamic_name=dinamic_name).first()
+    def get_frist(user: User, index_name=None, dinamic_name=None):
+        return session.query(DinamicItems).filter_by(user=user, dinamic_name=dinamic_name).first()
 
     @staticmethod
     def delete_all_from_user(user: User):
         session.query(DinamicItems).filter_by(user=user).delete()
         session.commit()
+
 
 class UserCache(Base):
     __tablename__ = 'user_cache'
