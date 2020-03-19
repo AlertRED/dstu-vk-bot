@@ -206,7 +206,7 @@ class DinamicItems(Base):
 
     @staticmethod
     def delete_all_from_user(user: User):
-        session.query(DinamicItems).filter_be(user=user).delete()
+        session.query(DinamicItems).filter_by(user=user).delete()
         session.commit()
 
 class UserCache(Base):
