@@ -1,10 +1,8 @@
 scrapy
 vk-api
+psycopg2-binary
 SQLAlchemy
-psycopg2
 Flask
-alembic
 Flask-Admin
-flask-sqlalchemy
-flask-migrate
+alembic
 gunicorn
