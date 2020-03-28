@@ -2,13 +2,14 @@ import json
 import os
 
 from vk_api import VkApi, VkUpload
-
+import traceback
 from app.controller import Controller
 from app.menus import MenuTree
 from app.models_menu import TypeItem
 import random
 import logging
 import threading
+from app.models.models_other import Log
 
 
 class App:
@@ -97,19 +98,17 @@ class App:
         print('[*] Цикл обработки сообщений запущен')
         while True:
             user_id = None
-            # try:
-            # получаем сообщения
-            messages = self.vk.method("messages.getConversations",
-                                      {"offset": 0, "count": 20, "filter": "unanswered"})
-            if messages["count"] >= 1:
-                user_id = messages["items"][0]["last_message"]["from_id"]
-                text_message = messages["items"][0]["last_message"]["text"]
-                logging.info("From id: %d, message: %s" % (user_id, text_message))
+            try:
+                messages = self.vk.method("messages.getConversations",
+                                          {"offset": 0, "count": 20, "filter": "unanswered"})
+                if messages["count"] >= 1:
+                    user_id = messages["items"][0]["last_message"]["from_id"]
+                    text_message = messages["items"][0]["last_message"]["text"]
+                    logging.info("From id: %d, message: %s" % (user_id, text_message))
 
-                if not any(thread.name == str(user_id) for thread in threading.enumerate()):
-                    threading.Thread(target=self.__handling_message, args=(user_id, text_message), name=user_id).start()
-
-            # except Exception as E:
-            #     Log.create(text=str(E), vk_id=user_id)
-            #     if user_id:
-            #         self.send_message(('Вы что-то сломали:(', None), self.menues.root, user_id)
+                    if not any(thread.name == str(user_id) for thread in threading.enumerate()):
+                        threading.Thread(target=self.__handling_message, args=(user_id, text_message), name=user_id).start()
+            except Exception as E:
+                Log.create(text=str(traceback.format_exc()), vk_id=user_id)
+                if user_id:
+                    self.__send_message(('Вы что-то сломали:(', None), menu=self.menus.root, id_user=user_id)
